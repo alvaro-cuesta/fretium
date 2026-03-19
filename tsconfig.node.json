@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base-node.json",
+  "include": [
+    "bin",
+    "eslint.config.ts",
+    "knip.config.ts",
+    "prettier.config.ts",
+    "pwa-assets.config.ts",
+    "vite.config.ts"
+  ],
+  "compilerOptions": {
+    "types": ["node"]
+  }
+}
