@@ -41,7 +41,7 @@ type NumberCondition = number | readonly number[] | NumberRangeCondition;
 
 type NoteCondition = Note | readonly Note[];
 
-export type RuleCondition = {
+type RuleCondition = {
   string?: NumberCondition;
   fret?: NumberCondition;
   note?: NoteCondition;
@@ -56,17 +56,17 @@ export type Rule = {
 
 export type RuleDefinition = readonly Rule[];
 
-export type RuleContext = {
+type RuleContext = {
   string: number;
   fret: number;
   note: SharpNote;
 };
 
-export type RuleMatchOptions = {
+type RuleMatchOptions = {
   rootNote?: Note | undefined;
 };
 
-export function normalizeNote(note: string): SharpNote | null {
+function normalizeNote(note: string): SharpNote | null {
   const upper = note.trim().toUpperCase();
   if (SHARP_NOTES.includes(upper as SharpNote)) {
     return upper as SharpNote;
