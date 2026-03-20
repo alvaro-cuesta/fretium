@@ -113,7 +113,8 @@ code {
   background: var(--code-bg);
 }
 
-input {
+input,
+select {
   font: inherit;
   color: var(--text-h);
   background: color-mix(in srgb, var(--bg) 88%, var(--text-h) 12%);
@@ -123,14 +124,14 @@ input {
     border-color 120ms ease,
     box-shadow 120ms ease,
     background-color 120ms ease;
-}
 
-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-bg);
-}
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-bg);
+  }
 
-input:hover {
-  border-color: var(--accent-border);
+  &:hover {
+    border-color: var(--accent-border);
+  }
 }
