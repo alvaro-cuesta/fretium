@@ -20,7 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         linter:
-          - { name: 'TypeScript', script: 'lint:tsc' }
+          # Currently TSC lint needs .module.scss.d.ts files to be present, which are not committed to the repository
+          # on purpose. TSC will be run post-build though, so we can skip it here for now.
+          # - { name: 'TypeScript', script: 'lint:tsc' }
           - { name: 'ESLint', script: 'lint:eslint' }
           - { name: 'Knip', script: 'lint:knip' }
           - { name: 'Madge', script: 'lint:madge' }
