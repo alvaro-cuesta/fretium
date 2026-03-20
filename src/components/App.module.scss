@@ -103,5 +103,5 @@
 }
 
 .fretboardImg {
-  height: 30vh;
+  height: clamp(180px, 32vmin, 360px);
 }
