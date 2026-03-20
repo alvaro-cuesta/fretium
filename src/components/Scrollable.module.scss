@@ -1,0 +1,49 @@
+.root {
+  position: relative;
+}
+
+.scroller {
+  overflow: auto;
+}
+
+.content {
+  display: inline-block;
+  min-width: 100%;
+}
+
+.root::before,
+.root::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  width: clamp(18px, 4vw, 30px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.root::before {
+  inset-inline-start: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--bg) 94%, transparent),
+    transparent
+  );
+}
+
+.root::after {
+  inset-inline-end: 0;
+  background: linear-gradient(
+    270deg,
+    color-mix(in srgb, var(--bg) 94%, transparent),
+    transparent
+  );
+}
+
+.fadeLeft::before {
+  opacity: 1;
+}
+
+.fadeRight::after {
+  opacity: 1;
+}

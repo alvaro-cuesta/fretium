@@ -49,6 +49,7 @@
     "generate:og-assets": "node ./bin/generate-og-assets.ts"
   },
   "dependencies": {
+    "classnames": "^2.5.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

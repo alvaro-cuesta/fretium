@@ -5,6 +5,7 @@ import { clamp } from '../lib/math.ts';
 import styles from './App.module.scss';
 import { type FretboardDefinition } from './Fretboard/Fretboard.tsx';
 import { FretboardImg } from './FretboardImg.tsx';
+import { Scrollable } from './Scrollable.tsx';
 
 const definition: FretboardDefinition = [
   { condition: 'Note = G', color: '#18a999' },
@@ -149,14 +150,16 @@ export function App() {
         </div>
       </section>
 
-      <section className={styles.fretboardSection}>
-        <FretboardImg
-          className={styles.fretboardImg}
-          definition={definition}
-          tuning={resolvedInstrumentTuning.tuning}
-          startFret={startFret}
-          endFret={endFret}
-        />
+      <section>
+        <Scrollable>
+          <FretboardImg
+            className={styles.fretboardImg}
+            definition={definition}
+            tuning={resolvedInstrumentTuning.tuning}
+            startFret={startFret}
+            endFret={endFret}
+          />
+        </Scrollable>
       </section>
 
       <footer>
