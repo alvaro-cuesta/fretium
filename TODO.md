@@ -1,0 +1,20 @@
+# Fretium TODO
+
+- Add more instruments and tunings
+- Allow better preset DSL
+- Add default presets for common chords and scales
+  - Consider allowing selecting a root note separately
+- Add support for custom presets
+  - Needs editing capabilities in the fretboard
+  - Needs a way to save presets (to hash?)
+- Add current options to hash? E.g. selected instrument, tuning, chord/scale, diagram options...
+- Add more ways to export diagrams (e.g. PNG)
+- Add a way to customize diagram appearance (colors, fonts, sizes, shown elements...)
+- Add a way to display multiple diagrams at once (for chord progressions, scale variations...)
+- Add a way to display intervals instead of note names in diagrams
+- Add a way to display string names in diagrams
+- Add a way to display fingerings in diagrams
+- Consider the spacing in the diagram when fret = 0 vs 1
+- Maybe remove the diagram padding and make the app pad?
+- Keep height stable when changing fret count
+- Allow scrolling on the fretboard if it's larger than the container -- keeps aspect ratio!

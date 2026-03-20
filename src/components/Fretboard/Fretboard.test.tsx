@@ -1,22 +1,18 @@
-import { render, screen } from '@testing-library/react';
-import { createElement } from 'react';
-import {
-  Fretboard,
-  type FretboardDefinition,
-} from './components/Fretboard/Fretboard';
+import { render } from '@testing-library/react';
+import { Fretboard, type FretboardDefinition } from './Fretboard';
 
 test('renders open-string notes outside the neck clip path', () => {
   const definition: FretboardDefinition = [
     { condition: 'Note = E', color: '#000' },
   ];
 
-  render(
-    createElement(Fretboard, {
-      definition,
-      tuning: ['E'],
-      startFret: 0,
-      endFret: 0,
-    }),
+  const screen = render(
+    <Fretboard
+      definition={definition}
+      tuning={['E']}
+      startFret={0}
+      endFret={0}
+    />,
   );
 
   const svg = screen.getByRole('img', { name: 'Fretboard diagram' });

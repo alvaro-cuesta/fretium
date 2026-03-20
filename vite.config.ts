@@ -9,7 +9,25 @@ import { patchCssModules } from 'vite-css-modules';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import { ViteMinifyPlugin } from 'vite-plugin-minify';
 import ViteSvgr from 'vite-plugin-svgr';
+import type { MyImportMetaEnv } from './lib/define';
+import { fromEntries, objectKeys } from './lib/object';
 import * as packageJson from './package.json';
+
+type MetaEnvKey<TEnv extends Record<string, unknown>> = Extract<
+  keyof TEnv,
+  string
+>;
+
+function makeMetaEnvDefines<TEnv extends Record<string, unknown>>(
+  env: TEnv,
+): Record<`import.meta.env.${MetaEnvKey<TEnv>}`, string> {
+  return fromEntries(
+    objectKeys(env).map((key) => [
+      `import.meta.env.${key}` as const,
+      JSON.stringify(env[key]),
+    ]),
+  );
+}
 
 // https://vite.dev/config/
 export default defineConfig(async ({ mode }) => {
@@ -62,37 +80,18 @@ export default defineConfig(async ({ mode }) => {
       ViteMinifyPlugin(),
       ViteSvgr(),
     ],
-    define: {
-      'import.meta.env.GIT_COMMIT_SHORT_SHA': JSON.stringify(gitCommit),
-      'import.meta.env.PACKAGE_DESCRIPTION': JSON.stringify(
-        packageJson.description,
-      ),
-      'import.meta.env.PACKAGE_HOMEPAGE': JSON.stringify(packageJson.homepage),
-      'import.meta.env.PACKAGE_CONFIG_NAME': JSON.stringify(
-        packageJson.config.name,
-      ),
-      'import.meta.env.PACKAGE_CONFIG_SHORT_NAME': JSON.stringify(
-        packageJson.config.shortName,
-      ),
-      'import.meta.env.PACKAGE_CONFIG_DESCRIPTION': JSON.stringify(
-        packageJson.config.description,
-      ),
-      'import.meta.env.PACKAGE_CONFIG_AUTHOR': JSON.stringify(
-        packageJson.config.author,
-      ),
-      'import.meta.env.PACKAGE_CONFIG_THEME_COLOR': JSON.stringify(
-        packageJson.config.themeColor,
-      ),
-      'import.meta.env.PACKAGE_CONFIG_URL': JSON.stringify(
-        packageJson.config.url,
-      ),
-      'import.meta.env.PACKAGE_CONFIG_PUBLIC_URL_BASE': JSON.stringify(
-        packageJson.config.publicUrlBase,
-      ),
-      'import.meta.env.PACKAGE_CONFIG_REPOSITORY_URL': JSON.stringify(
-        packageJson.config.repositoryUrl,
-      ),
-    },
+    define: makeMetaEnvDefines<MyImportMetaEnv>({
+      GIT_COMMIT_SHORT_SHA: gitCommit,
+      PACKAGE_DESCRIPTION: packageJson.description,
+      PACKAGE_HOMEPAGE: packageJson.homepage,
+      PACKAGE_AUTHOR: packageJson.author,
+      PACKAGE_CONFIG_NAME: packageJson.config.name,
+      PACKAGE_CONFIG_SHORT_NAME: packageJson.config.shortName,
+      PACKAGE_CONFIG_DESCRIPTION: packageJson.config.description,
+      PACKAGE_CONFIG_THEME_COLOR: packageJson.config.themeColor,
+      PACKAGE_CONFIG_PUBLIC_URL_BASE: packageJson.config.publicUrlBase,
+      PACKAGE_CONFIG_REPOSITORY_URL: packageJson.config.repositoryUrl,
+    }),
     build: {
       outDir: 'build',
       target: 'es2023',
@@ -114,6 +113,7 @@ export default defineConfig(async ({ mode }) => {
       },
     },
     test: {
+      environment: 'jsdom',
       globals: true,
     },
   } satisfies UserConfig;

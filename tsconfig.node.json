@@ -2,6 +2,7 @@
   "extends": "./tsconfig.base-node.json",
   "include": [
     "bin",
+    "lib",
     "eslint.config.ts",
     "knip.config.ts",
     "prettier.config.ts",
