@@ -1,9 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { Exact } from 'type-fest';
 import { svgElementToFile } from '../lib/file.ts';
 import { Fretboard, type FretboardProps } from './Fretboard/Fretboard.tsx';
 import styles from './FretboardImg.module.scss';
 
-export function FretboardImg(props: FretboardProps) {
+type FretboardImgProps = Omit<FretboardProps, 'ref'> &
+  React.ImgHTMLAttributes<HTMLImageElement>;
+
+export function FretboardImg(props: FretboardImgProps) {
+  const { definition, tuning, startFret, endFret, ...imgProps } = props;
+
+  imgProps satisfies Exact<
+    React.ImgHTMLAttributes<HTMLImageElement>,
+    typeof imgProps
+  >;
+
   const svgRef = useRef<SVGSVGElement>(null);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
 
@@ -27,31 +38,26 @@ export function FretboardImg(props: FretboardProps) {
   useEffect(() => {
     if (!svgRef.current) return;
     return regenerateImgUrl(svgRef.current);
-  }, [
-    regenerateImgUrl,
-    props.definition,
-    props.tuning,
-    props.startFret,
-    props.endFret,
-  ]);
+  }, [regenerateImgUrl, definition, tuning, startFret, endFret]);
 
   return (
     <>
       <div className={styles.hidden}>
         <Fretboard
-          definition={props.definition}
-          tuning={props.tuning}
-          startFret={props.startFret}
-          endFret={props.endFret}
+          definition={definition}
+          tuning={tuning}
+          startFret={startFret}
+          endFret={endFret}
           ref={svgRef}
         />
       </div>
+
       {imgUrl && (
         <img
           src={imgUrl}
           // @todo better alt based on props
           alt="Fretboard diagram"
-          className={styles.image}
+          {...imgProps}
         />
       )}
     </>

@@ -149,8 +149,9 @@ export function App() {
         </div>
       </section>
 
-      <section>
+      <section className={styles.fretboardSection}>
         <FretboardImg
+          className={styles.fretboardImg}
           definition={definition}
           tuning={resolvedInstrumentTuning.tuning}
           startFret={startFret}
