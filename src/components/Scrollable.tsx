@@ -7,7 +7,7 @@ type ScrollCueState = {
   right: boolean;
 };
 
-export type ScrollableProps = React.HTMLAttributes<HTMLElement> & {
+type ScrollableProps = React.HTMLAttributes<HTMLElement> & {
   children: React.ReactNode;
 };
 
