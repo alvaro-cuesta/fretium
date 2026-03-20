@@ -23,11 +23,11 @@
   "private": true,
   "type": "module",
   "config": {
-    "name": "fretium",
-    "shortName": "fretium",
+    "name": "Fretium",
+    "shortName": "Fretium",
     "description": "Fretboard diagram generator",
     "author": "https://alvaro.cuesta.dev",
-    "themeColor": "#2d2d2d",
+    "themeColor": "#bc366a",
     "url": "https://fretium.cuesta.dev",
     "publicUrlBase": "https://fretium.cuesta.dev",
     "repositoryUrl": "https://www.github.com/alvaro-cuesta/fretium"

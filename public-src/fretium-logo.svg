@@ -10,24 +10,25 @@
   <!-- Rounded square background -->
   <rect x="0" y="0" width="512" height="512" rx="72" fill="url(#bgGrad)" />
 
-  <!-- Fretboard grid -->
-  <g stroke="white" stroke-width="12" stroke-linecap="round">
-    <!-- Vertical strings -->
-    <line x1="128" y1="96" x2="128" y2="416" />
-    <line x1="192" y1="96" x2="192" y2="432" />
-    <line x1="256" y1="96" x2="256" y2="456" />
-    <line x1="320" y1="96" x2="320" y2="432" />
-    <line x1="384" y1="96" x2="384" y2="416" />
+  <!-- Fretboard grid + dots rotated around center -->
+  <g transform="rotate(-5, 256, 256)">
 
-    <!-- Horizontal frets -->
-    <line x1="96" y1="144" x2="416" y2="144" />
-    <line x1="96" y1="224" x2="416" y2="224" />
-    <line x1="96" y1="304" x2="416" y2="304" />
-    <line x1="96" y1="384" x2="416" y2="384" />
+    <!-- Fretboard grid: 3 strings, 2 frets -->
+    <g stroke="white" stroke-width="32" stroke-linecap="round" opacity="0.9">
+      <!-- Vertical strings -->
+      <line x1="164" y1="80" x2="164" y2="432" />
+      <line x1="256" y1="80" x2="256" y2="432" />
+      <line x1="348" y1="80" x2="348" y2="432" />
+
+      <!-- Horizontal frets -->
+      <line x1="96" y1="197" x2="416" y2="197" />
+      <line x1="96" y1="315" x2="416" y2="315" />
+    </g>
+
+    <!-- Note markers: large, diagonal across fret zones -->
+    <circle cx="164" cy="139" r="36" fill="#a78bfa" stroke="white" stroke-width="4" />
+    <circle cx="256" cy="256" r="36" fill="#34d399" stroke="white" stroke-width="4" />
+    <circle cx="348" cy="373" r="36" fill="#fbbf24" stroke="white" stroke-width="4" />
+
   </g>
-
-  <!-- Note markers -->
-  <circle cx="192" cy="184" r="24" fill="#38bdf8" stroke="#ffffff" stroke-width="4" />
-  <circle cx="256" cy="264" r="24" fill="#ec4899" stroke="#ffffff" stroke-width="4" />
-  <circle cx="320" cy="344" r="24" fill="#facc15" stroke="#ffffff" stroke-width="4" />
 </svg>
