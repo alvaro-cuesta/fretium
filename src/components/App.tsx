@@ -33,7 +33,7 @@ const MIN_FRET = 0;
 const MAX_FRET = 48;
 
 const DEFAULT_START_FRET = 0;
-const DEFAULT_END_FRET = 24;
+const DEFAULT_END_FRET = 14;
 
 const DEFAULT_INSTRUMENT = 'Guitar' satisfies keyof typeof INSTRUMENTS;
 const DEFAULT_INSTRUMENT_TUNING =
