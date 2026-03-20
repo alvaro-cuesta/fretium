@@ -14,7 +14,3 @@
 - Add a way to display intervals instead of note names in diagrams
 - Add a way to display string names in diagrams
 - Add a way to display fingerings in diagrams
-- Consider the spacing in the diagram when fret = 0 vs 1
-- Maybe remove the diagram padding and make the app pad?
-- Keep height stable when changing fret count
-- Allow scrolling on the fretboard if it's larger than the container -- keeps aspect ratio!

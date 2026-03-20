@@ -16,12 +16,15 @@ export function FretboardNote(props: FretboardNoteProps) {
         opacity={0.95}
       />
       <text
+        x={0}
+        y={0}
         fill="#fff"
         fontFamily={FRETBOARD_THEME_FONT_FAMILY}
         fontSize={9.5}
         fontWeight={700}
         textAnchor="middle"
-        dominantBaseline="middle"
+        dominantBaseline="central"
+        alignmentBaseline="central"
       >
         {props.note}
       </text>
