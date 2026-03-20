@@ -1,9 +1,10 @@
 import { render } from '@testing-library/react';
-import { Fretboard, type FretboardDefinition } from './Fretboard';
+import type { RuleDefinition } from '../../lib/rule-engine';
+import { Fretboard } from './Fretboard';
 
 test('renders open-string notes outside the neck clip path', () => {
-  const definition: FretboardDefinition = [
-    { condition: 'Note = E', color: '#000' },
+  const definition: RuleDefinition = [
+    { condition: { note: 'E' }, color: 'BLACK' },
   ];
 
   const screen = render(
@@ -27,8 +28,8 @@ test('renders open-string notes outside the neck clip path', () => {
 });
 
 test('balances the top and bottom margins around the rendered fretboard content', () => {
-  const definition: FretboardDefinition = [
-    { condition: 'Note = G', color: '#000' },
+  const definition: RuleDefinition = [
+    { condition: { note: 'G' }, color: 'BLACK' },
   ];
 
   const screen = render(
@@ -46,8 +47,8 @@ test('balances the top and bottom margins around the rendered fretboard content'
 });
 
 test('adds extra left margin when open-string notes are shown', () => {
-  const definition: FretboardDefinition = [
-    { condition: 'Note = E', color: '#000' },
+  const definition: RuleDefinition = [
+    { condition: { note: 'E' }, color: 'BLACK' },
   ];
 
   const screen = render(
@@ -65,8 +66,8 @@ test('adds extra left margin when open-string notes are shown', () => {
 });
 
 test('extends open strings to the nut edge and keeps the neck flat on the left', () => {
-  const definition: FretboardDefinition = [
-    { condition: 'Note = E', color: '#000' },
+  const definition: RuleDefinition = [
+    { condition: { note: 'E' }, color: 'BLACK' },
   ];
 
   const screen = render(
@@ -87,8 +88,8 @@ test('extends open strings to the nut edge and keeps the neck flat on the left',
 });
 
 test('keeps the neck flat against the nut at fret 1', () => {
-  const definition: FretboardDefinition = [
-    { condition: 'Note = F', color: '#000' },
+  const definition: RuleDefinition = [
+    { condition: { note: 'F' }, color: 'BLACK' },
   ];
 
   const screen = render(
@@ -109,8 +110,8 @@ test('keeps the neck flat against the nut at fret 1', () => {
 });
 
 test('explicitly centers note text on the note circle', () => {
-  const definition: FretboardDefinition = [
-    { condition: 'Note = E', color: '#000' },
+  const definition: RuleDefinition = [
+    { condition: { note: 'E' }, color: 'BLACK' },
   ];
 
   const screen = render(
@@ -155,4 +156,97 @@ test('shows the ending fret label for open-string diagrams', () => {
   );
 
   expect(screen.queryByText('1')).not.toBeNull();
+});
+
+test('supports string and fret DSL selectors', () => {
+  const definition: RuleDefinition = [
+    { condition: { string: 1, fret: 3 }, color: 'BLACK' },
+  ];
+
+  const screen = render(
+    <Fretboard
+      definition={definition}
+      tuning={['E', 'A']}
+      startFret={0}
+      endFret={5}
+    />,
+  );
+
+  expect(screen.queryAllByText('C').length).toBe(1);
+});
+
+test('supports array and range DSL selectors', () => {
+  const definition: RuleDefinition = [
+    {
+      condition: { string: [1, 2], fret: { gte: 3, lte: 4 } },
+      color: 'BLACK',
+    },
+  ];
+
+  const screen = render(
+    <Fretboard
+      definition={definition}
+      tuning={['E', 'A']}
+      startFret={0}
+      endFret={5}
+    />,
+  );
+
+  const renderedNoteTexts = ['G', 'G#', 'C', 'C#'];
+  expect(
+    renderedNoteTexts.every((note) => screen.queryByText(note) !== null),
+  ).toBe(true);
+});
+
+test('supports interval DSL selectors', () => {
+  const definition: RuleDefinition = [
+    { condition: { interval: 'b3' }, color: 'BLACK' },
+  ];
+
+  const screen = render(
+    <Fretboard
+      definition={definition}
+      tuning={['C']}
+      startFret={0}
+      endFret={3}
+    />,
+  );
+
+  expect(screen.queryByText('D#')).not.toBeNull();
+});
+
+test('resolves interval DSL selectors against the provided root note', () => {
+  const definition: RuleDefinition = [
+    { condition: { interval: 'b3' }, color: 'BLACK' },
+  ];
+
+  const screen = render(
+    <Fretboard
+      definition={definition}
+      tuning={['A']}
+      startFret={0}
+      endFret={3}
+      rootNote="A"
+    />,
+  );
+
+  expect(screen.queryByText('C')).not.toBeNull();
+});
+
+test('supports natural interval selectors against the provided root note', () => {
+  const definition: RuleDefinition = [
+    { condition: { interval: '1' }, color: 'BLACK' },
+  ];
+
+  const screen = render(
+    <Fretboard
+      definition={definition}
+      tuning={['A']}
+      startFret={0}
+      endFret={3}
+      rootNote="A"
+    />,
+  );
+
+  expect(screen.queryByText('A')).not.toBeNull();
 });

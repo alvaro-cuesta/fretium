@@ -1,6 +1,12 @@
 import { useId } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import type { Tuning } from '../../lib/instrument';
+import type { Note } from '../../lib/music';
+import {
+  matchesCondition,
+  transposeNote,
+  type RuleDefinition,
+} from '../../lib/rule-engine';
 import { checkIsNever } from '../../lib/type';
 import { FretboardFretLabel } from './FretboardFretLabel';
 import { FretboardFretLine } from './FretboardFretLine';
@@ -8,45 +14,12 @@ import { FretboardMarkerCircle } from './FretboardMarkerCircle';
 import { FretboardNote } from './FretboardNote';
 import { FretboardString } from './FretboardString';
 
-const SHARP_NOTES = [
-  'C',
-  'C#',
-  'D',
-  'D#',
-  'E',
-  'F',
-  'F#',
-  'G',
-  'G#',
-  'A',
-  'A#',
-  'B',
-] as const;
-
-const FLAT_TO_SHARP: Readonly<Record<string, (typeof SHARP_NOTES)[number]>> = {
-  CB: 'B',
-  DB: 'C#',
-  EB: 'D#',
-  FB: 'E',
-  GB: 'F#',
-  AB: 'G#',
-  BB: 'A#',
-  'E#': 'F',
-  'B#': 'C',
-};
-
-export type FretboardRule = {
-  condition: string;
-  color: string;
-};
-
-export type FretboardDefinition = readonly FretboardRule[];
-
 export type FretboardProps = {
-  definition: FretboardDefinition;
+  definition: RuleDefinition;
   tuning: Tuning<number>;
   startFret: number;
   endFret: number;
+  rootNote?: Note | undefined;
   ref?: React.Ref<SVGSVGElement> | undefined;
 };
 
@@ -109,46 +82,12 @@ function getRoundedRectPath({
   ].join(' ');
 }
 
-function normalizeNote(note: string): (typeof SHARP_NOTES)[number] | null {
-  const upper = note.trim().toUpperCase();
-  if (SHARP_NOTES.includes(upper as (typeof SHARP_NOTES)[number])) {
-    return upper as (typeof SHARP_NOTES)[number];
-  }
-
-  return FLAT_TO_SHARP[upper] ?? null;
-}
-
-function transposeNote(
-  root: string,
-  semitones: number,
-): (typeof SHARP_NOTES)[number] | null {
-  const normalized = normalizeNote(root);
-  if (!normalized) {
-    return null;
-  }
-
-  const rootIndex = SHARP_NOTES.indexOf(normalized);
-  const nextIndex =
-    (((rootIndex + semitones) % SHARP_NOTES.length) + SHARP_NOTES.length) %
-    SHARP_NOTES.length;
-  return SHARP_NOTES[nextIndex] ?? null;
-}
-
-function matchesCondition(condition: string, note: string): boolean {
-  const match = /^\s*note\s*=\s*([a-g](?:#|b)?)\s*$/i.exec(condition);
-  if (!match?.[1]) {
-    return false;
-  }
-
-  const target = normalizeNote(match[1]);
-  return target === note;
-}
-
 export function Fretboard({
   definition,
   tuning: tuning,
   startFret,
   endFret,
+  rootNote,
   ref,
 }: FretboardProps) {
   const showOpenString = startFret === 0;
@@ -196,6 +135,7 @@ export function Fretboard({
       openNote,
       y: rowIndex * stringSpacing,
       gauge: Math.max(1.2, 3.2 - originalIndex * 0.35),
+      number: rowIndex + 1,
     };
   });
 
@@ -330,7 +270,17 @@ export function Fretboard({
               }
 
               const matchingRule = definition.find((rule) =>
-                matchesCondition(rule.condition, note),
+                matchesCondition(
+                  rule.condition,
+                  {
+                    string: row.number,
+                    fret,
+                    note,
+                  },
+                  {
+                    rootNote,
+                  },
+                ),
               );
               if (!matchingRule) {
                 return null;
@@ -343,6 +293,7 @@ export function Fretboard({
                   y={y}
                   color={matchingRule.color}
                   note={note}
+                  opacity={matchingRule.opacity}
                 />
               );
             },

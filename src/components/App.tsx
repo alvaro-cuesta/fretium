@@ -1,21 +1,39 @@
 import { useCallback, useState } from 'react';
 import { objectEntries, objectKeys } from '../../lib/object.ts';
-import { INSTRUMENTS } from '../lib/instrument.ts';
+import {
+  DEFINITIONS,
+  DEFINITIONS_GROUPED,
+  type DefinitionPresetName,
+} from '../config/definitions.ts';
+import { INSTRUMENTS } from '../config/instruments.ts';
 import { clamp } from '../lib/math.ts';
+import type { Note } from '../lib/music.ts';
 import styles from './App.module.scss';
-import { type FretboardDefinition } from './Fretboard/Fretboard.tsx';
 import { FretboardImg } from './FretboardImg.tsx';
 import { Scrollable } from './Scrollable.tsx';
 
-const definition: FretboardDefinition = [
-  { condition: 'Note = G', color: '#18a999' },
-  { condition: 'Note = C', color: '#f18805' },
-  { condition: 'Note = D', color: '#d81e5b' },
-  //{ condition: 'Note = E', color: '#f18805' },
-  { condition: 'Note = F', color: '#f18805' },
-  { condition: 'Note = A', color: '#f18805' },
-  { condition: 'Note = B', color: '#f18805' },
-];
+const ROOT_NOTES = [
+  'C',
+  'C#',
+  'Db',
+  'D',
+  'D#',
+  'Eb',
+  'E',
+  'F',
+  'F#',
+  'Gb',
+  'G',
+  'G#',
+  'Ab',
+  'A',
+  'A#',
+  'Bb',
+  'B',
+] as const satisfies readonly Note[];
+
+const DEFAULT_DEFINITION_PRESET = 'Major scale' satisfies DefinitionPresetName;
+const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({
@@ -41,6 +59,11 @@ const DEFAULT_INSTRUMENT_TUNING =
 const DEFAULT_INSTRUMENT_TUNING_VALUE = `${DEFAULT_INSTRUMENT}::${DEFAULT_INSTRUMENT_TUNING}`;
 
 export function App() {
+  const [selectedDefinitionPreset, setSelectedDefinitionPreset] =
+    useState<DefinitionPresetName>(DEFAULT_DEFINITION_PRESET);
+  const [selectedRootNote, setSelectedRootNote] =
+    useState<Note>(DEFAULT_ROOT_NOTE);
+
   const [selectedInstrumentTuning, setSelectedInstrumentTuning] = useState(
     DEFAULT_INSTRUMENT_TUNING_VALUE,
   );
@@ -51,6 +74,8 @@ export function App() {
   if (!resolvedInstrumentTuning) {
     throw new Error('Expected at least one instrument tuning to be available.');
   }
+
+  const definition = DEFINITIONS[selectedDefinitionPreset];
 
   // Start/end fret
   const [startFret, setStartFret] = useState(DEFAULT_START_FRET);
@@ -93,59 +118,116 @@ export function App() {
         </h1>
       </header>
       <section className={styles.controlsSection}>
-        <label className={styles.fieldGroup}>
-          <span className={styles.fieldLabel}>Instrument</span>
-          <select
-            className={styles.selectorInput}
-            value={resolvedInstrumentTuning.value}
-            onChange={(e) => {
-              setSelectedInstrumentTuning(e.target.value);
-            }}
-          >
-            {objectEntries(INSTRUMENTS).map(([instrumentName, instrument]) => (
-              <optgroup
-                key={instrumentName}
-                label={instrumentName}
-              >
-                {objectKeys(instrument.tunings).map((tuningName) => {
-                  const value = `${instrumentName}::${tuningName}`;
-                  const label = `${instrumentName} ${tuningName}`;
-                  return (
-                    <option
-                      key={value}
-                      value={value}
-                    >
-                      {label}
-                    </option>
-                  );
-                })}
-              </optgroup>
-            ))}
-          </select>
-        </label>
-
-        <div className={styles.rangeFields}>
+        <div className={styles.controlsRow}>
           <label className={styles.fieldGroup}>
-            <span className={styles.fieldLabel}>Start fret</span>
-            <input
-              className={styles.fretRangeInput}
-              type="number"
-              min={MIN_FRET}
-              max={endFret}
-              value={startFret}
-              onChange={handleChangeStartFret}
-            />
+            <span className={styles.fieldLabel}>Instrument</span>
+            <select
+              className={styles.selectorInput}
+              value={resolvedInstrumentTuning.value}
+              onChange={(e) => {
+                setSelectedInstrumentTuning(e.target.value);
+              }}
+            >
+              {objectEntries(INSTRUMENTS).map(
+                ([instrumentName, instrument]) => (
+                  <optgroup
+                    key={instrumentName}
+                    label={instrumentName}
+                  >
+                    {objectKeys(instrument.tunings).map((tuningName) => {
+                      const value = `${instrumentName}::${tuningName}`;
+                      const label = `${instrumentName} ${tuningName}`;
+                      return (
+                        <option
+                          key={value}
+                          value={value}
+                        >
+                          {label}
+                        </option>
+                      );
+                    })}
+                  </optgroup>
+                ),
+              )}
+            </select>
           </label>
+
+          <div className={styles.rangeFields}>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>Start fret</span>
+              <input
+                className={styles.fretRangeInput}
+                type="number"
+                min={MIN_FRET}
+                max={endFret}
+                value={startFret}
+                onChange={handleChangeStartFret}
+              />
+            </label>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>End fret</span>
+              <input
+                className={styles.fretRangeInput}
+                type="number"
+                min={startFret}
+                max={MAX_FRET}
+                value={endFret}
+                onChange={handleChangeEndFret}
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
           <label className={styles.fieldGroup}>
-            <span className={styles.fieldLabel}>End fret</span>
-            <input
-              className={styles.fretRangeInput}
-              type="number"
-              min={startFret}
-              max={MAX_FRET}
-              value={endFret}
-              onChange={handleChangeEndFret}
-            />
+            <span className={styles.fieldLabel}>Definition preset</span>
+            <select
+              className={styles.selectorInput}
+              value={selectedDefinitionPreset}
+              onChange={(e) => {
+                setSelectedDefinitionPreset(
+                  e.target.value as DefinitionPresetName,
+                );
+              }}
+            >
+              {objectEntries(DEFINITIONS_GROUPED).map(
+                ([groupName, presets]) => (
+                  <optgroup
+                    key={groupName}
+                    label={groupName}
+                  >
+                    {objectKeys(presets).map((presetName) => (
+                      <option
+                        key={presetName}
+                        value={presetName}
+                      >
+                        {presetName}
+                      </option>
+                    ))}
+                  </optgroup>
+                ),
+              )}
+            </select>
+          </label>
+
+          <label className={`${styles.fieldGroup} ${styles.rootNoteField}`}>
+            <span className={styles.fieldLabel}>Root note</span>
+            <select
+              className={styles.selectorInput}
+              value={selectedRootNote}
+              onChange={(e) => {
+                setSelectedRootNote(e.target.value as Note);
+              }}
+            >
+              {ROOT_NOTES.map((rootNote) => (
+                <option
+                  key={rootNote}
+                  value={rootNote}
+                >
+                  {rootNote}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
       </section>
@@ -158,6 +240,7 @@ export function App() {
             tuning={resolvedInstrumentTuning.tuning}
             startFret={startFret}
             endFret={endFret}
+            rootNote={selectedRootNote}
           />
         </Scrollable>
       </section>
