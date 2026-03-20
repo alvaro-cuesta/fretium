@@ -71,7 +71,7 @@ export function App() {
   );
 
   return (
-    <>
+    <div className={styles.app}>
       <header>
         <h1>
           <a
@@ -183,6 +183,6 @@ export function App() {
           .
         </p>
       </footer>
-    </>
+    </div>
   );
 }
