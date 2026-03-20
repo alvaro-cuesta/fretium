@@ -8,7 +8,7 @@ type FretboardNoteProps = {
   x: number;
   y: number;
   color: FretboardNoteColor;
-  note: string;
+  label: string | null;
   opacity?: number | undefined;
 };
 
@@ -23,19 +23,21 @@ export function FretboardNote(props: FretboardNoteProps) {
         fill={FRETBOARD_THEME_NOTE_COLORS[props.color]}
         opacity={0.95}
       />
-      <text
-        x={0}
-        y={0}
-        fill="#fff"
-        fontFamily={FRETBOARD_THEME_FONT_FAMILY}
-        fontSize={9.5}
-        fontWeight={700}
-        textAnchor="middle"
-        dominantBaseline="central"
-        alignmentBaseline="central"
-      >
-        {props.note}
-      </text>
+      {props.label !== null && (
+        <text
+          x={0}
+          y={0}
+          fill="#fff"
+          fontFamily={FRETBOARD_THEME_FONT_FAMILY}
+          fontSize={9.5}
+          fontWeight={700}
+          textAnchor="middle"
+          dominantBaseline="central"
+          alignmentBaseline="central"
+        >
+          {props.label}
+        </text>
+      )}
     </g>
   );
 }

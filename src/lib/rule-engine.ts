@@ -31,6 +31,20 @@ const FLAT_TO_SHARP: Readonly<Record<string, SharpNote>> = {
 };
 
 const DEFAULT_INTERVAL_ROOT: SharpNote = 'C';
+const SEMITONE_INTERVAL_LABELS = [
+  '1',
+  'b2',
+  '2',
+  'b3',
+  '3',
+  '4',
+  'b5',
+  '5',
+  'b6',
+  '6',
+  'b7',
+  '7',
+] as const;
 
 type NumberRangeCondition = {
   gte?: number;
@@ -198,6 +212,27 @@ function matchesIntervalCondition(
       noteSemitonesFromRoot
     );
   });
+}
+
+export function getIntervalLabelFromRoot(
+  note: string,
+  rootNote?: Note,
+): (typeof SEMITONE_INTERVAL_LABELS)[number] | null {
+  const normalizedRoot = normalizeNote(rootNote ?? DEFAULT_INTERVAL_ROOT);
+  const normalizedNote = normalizeNote(note);
+  if (!normalizedRoot || !normalizedNote) {
+    return null;
+  }
+
+  const rootIndex = SHARP_NOTES.indexOf(normalizedRoot);
+  const noteIndex = SHARP_NOTES.indexOf(normalizedNote);
+  if (rootIndex < 0 || noteIndex < 0) {
+    return null;
+  }
+
+  const semitonesFromRoot =
+    (noteIndex - rootIndex + SHARP_NOTES.length) % SHARP_NOTES.length;
+  return SEMITONE_INTERVAL_LABELS[semitonesFromRoot] ?? null;
 }
 
 export function matchesCondition(

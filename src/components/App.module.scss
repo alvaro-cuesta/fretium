@@ -84,6 +84,10 @@
   flex: 0 0 180px;
 }
 
+.noteLabelsField {
+  flex: 0 0 240px;
+}
+
 .fieldGroup {
   display: flex;
   flex-direction: column;
@@ -133,6 +137,10 @@
 
   .rootNoteField {
     flex: 1 1 160px;
+  }
+
+  .noteLabelsField {
+    flex: 1 1 220px;
   }
 
   .fieldGroup {

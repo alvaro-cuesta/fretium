@@ -8,8 +8,15 @@ type FretboardImgProps = Omit<FretboardProps, 'ref'> &
   React.ImgHTMLAttributes<HTMLImageElement>;
 
 export function FretboardImg(props: FretboardImgProps) {
-  const { definition, tuning, startFret, endFret, rootNote, ...imgProps } =
-    props;
+  const {
+    definition,
+    tuning,
+    startFret,
+    endFret,
+    noteDisplayMode,
+    rootNote,
+    ...imgProps
+  } = props;
 
   imgProps satisfies Exact<
     React.ImgHTMLAttributes<HTMLImageElement>,
@@ -39,7 +46,15 @@ export function FretboardImg(props: FretboardImgProps) {
   useEffect(() => {
     if (!svgRef.current) return;
     return regenerateImgUrl(svgRef.current);
-  }, [regenerateImgUrl, definition, tuning, startFret, endFret, rootNote]);
+  }, [
+    regenerateImgUrl,
+    definition,
+    tuning,
+    startFret,
+    endFret,
+    noteDisplayMode,
+    rootNote,
+  ]);
 
   return (
     <>
@@ -49,6 +64,7 @@ export function FretboardImg(props: FretboardImgProps) {
           tuning={tuning}
           startFret={startFret}
           endFret={endFret}
+          noteDisplayMode={noteDisplayMode}
           rootNote={rootNote}
           ref={svgRef}
         />

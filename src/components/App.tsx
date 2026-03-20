@@ -34,6 +34,8 @@ const ROOT_NOTES = [
 
 const DEFAULT_DEFINITION_PRESET = 'Major scale' satisfies DefinitionPresetName;
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
+const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
+type NoteDisplayMode = 'note' | 'interval' | 'none';
 
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({
@@ -63,6 +65,8 @@ export function App() {
     useState<DefinitionPresetName>(DEFAULT_DEFINITION_PRESET);
   const [selectedRootNote, setSelectedRootNote] =
     useState<Note>(DEFAULT_ROOT_NOTE);
+  const [selectedNoteDisplayMode, setSelectedNoteDisplayMode] =
+    useState<NoteDisplayMode>(DEFAULT_NOTE_DISPLAY_MODE);
 
   const [selectedInstrumentTuning, setSelectedInstrumentTuning] = useState(
     DEFAULT_INSTRUMENT_TUNING_VALUE,
@@ -176,6 +180,21 @@ export function App() {
               />
             </label>
           </div>
+
+          <label className={`${styles.fieldGroup} ${styles.noteLabelsField}`}>
+            <span className={styles.fieldLabel}>Note labels</span>
+            <select
+              className={styles.selectorInput}
+              value={selectedNoteDisplayMode}
+              onChange={(e) => {
+                setSelectedNoteDisplayMode(e.target.value as NoteDisplayMode);
+              }}
+            >
+              <option value="note">Note name</option>
+              <option value="interval">Intervals (from root)</option>
+              <option value="none">None</option>
+            </select>
+          </label>
         </div>
 
         <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
@@ -240,6 +259,7 @@ export function App() {
             tuning={resolvedInstrumentTuning.tuning}
             startFret={startFret}
             endFret={endFret}
+            noteDisplayMode={selectedNoteDisplayMode}
             rootNote={selectedRootNote}
           />
         </Scrollable>

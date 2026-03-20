@@ -3,6 +3,7 @@ import { Fragment } from 'react/jsx-runtime';
 import type { Tuning } from '../../lib/instrument';
 import type { Note } from '../../lib/music';
 import {
+  getIntervalLabelFromRoot,
   matchesCondition,
   transposeNote,
   type RuleDefinition,
@@ -19,7 +20,8 @@ export type FretboardProps = {
   tuning: Tuning<number>;
   startFret: number;
   endFret: number;
-  rootNote?: Note | undefined;
+  noteDisplayMode: 'note' | 'interval' | 'none';
+  rootNote: Note;
   ref?: React.Ref<SVGSVGElement> | undefined;
 };
 
@@ -87,6 +89,7 @@ export function Fretboard({
   tuning: tuning,
   startFret,
   endFret,
+  noteDisplayMode,
   rootNote,
   ref,
 }: FretboardProps) {
@@ -286,13 +289,18 @@ export function Fretboard({
                 return null;
               }
 
+              const noteLabel =
+                noteDisplayMode === 'interval'
+                  ? (getIntervalLabelFromRoot(note, rootNote) ?? note)
+                  : note;
+
               return (
                 <FretboardNote
                   key={`${row.id}-${fret}`}
                   x={noteX(fret)}
                   y={y}
                   color={matchingRule.color}
-                  note={note}
+                  label={noteDisplayMode === 'none' ? null : noteLabel}
                   opacity={matchingRule.opacity}
                 />
               );

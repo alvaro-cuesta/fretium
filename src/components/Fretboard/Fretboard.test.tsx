@@ -2,6 +2,11 @@ import { render } from '@testing-library/react';
 import type { RuleDefinition } from '../../lib/rule-engine';
 import { Fretboard } from './Fretboard';
 
+const REQUIRED_PROPS = {
+  noteDisplayMode: 'note' as const,
+  rootNote: 'C' as const,
+};
+
 test('renders open-string notes outside the neck clip path', () => {
   const definition: RuleDefinition = [
     { condition: { note: 'E' }, color: 'BLACK' },
@@ -9,6 +14,7 @@ test('renders open-string notes outside the neck clip path', () => {
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['E']}
       startFret={0}
@@ -34,6 +40,7 @@ test('balances the top and bottom margins around the rendered fretboard content'
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['E']}
       startFret={1}
@@ -53,6 +60,7 @@ test('adds extra left margin when open-string notes are shown', () => {
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['E']}
       startFret={0}
@@ -72,6 +80,7 @@ test('extends open strings to the nut edge and keeps the neck flat on the left',
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['E']}
       startFret={0}
@@ -94,6 +103,7 @@ test('keeps the neck flat against the nut at fret 1', () => {
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['E']}
       startFret={1}
@@ -116,6 +126,7 @@ test('explicitly centers note text on the note circle', () => {
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['E']}
       startFret={0}
@@ -134,6 +145,7 @@ test('explicitly centers note text on the note circle', () => {
 test('always shows fret labels for the visible start and end frets', () => {
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={[]}
       tuning={['E']}
       startFret={1}
@@ -148,6 +160,7 @@ test('always shows fret labels for the visible start and end frets', () => {
 test('shows the ending fret label for open-string diagrams', () => {
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={[]}
       tuning={['E']}
       startFret={0}
@@ -165,6 +178,7 @@ test('supports string and fret DSL selectors', () => {
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['E', 'A']}
       startFret={0}
@@ -185,6 +199,7 @@ test('supports array and range DSL selectors', () => {
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['E', 'A']}
       startFret={0}
@@ -205,6 +220,7 @@ test('supports interval DSL selectors', () => {
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['C']}
       startFret={0}
@@ -222,6 +238,7 @@ test('resolves interval DSL selectors against the provided root note', () => {
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['A']}
       startFret={0}
@@ -240,6 +257,7 @@ test('supports natural interval selectors against the provided root note', () =>
 
   const screen = render(
     <Fretboard
+      {...REQUIRED_PROPS}
       definition={definition}
       tuning={['A']}
       startFret={0}
@@ -249,4 +267,73 @@ test('supports natural interval selectors against the provided root note', () =>
   );
 
   expect(screen.queryByText('A')).not.toBeNull();
+});
+
+test('shows interval labels when interval display mode is selected', () => {
+  const definition: RuleDefinition = [
+    { condition: { note: ['A', 'B'] }, color: 'BLACK' },
+  ];
+
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      definition={definition}
+      tuning={['A']}
+      startFret={0}
+      endFret={2}
+      rootNote="A"
+      noteDisplayMode="interval"
+    />,
+  );
+
+  const noteLabels = Array.from(
+    screen.container.querySelectorAll('text[alignment-baseline="central"]'),
+  ).map((node) => node.textContent);
+
+  expect(noteLabels).toContain('1');
+  expect(noteLabels).toContain('2');
+  expect(screen.queryByText('A')).toBeNull();
+});
+
+test('shows note names by default', () => {
+  const definition: RuleDefinition = [
+    { condition: { note: 'A' }, color: 'BLACK' },
+  ];
+
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      definition={definition}
+      tuning={['A']}
+      startFret={0}
+      endFret={0}
+    />,
+  );
+
+  expect(screen.queryByText('A')).not.toBeNull();
+  expect(screen.queryByText('1')).toBeNull();
+});
+
+test('hides note labels when none display mode is selected', () => {
+  const definition: RuleDefinition = [
+    { condition: { note: 'A' }, color: 'BLACK' },
+  ];
+
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      definition={definition}
+      tuning={['A']}
+      startFret={0}
+      endFret={0}
+      noteDisplayMode="none"
+    />,
+  );
+
+  const noteLabels = screen.container.querySelectorAll(
+    'text[alignment-baseline="central"]',
+  );
+
+  expect(noteLabels.length).toBe(0);
+  expect(screen.container.querySelector('circle')).not.toBeNull();
 });
