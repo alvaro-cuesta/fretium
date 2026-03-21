@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { objectEntries, objectKeys } from '../../lib/object.ts';
 import {
   DEFINITIONS,
@@ -6,6 +6,7 @@ import {
   type DefinitionPresetName,
 } from '../config/definitions.ts';
 import { INSTRUMENTS } from '../config/instruments.ts';
+import { useLenientInput } from '../hooks/useLenientInput.ts';
 import { clamp } from '../lib/math.ts';
 import type { Note } from '../lib/music.ts';
 import styles from './App.module.scss';
@@ -52,6 +53,7 @@ const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
 
 const MIN_FRET = 0;
 const MAX_FRET = 48;
+const INTEGER_INPUT_PATTERN = /^\d+$/;
 
 const DEFAULT_START_FRET = 0;
 const DEFAULT_END_FRET = 14;
@@ -60,6 +62,23 @@ const DEFAULT_INSTRUMENT = 'Guitar' satisfies keyof typeof INSTRUMENTS;
 const DEFAULT_INSTRUMENT_TUNING =
   'Standard' satisfies keyof (typeof INSTRUMENTS)[typeof DEFAULT_INSTRUMENT]['tunings'];
 const DEFAULT_INSTRUMENT_TUNING_VALUE = `${DEFAULT_INSTRUMENT}::${DEFAULT_INSTRUMENT_TUNING}`;
+
+function deriveFretValue(
+  inputValue: string,
+  currentValue: number,
+  min: number,
+  max: number,
+) {
+  const trimmedValue = inputValue.trim();
+  if (trimmedValue === '') return currentValue;
+
+  if (!INTEGER_INPUT_PATTERN.test(trimmedValue)) return currentValue;
+
+  const parsedValue = Number(trimmedValue);
+  if (Number.isNaN(parsedValue)) return currentValue;
+
+  return clamp(parsedValue, min, max);
+}
 
 export function App() {
   const [selectedDefinitionPreset, setSelectedDefinitionPreset] =
@@ -85,20 +104,21 @@ export function App() {
   // Start/end fret
   const [startFret, setStartFret] = useState(DEFAULT_START_FRET);
   const [endFret, setEndFret] = useState(DEFAULT_END_FRET);
-  const handleChangeStartFret = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newStartFret = clamp(Number(e.target.value), MIN_FRET, endFret);
-      setStartFret(newStartFret);
-    },
-    [endFret],
-  );
-  const handleChangeEndFret = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newEndFret = clamp(Number(e.target.value), startFret, MAX_FRET);
-      setEndFret(newEndFret);
-    },
-    [startFret],
-  );
+
+  const startFretInput = useLenientInput<number>({
+    value: startFret,
+    setValue: setStartFret,
+    deriveValue: (inputValue, currentValue) =>
+      deriveFretValue(inputValue, currentValue, MIN_FRET, endFret),
+    formatValue: (value) => String(value),
+  });
+  const endFretInput = useLenientInput<number>({
+    value: endFret,
+    setValue: setEndFret,
+    deriveValue: (inputValue, currentValue) =>
+      deriveFretValue(inputValue, currentValue, startFret, MAX_FRET),
+    formatValue: (value) => String(value),
+  });
 
   return (
     <Layout>
@@ -145,8 +165,7 @@ export function App() {
                 type="number"
                 min={MIN_FRET}
                 max={endFret}
-                value={startFret}
-                onChange={handleChangeStartFret}
+                {...startFretInput}
               />
             </label>
             <label className={styles.fieldGroup}>
@@ -156,8 +175,7 @@ export function App() {
                 type="number"
                 min={startFret}
                 max={MAX_FRET}
-                value={endFret}
-                onChange={handleChangeEndFret}
+                {...endFretInput}
               />
             </label>
           </div>
