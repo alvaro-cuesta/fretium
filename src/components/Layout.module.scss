@@ -36,3 +36,15 @@
 .main {
   max-width: 100%;
 }
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.version {
+  font-size: 0.78rem;
+  color: #666;
+}

@@ -30,9 +30,9 @@ export function Layout(props: LayoutProps) {
 
       <main className={styles.main}>{props.children}</main>
 
-      <footer>
+      <footer className={styles.footer}>
         <p>
-          Made by{' '}
+          Made with ❤️ by{' '}
           <a
             href={import.meta.env.PACKAGE_AUTHOR.url}
             target="_blank"
@@ -49,6 +49,19 @@ export function Layout(props: LayoutProps) {
             GitHub
           </a>
           .
+        </p>
+        <p>
+          <a
+            href={import.meta.env.PACKAGE_BUGS}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Suggestions and feedback
+          </a>{' '}
+          are welcome!
+        </p>
+        <p className={styles.version}>
+          (Version {import.meta.env.GIT_COMMIT_SHORT_SHA})
         </p>
       </footer>
     </div>

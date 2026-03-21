@@ -85,6 +85,7 @@ export default defineConfig(async ({ mode }) => {
       PACKAGE_DESCRIPTION: packageJson.description,
       PACKAGE_HOMEPAGE: packageJson.homepage,
       PACKAGE_AUTHOR: packageJson.author,
+      PACKAGE_BUGS: packageJson.bugs,
       PACKAGE_CONFIG_NAME: packageJson.config.name,
       PACKAGE_CONFIG_SHORT_NAME: packageJson.config.shortName,
       PACKAGE_CONFIG_DESCRIPTION: packageJson.config.description,
