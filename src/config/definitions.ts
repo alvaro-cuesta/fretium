@@ -1362,11 +1362,13 @@ export const DEFINITIONS_GROUPED = {
   ...make7ArpeggioGroup('min7', 'b3', '5', 'b7'),
   ...make7ArpeggioGroup('min7b5', 'b3', 'b5', 'b7'),
   ...make7ArpeggioGroup('dim7', 'b3', 'b5', 'bb7'),
+  ...make7ArpeggioGroup('minMaj7', 'b3', '5', '7'),
   ...make7ChordGroup('Maj7', '3', '5', '7'),
   ...make7ChordGroup('7', '3', '5', 'b7'),
   ...make7ChordGroup('min7', 'b3', '5', 'b7'),
   ...make7ChordGroup('min7b5', 'b3', 'b5', 'b7'),
   ...make7ChordGroup('dim7', 'b3', 'b5', 'bb7'),
+  ...make7ChordGroup('minMaj7', 'b3', '5', '7'),
 } as const satisfies Record<string, Record<string, RuleDefinition>>;
 
 export type DefinitionGroupName = keyof typeof DEFINITIONS_GROUPED;
