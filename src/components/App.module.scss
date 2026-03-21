@@ -166,3 +166,9 @@
 .fretboardImg {
   height: clamp(180px, 32vmin, 360px);
 }
+
+.fretboardSection {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
