@@ -1,10 +1,10 @@
 import { render, waitFor } from '@testing-library/react';
-import type { RuleDefinition } from '../lib/rule-engine';
+import type { Pattern } from '../lib/pattern-engine';
 import { FretboardImg } from './FretboardImg';
 import styles from './FretboardImg.module.scss';
 
 const REQUIRED_PROPS = {
-  definition: [] as RuleDefinition,
+  pattern: [] as Pattern,
   startFret: 0,
   endFret: 12,
   showStringNames: false,

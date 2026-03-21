@@ -12,10 +12,10 @@ import {
   type NoteClass,
 } from '../../lib/music';
 import {
-  getAppliedRules,
-  type GetAppliedRulesResult,
-  type RuleDefinition,
-} from '../../lib/rule-engine';
+  getAppliedPatternRules,
+  type GetAppliedPatternRulesResult,
+  type Pattern,
+} from '../../lib/pattern-engine';
 import { checkIsNever } from '../../lib/type';
 import { FretboardFretLabel } from './FretboardFretLabel';
 import { FretboardFretLine } from './FretboardFretLine';
@@ -32,7 +32,7 @@ import {
 } from './theme';
 
 export type FretboardProps = {
-  definition: RuleDefinition;
+  pattern: Pattern;
   tuning: Tuning<number>;
   startFret: number;
   endFret: number;
@@ -105,7 +105,7 @@ function getRoundedRectPath({
 }
 
 export function Fretboard({
-  definition,
+  pattern,
   tuning,
   startFret,
   endFret,
@@ -185,21 +185,21 @@ export function Fretboard({
   );
 
   const renderNote = (stringNumber: number, fret: number, y: number) => {
-    const appliedRulesResult = getAppliedRules(
+    const appliedPatternRulesResult = getAppliedPatternRules(
       tuning,
       stringNumber,
       fret,
       rootNote,
-      definition,
+      pattern,
     );
-    if (!appliedRulesResult) {
+    if (!appliedPatternRulesResult) {
       return null;
     }
 
     const noteLabel = getNoteLabel(
       noteDisplayMode,
       rootNote,
-      appliedRulesResult,
+      appliedPatternRulesResult,
     );
 
     return (
@@ -207,9 +207,9 @@ export function Fretboard({
         key={`${stringNumber}-${fret}`}
         x={fret === 0 ? OPEN_STRING_X : noteX(fret)}
         y={y}
-        color={appliedRulesResult.appliedRules.color}
+        color={appliedPatternRulesResult.appliedPatternRule.color}
         label={noteDisplayMode === 'none' ? null : noteLabel}
-        opacity={appliedRulesResult.appliedRules.opacity}
+        opacity={appliedPatternRulesResult.appliedPatternRule.opacity}
       />
     );
   };
@@ -631,17 +631,20 @@ const MATCHED_INTERVAL_TO_DISPLAY_DEGREE_WITH_ACCIDENTAL: Record<
 function getNoteLabel(
   noteDisplayMode: NoteDisplayMode,
   rootNote: Note,
-  appliedRulesResult: GetAppliedRulesResult,
+  appliedPatternRulesResult: GetAppliedPatternRulesResult,
 ) {
   switch (noteDisplayMode) {
     case 'interval':
     case 'degree': {
       const rootNoteClass = NOTE_TO_NOTE_CLASS[rootNote];
       const noteSemitonesFromRoot = semitonesToNoteClass(
-        appliedRulesResult.noteClass - rootNoteClass,
+        appliedPatternRulesResult.noteClass - rootNoteClass,
       );
 
-      const matchedInterval = getMatchedInterval(rootNote, appliedRulesResult);
+      const matchedInterval = getMatchedInterval(
+        rootNote,
+        appliedPatternRulesResult,
+      );
 
       switch (noteDisplayMode) {
         case 'interval': {
@@ -669,8 +672,8 @@ function getNoteLabel(
     case 'note': {
       const shouldPreferFlatNoteNames = rootNote.includes('b');
       return shouldPreferFlatNoteNames
-        ? NOTE_CLASS_TO_DISPLAY_FLAT_NOTE[appliedRulesResult.noteClass]
-        : NOTE_CLASS_TO_DISPLAY_SHARP_NOTE[appliedRulesResult.noteClass];
+        ? NOTE_CLASS_TO_DISPLAY_FLAT_NOTE[appliedPatternRulesResult.noteClass]
+        : NOTE_CLASS_TO_DISPLAY_SHARP_NOTE[appliedPatternRulesResult.noteClass];
     }
 
     case 'none': {
@@ -685,11 +688,12 @@ function getNoteLabel(
 
 function getMatchedInterval(
   rootNote: Note,
-  appliedRulesResult: GetAppliedRulesResult,
+  appliedPatternRulesResult: GetAppliedPatternRulesResult,
 ): LooseInterval | null {
-  const matchedIntervalCondition = appliedRulesResult.matchingRules
+  const matchedIntervalCondition = appliedPatternRulesResult.matchingPatternRules
     .toReversed()
-    .find((rule) => rule.condition.interval !== undefined)?.condition.interval;
+    .find((patternRule) => patternRule.condition.interval !== undefined)
+    ?.condition.interval;
 
   if (!matchedIntervalCondition) {
     return null;
@@ -702,7 +706,7 @@ function getMatchedInterval(
 
   const rootNoteClass = NOTE_TO_NOTE_CLASS[rootNote];
   const noteSemitonesFromRoot = semitonesToNoteClass(
-    appliedRulesResult.noteClass - rootNoteClass,
+    appliedPatternRulesResult.noteClass - rootNoteClass,
   );
 
   for (const interval of candidateIntervals) {

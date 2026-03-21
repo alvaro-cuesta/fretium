@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { objectEntries, objectKeys } from '../../lib/object.ts';
-import {
-  DEFINITIONS,
-  DEFINITIONS_GROUPED,
-  type DefinitionPresetName,
-} from '../config/definitions.ts';
 import { INSTRUMENTS } from '../config/instruments.ts';
+import {
+  PATTERNS,
+  PATTERNS_GROUPED,
+  type PatternName,
+} from '../config/patterns.ts';
 import { useLenientInput } from '../hooks/useLenientInput.ts';
 import type { NoteDisplayMode } from '../lib/fretboard.ts';
 import { clamp } from '../lib/math.ts';
@@ -35,7 +35,7 @@ const ROOT_NOTES = [
   'B',
 ] as const satisfies readonly Note[];
 
-const DEFAULT_DEFINITION_PRESET = 'Major scale' satisfies DefinitionPresetName;
+const DEFAULT_PATTERN = 'Major scale' satisfies PatternName;
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
 
@@ -81,8 +81,8 @@ function deriveFretValue(
 }
 
 export function App() {
-  const [selectedDefinitionPreset, setSelectedDefinitionPreset] =
-    useState<DefinitionPresetName>(DEFAULT_DEFINITION_PRESET);
+  const [selectedPattern, setSelectedPattern] =
+    useState<PatternName>(DEFAULT_PATTERN);
   const [selectedRootNote, setSelectedRootNote] =
     useState<Note>(DEFAULT_ROOT_NOTE);
   const [selectedNoteDisplayMode, setSelectedNoteDisplayMode] =
@@ -99,7 +99,7 @@ export function App() {
     throw new Error('Expected at least one instrument tuning to be available.');
   }
 
-  const definition = DEFINITIONS[selectedDefinitionPreset];
+  const pattern = PATTERNS[selectedPattern];
 
   // Start/end fret
   const [startFret, setStartFret] = useState(DEFAULT_START_FRET);
@@ -199,33 +199,29 @@ export function App() {
 
         <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
           <label className={styles.fieldGroup}>
-            <span className={styles.fieldLabel}>Definition preset</span>
+            <span className={styles.fieldLabel}>Pattern</span>
             <select
               className={styles.selectorInput}
-              value={selectedDefinitionPreset}
+              value={selectedPattern}
               onChange={(e) => {
-                setSelectedDefinitionPreset(
-                  e.target.value as DefinitionPresetName,
-                );
+                setSelectedPattern(e.target.value as PatternName);
               }}
             >
-              {objectEntries(DEFINITIONS_GROUPED).map(
-                ([groupName, presets]) => (
-                  <optgroup
-                    key={groupName}
-                    label={groupName}
-                  >
-                    {objectKeys(presets).map((presetName) => (
-                      <option
-                        key={presetName}
-                        value={presetName}
-                      >
-                        {presetName}
-                      </option>
-                    ))}
-                  </optgroup>
-                ),
-              )}
+              {objectEntries(PATTERNS_GROUPED).map(([groupName, patterns]) => (
+                <optgroup
+                  key={groupName}
+                  label={groupName}
+                >
+                  {objectKeys(patterns).map((patternName) => (
+                    <option
+                      key={patternName}
+                      value={patternName}
+                    >
+                      {patternName}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
             </select>
           </label>
 
@@ -255,7 +251,7 @@ export function App() {
         <Scrollable>
           <FretboardImg
             className={styles.fretboardImg}
-            definition={definition}
+            pattern={pattern}
             tuning={resolvedInstrumentTuning.tuning}
             startFret={startFret}
             endFret={endFret}

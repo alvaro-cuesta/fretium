@@ -1,7 +1,7 @@
 import type { KeysOfUnion } from 'type-fest';
 import { objectValues } from '../../lib/object';
 import type { FretboardNoteColorName } from '../components/Fretboard/theme';
-import type { Rule, RuleDefinition } from '../lib/rule-engine';
+import type { Pattern, PatternRule } from '../lib/pattern-engine';
 
 const ALT_OPACITY = 0.25;
 
@@ -21,7 +21,7 @@ function make7Arpeggio_GPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
@@ -43,7 +43,7 @@ function make7Arpeggio_EPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
@@ -73,7 +73,7 @@ function make7Arpeggio_DPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
     { condition: { string: 2, interval: '1' }, color: rootColor },
@@ -95,7 +95,7 @@ function make7Arpeggio_CPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     {
       condition: { string: 1, interval: [thirdInterval, fifthInterval] },
@@ -127,7 +127,7 @@ function make7Arpeggio_APosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     {
       condition: { string: 1, interval: [fifthInterval, seventhInterval] },
@@ -152,7 +152,7 @@ function make7Arpeggio_AGPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
@@ -191,7 +191,7 @@ function make7Chord_6432_RootPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
@@ -206,7 +206,7 @@ function make7Chord_6432_1stInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
     { condition: { string: 3, interval: fifthInterval }, color: toneColor },
@@ -221,7 +221,7 @@ function make7Chord_6432_2ndInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 2, interval: '1' }, color: rootColor },
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
@@ -236,7 +236,7 @@ function make7Chord_6432_3rdInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
     { condition: { string: 3, interval: '1' }, color: rootColor },
@@ -251,7 +251,7 @@ function make7Chord_5321_RootPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: fifthInterval }, color: toneColor },
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
@@ -266,7 +266,7 @@ function make7Chord_5321_1stInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
     { condition: { string: 2, interval: fifthInterval }, color: toneColor },
@@ -281,7 +281,7 @@ function make7Chord_5321_2ndInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
@@ -296,7 +296,7 @@ function make7Chord_5321_3rdInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
     { condition: { string: 2, interval: '1' }, color: rootColor },
@@ -311,7 +311,7 @@ function make7Chord_6543_RootPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
     { condition: { string: 4, interval: seventhInterval }, color: toneColor },
@@ -326,7 +326,7 @@ function make7Chord_6543_1stInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     { condition: { string: 4, interval: '1' }, color: rootColor },
@@ -341,7 +341,7 @@ function make7Chord_6543_2ndInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
     { condition: { string: 4, interval: thirdInterval }, color: toneColor },
@@ -356,7 +356,7 @@ function make7Chord_6543_3rdInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 3, interval: '1' }, color: rootColor },
     { condition: { string: 4, interval: fifthInterval }, color: toneColor },
@@ -371,7 +371,7 @@ function make7Chord_5432_RootPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
@@ -386,7 +386,7 @@ function make7Chord_5432_1stInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     { condition: { string: 3, interval: '1' }, color: rootColor },
@@ -401,7 +401,7 @@ function make7Chord_5432_2ndInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
@@ -416,7 +416,7 @@ function make7Chord_5432_3rdInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 2, interval: '1' }, color: rootColor },
     { condition: { string: 3, interval: fifthInterval }, color: toneColor },
@@ -431,7 +431,7 @@ function make7Chord_4321_RootPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
@@ -446,7 +446,7 @@ function make7Chord_4321_1stInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: fifthInterval }, color: toneColor },
     { condition: { string: 2, interval: '1' }, color: rootColor },
@@ -461,7 +461,7 @@ function make7Chord_4321_2ndInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
@@ -476,7 +476,7 @@ function make7Chord_4321_3rdInversion(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): Rule[] {
+): PatternRule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
     { condition: { string: 2, interval: fifthInterval }, color: toneColor },
@@ -486,9 +486,9 @@ function make7Chord_4321_3rdInversion(
 }
 
 // Doing this is needed due to TS limitations
-// `as const` does not work properly in computed property names, and without it, the preset names
+// `as const` does not work properly in computed property names, and without it, the pattern names
 // become widened to string, which breaks type safety in other parts of the app
-type ArpeggioPresetSuffix =
+type ArpeggioPatternSuffix =
   | ' Arpeggio'
   | ' Arpeggio (G position)'
   | ' Arpeggio (G position) + 6-4-3-2 (root position)'
@@ -529,12 +529,12 @@ type ArpeggioPresetSuffix =
   | ' Arpeggio (A-G position) + Right 6-4-3-2 (root position)'
   | ' Arpeggio (A-G position) + Right 4-3-2-1 (3rd inversion)';
 
-type ArpeggioPresetName<TGroupName extends string> =
-  `${TGroupName}${ArpeggioPresetSuffix}`;
+type ArpeggioPatternName<TGroupName extends string> =
+  `${TGroupName}${ArpeggioPatternSuffix}`;
 
 type ArpeggioGroup<TGroupName extends string> = Record<
   `Arpeggios - ${TGroupName}`,
-  Record<ArpeggioPresetName<TGroupName>, readonly Rule[]>
+  Record<ArpeggioPatternName<TGroupName>, readonly PatternRule[]>
 >;
 
 function make7ArpeggioGroup<const TGroupName extends string>(
@@ -553,7 +553,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           },
           color: SCALE_TONE_COLOR,
         },
-      ] as Rule[],
+      ] as PatternRule[],
       [`${groupName} Arpeggio (G position)`]: [
         ...make7Arpeggio_GPosition(
           thirdInterval,
@@ -1289,7 +1289,7 @@ function make7ChordGroup<const TGroupName extends string>(
   } as const;
 }
 
-export const DEFINITIONS_GROUPED = {
+export const PATTERNS_GROUPED = {
   Scales: {
     'Major scale': [
       { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
@@ -1369,18 +1369,15 @@ export const DEFINITIONS_GROUPED = {
   ...make7ChordGroup('min7b5', 'b3', 'b5', 'b7'),
   ...make7ChordGroup('dim7', 'b3', 'b5', 'bb7'),
   ...make7ChordGroup('minMaj7', 'b3', '5', '7'),
-} as const satisfies Record<string, Record<string, RuleDefinition>>;
+} as const satisfies Record<string, Record<string, Pattern>>;
 
-export type DefinitionGroupName = keyof typeof DEFINITIONS_GROUPED;
+export type PatternGroupName = keyof typeof PATTERNS_GROUPED;
 
-export type DefinitionPresetName = KeysOfUnion<
-  (typeof DEFINITIONS_GROUPED)[DefinitionGroupName]
+export type PatternName = KeysOfUnion<
+  (typeof PATTERNS_GROUPED)[PatternGroupName]
 >;
 
 // Flatten for easy lookup
-export const DEFINITIONS = objectValues(DEFINITIONS_GROUPED).reduce<
-  Record<DefinitionPresetName, RuleDefinition>
->(
-  (acc, group) => ({ ...acc, ...group }),
-  {} as Record<DefinitionPresetName, RuleDefinition>,
-);
+export const PATTERNS = objectValues(PATTERNS_GROUPED).reduce<
+  Record<PatternName, Pattern>
+>((acc, group) => ({ ...acc, ...group }), {} as Record<PatternName, Pattern>);

@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import type { RuleDefinition } from '../../lib/rule-engine';
+import type { Pattern } from '../../lib/pattern-engine';
 import { Fretboard } from './Fretboard';
 
 const REQUIRED_PROPS = {
@@ -9,14 +9,12 @@ const REQUIRED_PROPS = {
 };
 
 test('keeps the neck local coordinates anchored at the neck edge for open-string diagrams', () => {
-  const definition: RuleDefinition = [
-    { condition: { note: 'E' }, color: 'BLACK' },
-  ];
+  const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['E']}
       startFret={0}
       endFret={0}
@@ -42,14 +40,12 @@ test('keeps the neck local coordinates anchored at the neck edge for open-string
 });
 
 test('sizes the viewBox from the translated neck bounds and label area', () => {
-  const definition: RuleDefinition = [
-    { condition: { note: 'G' }, color: 'BLACK' },
-  ];
+  const definition: Pattern = [{ condition: { note: 'G' }, color: 'BLACK' }];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['E']}
       startFret={1}
       endFret={3}
@@ -62,14 +58,12 @@ test('sizes the viewBox from the translated neck bounds and label area', () => {
 });
 
 test('adds enough left svg padding to fit a full open-string fret', () => {
-  const definition: RuleDefinition = [
-    { condition: { note: 'E' }, color: 'BLACK' },
-  ];
+  const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['E']}
       startFret={0}
       endFret={0}
@@ -86,7 +80,7 @@ test('renders string names at the open-string position and expands the left marg
     <Fretboard
       {...REQUIRED_PROPS}
       showStringNames={true}
-      definition={[]}
+      pattern={[]}
       tuning={['E']}
       startFret={1}
       endFret={1}
@@ -104,15 +98,13 @@ test('renders string names at the open-string position and expands the left marg
 });
 
 test('paints open-string notes on top of string names', () => {
-  const definition: RuleDefinition = [
-    { condition: { note: 'E' }, color: 'BLACK' },
-  ];
+  const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
       showStringNames={true}
-      definition={definition}
+      pattern={definition}
       tuning={['E']}
       startFret={0}
       endFret={0}
@@ -129,14 +121,12 @@ test('paints open-string notes on top of string names', () => {
 });
 
 test('keeps fret-one diagrams in the neck coordinate system including half the nut width', () => {
-  const definition: RuleDefinition = [
-    { condition: { note: 'F' }, color: 'BLACK' },
-  ];
+  const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['E']}
       startFret={1}
       endFret={1}
@@ -159,7 +149,7 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={[]}
+      pattern={[]}
       tuning={['E', 'A']}
       startFret={4}
       endFret={4}
@@ -184,14 +174,12 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
 });
 
 test('explicitly centers note text on the note circle', () => {
-  const definition: RuleDefinition = [
-    { condition: { note: 'E' }, color: 'BLACK' },
-  ];
+  const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['E']}
       startFret={0}
       endFret={0}
@@ -210,7 +198,7 @@ test('always shows fret labels for the visible start and end frets', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={[]}
+      pattern={[]}
       tuning={['E']}
       startFret={1}
       endFret={4}
@@ -225,7 +213,7 @@ test('shows the ending fret label for open-string diagrams', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={[]}
+      pattern={[]}
       tuning={['E']}
       startFret={0}
       endFret={1}
@@ -236,14 +224,14 @@ test('shows the ending fret label for open-string diagrams', () => {
 });
 
 test('supports string and fret DSL selectors', () => {
-  const definition: RuleDefinition = [
+  const definition: Pattern = [
     { condition: { string: 1, fret: 3 }, color: 'BLACK' },
   ];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['E', 'A']}
       startFret={0}
       endFret={5}
@@ -254,7 +242,7 @@ test('supports string and fret DSL selectors', () => {
 });
 
 test('supports array and range DSL selectors', () => {
-  const definition: RuleDefinition = [
+  const definition: Pattern = [
     {
       condition: { string: [1, 2], fret: { gte: 3, lte: 4 } },
       color: 'BLACK',
@@ -264,7 +252,7 @@ test('supports array and range DSL selectors', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['E', 'A']}
       startFret={0}
       endFret={5}
@@ -278,14 +266,14 @@ test('supports array and range DSL selectors', () => {
 });
 
 test('supports interval DSL selectors', () => {
-  const definition: RuleDefinition = [
+  const definition: Pattern = [
     { condition: { interval: 'b3' }, color: 'BLACK' },
   ];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['C']}
       startFret={0}
       endFret={3}
@@ -296,14 +284,14 @@ test('supports interval DSL selectors', () => {
 });
 
 test('resolves interval DSL selectors against the provided root note', () => {
-  const definition: RuleDefinition = [
+  const definition: Pattern = [
     { condition: { interval: 'b3' }, color: 'BLACK' },
   ];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['A']}
       startFret={0}
       endFret={3}
@@ -315,14 +303,14 @@ test('resolves interval DSL selectors against the provided root note', () => {
 });
 
 test('supports natural interval selectors against the provided root note', () => {
-  const definition: RuleDefinition = [
+  const definition: Pattern = [
     { condition: { interval: '1' }, color: 'BLACK' },
   ];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['A']}
       startFret={0}
       endFret={3}
@@ -334,14 +322,14 @@ test('supports natural interval selectors against the provided root note', () =>
 });
 
 test('shows interval labels when interval display mode is selected', () => {
-  const definition: RuleDefinition = [
+  const definition: Pattern = [
     { condition: { note: ['A', 'B'] }, color: 'BLACK' },
   ];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['A']}
       startFret={0}
       endFret={2}
@@ -360,14 +348,14 @@ test('shows interval labels when interval display mode is selected', () => {
 });
 
 test('shows degree labels when degree display mode is selected', () => {
-  const definition: RuleDefinition = [
+  const definition: Pattern = [
     { condition: { note: ['A', 'B', 'C'] }, color: 'BLACK' },
   ];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['A']}
       startFret={0}
       endFret={3}
@@ -387,14 +375,12 @@ test('shows degree labels when degree display mode is selected', () => {
 });
 
 test('shows note names by default', () => {
-  const definition: RuleDefinition = [
-    { condition: { note: 'A' }, color: 'BLACK' },
-  ];
+  const definition: Pattern = [{ condition: { note: 'A' }, color: 'BLACK' }];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['A']}
       startFret={0}
       endFret={0}
@@ -406,14 +392,12 @@ test('shows note names by default', () => {
 });
 
 test('hides note labels when none display mode is selected', () => {
-  const definition: RuleDefinition = [
-    { condition: { note: 'A' }, color: 'BLACK' },
-  ];
+  const definition: Pattern = [{ condition: { note: 'A' }, color: 'BLACK' }];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['A']}
       startFret={0}
       endFret={0}
@@ -430,7 +414,7 @@ test('hides note labels when none display mode is selected', () => {
 });
 
 test('merges all matching rules with later rules winning per property', () => {
-  const definition: RuleDefinition = [
+  const definition: Pattern = [
     { condition: { note: 'A' }, color: 'BLACK', opacity: 0.5 },
     { condition: { interval: '1' }, color: 'WHITE' },
   ];
@@ -438,7 +422,7 @@ test('merges all matching rules with later rules winning per property', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      definition={definition}
+      pattern={definition}
       tuning={['A']}
       startFret={0}
       endFret={0}

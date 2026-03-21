@@ -18,28 +18,28 @@ type NumberCondition = number | readonly number[] | NumberRangeCondition;
 
 type NoteCondition = Note | readonly Note[];
 
-type RuleCondition = {
+type PatternRuleCondition = {
   string?: NumberCondition;
   fret?: NumberCondition;
   note?: NoteCondition;
   interval?: LooseInterval | readonly LooseInterval[];
 };
 
-export type Rule = {
-  condition: RuleCondition;
+export type PatternRule = {
+  condition: PatternRuleCondition;
   color: FretboardNoteColorName;
   opacity?: number;
 };
 
-export type RuleDefinition = readonly Rule[];
+export type Pattern = readonly PatternRule[];
 
-type RuleContext = {
+type PatternContext = {
   string: number;
   fret: number;
   noteClass: NoteClass;
 };
 
-type RuleMatchOptions = {
+type PatternMatchOptions = {
   rootNote: Note;
 };
 
@@ -71,7 +71,7 @@ function matchesNumberCondition(
 function matchesIntervalCondition(
   noteClass: NoteClass,
   condition: LooseInterval | readonly LooseInterval[],
-  options: RuleMatchOptions,
+  options: PatternMatchOptions,
 ): boolean {
   const rootNoteClass = NOTE_TO_NOTE_CLASS[options.rootNote];
   const noteSemitonesFromRoot = semitonesToNoteClass(noteClass - rootNoteClass);
@@ -81,10 +81,10 @@ function matchesIntervalCondition(
   });
 }
 
-export function matchesCondition(
-  condition: RuleCondition,
-  value: RuleContext,
-  options: RuleMatchOptions,
+export function matchesPatternCondition(
+  condition: PatternRuleCondition,
+  value: PatternContext,
+  options: PatternMatchOptions,
 ): boolean {
   if (
     condition.string !== undefined &&
@@ -122,12 +122,12 @@ export function matchesCondition(
   return true;
 }
 
-export function getMatchingRules(
+export function getMatchingPatternRules(
   tuning: Tuning<number>,
   stringNumber: number,
   fret: number,
   rootNote: Note,
-  definition: RuleDefinition,
+  pattern: Pattern,
 ) {
   const openNote = tuning[tuning.length - stringNumber];
   if (!openNote) {
@@ -140,9 +140,9 @@ export function getMatchingRules(
 
   const noteClass = semitonesToNoteClass(openNoteClass + fret);
 
-  const matchingRules = definition.filter((rule) =>
-    matchesCondition(
-      rule.condition,
+  const matchingPatternRules = pattern.filter((patternRule) =>
+    matchesPatternCondition(
+      patternRule.condition,
       {
         string: stringNumber,
         fret,
@@ -154,48 +154,50 @@ export function getMatchingRules(
     ),
   );
 
-  if (matchingRules.length === 0) {
+  if (matchingPatternRules.length === 0) {
     return null;
   }
 
   return {
     noteClass,
-    matchingRules,
+    matchingPatternRules,
   };
 }
 
-export type GetAppliedRulesResult = {
+export type GetAppliedPatternRulesResult = {
   noteClass: NoteClass;
-  matchingRules: readonly Rule[];
-  appliedRules: Omit<Rule, 'condition'>;
+  matchingPatternRules: readonly PatternRule[];
+  appliedPatternRule: Omit<PatternRule, 'condition'>;
 };
 
-export function getAppliedRules(
+export function getAppliedPatternRules(
   tuning: Tuning<number>,
   stringNumber: number,
   fret: number,
   rootNote: Note,
-  definition: RuleDefinition,
-): GetAppliedRulesResult | null {
-  const matching = getMatchingRules(
+  pattern: Pattern,
+): GetAppliedPatternRulesResult | null {
+  const matching = getMatchingPatternRules(
     tuning,
     stringNumber,
     fret,
     rootNote,
-    definition,
+    pattern,
   );
   if (!matching) {
     return null;
   }
 
-  const { noteClass, matchingRules } = matching;
-  const { condition: _condition, ...appliedRules } = matchingRules.reduce(
-    (acc, rule) => ({ ...acc, ...rule }),
-  );
+  const { noteClass, matchingPatternRules } = matching;
+  const { condition: _condition, ...appliedPatternRule } =
+    matchingPatternRules.reduce((acc, patternRule) => ({
+      ...acc,
+      ...patternRule,
+    }));
 
   return {
     noteClass,
-    matchingRules,
-    appliedRules,
+    matchingPatternRules,
+    appliedPatternRule,
   };
 }

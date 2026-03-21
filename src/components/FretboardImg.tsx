@@ -14,7 +14,7 @@ type FretboardImgStyle = React.CSSProperties & {
 
 export function FretboardImg(props: FretboardImgProps) {
   const {
-    definition,
+    pattern,
     tuning,
     startFret,
     endFret,
@@ -56,7 +56,7 @@ export function FretboardImg(props: FretboardImgProps) {
     return regenerateImgUrl(svgRef.current);
   }, [
     regenerateImgUrl,
-    definition,
+    pattern,
     tuning,
     startFret,
     endFret,
@@ -69,7 +69,7 @@ export function FretboardImg(props: FretboardImgProps) {
     <>
       <div className={styles.hidden}>
         <Fretboard
-          definition={definition}
+          pattern={pattern}
           tuning={tuning}
           startFret={startFret}
           endFret={endFret}
