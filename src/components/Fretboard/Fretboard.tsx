@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import type { NoteDisplayMode } from '../../lib/config';
+import type { NoteDisplayMode } from '../../lib/fretboard';
 import type { Tuning } from '../../lib/instrument';
 import {
   LOOSE_INTERVAL_TO_NOTE_CLASS,

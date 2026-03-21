@@ -7,7 +7,7 @@ import {
 } from '../config/definitions.ts';
 import { INSTRUMENTS } from '../config/instruments.ts';
 import { useLenientInput } from '../hooks/useLenientInput.ts';
-import type { NoteDisplayMode } from '../lib/config.ts';
+import type { NoteDisplayMode } from '../lib/fretboard.ts';
 import { clamp } from '../lib/math.ts';
 import type { Note } from '../lib/music.ts';
 import styles from './App.module.scss';
