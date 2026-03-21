@@ -690,10 +690,11 @@ function getMatchedInterval(
   rootNote: Note,
   appliedPatternRulesResult: GetAppliedPatternRulesResult,
 ): LooseInterval | null {
-  const matchedIntervalCondition = appliedPatternRulesResult.matchingPatternRules
-    .toReversed()
-    .find((patternRule) => patternRule.condition.interval !== undefined)
-    ?.condition.interval;
+  const matchedIntervalCondition =
+    appliedPatternRulesResult.matchingPatternRules
+      .toReversed()
+      .find((patternRule) => patternRule.condition.interval !== undefined)
+      ?.condition.interval;
 
   if (!matchedIntervalCondition) {
     return null;
