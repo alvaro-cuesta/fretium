@@ -1,9 +1,9 @@
 <a id="fretium-fretboard-diagram-generator"></a>
 
 <h1>
-  <p align="center">
+  <div align="center">
     <a href="https://fretium.cuesta.dev"><img src="./public/favicon.svg" width="24" height="24" /></a> Fretium, fretboard diagram generator
-  </p>
+  </div>
 </h1>
 
 <p align="center">
