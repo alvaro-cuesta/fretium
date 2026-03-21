@@ -1,3 +1,4 @@
+import cx from 'classnames';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Exact } from 'type-fest';
 import { svgElementToFile } from '../lib/file.ts';
@@ -7,6 +8,10 @@ import styles from './FretboardImg.module.scss';
 type FretboardImgProps = Omit<FretboardProps, 'ref'> &
   React.ImgHTMLAttributes<HTMLImageElement>;
 
+type FretboardImgStyle = React.CSSProperties & {
+  '--fretboard-string-scale'?: number;
+};
+
 export function FretboardImg(props: FretboardImgProps) {
   const {
     definition,
@@ -15,6 +20,8 @@ export function FretboardImg(props: FretboardImgProps) {
     endFret,
     noteDisplayMode,
     rootNote,
+    className,
+    style,
     ...imgProps
   } = props;
 
@@ -72,10 +79,17 @@ export function FretboardImg(props: FretboardImgProps) {
 
       {imgUrl && (
         <img
+          {...imgProps}
           src={imgUrl}
           // @todo better alt based on props
           alt="Fretboard diagram"
-          {...imgProps}
+          className={cx(styles.fretboardImg, className)}
+          style={
+            {
+              '--fretboard-string-scale': tuning.length / 6,
+              ...style,
+            } as FretboardImgStyle
+          }
         />
       )}
     </>
