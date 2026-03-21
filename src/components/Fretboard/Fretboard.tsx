@@ -205,22 +205,22 @@ export function Fretboard({
         </clipPath>
       </defs>
       <g transform={`translate(${translateX}, ${translateY})`}>
-        <path
-          d={neckPath}
-          fill={FRETBOARD_THEME_NECK_COLOR}
-        />
-
-        {Array.from({ length: visibleFretSpaces + 1 }, (_, lineIndex) => (
-          <FretboardFretLine
-            key={lineIndex}
-            x={fretLineX(lineIndex)}
-            yTop={-SPACE_TO_STRINGS}
-            yBottom={boardHeight + SPACE_TO_STRINGS}
-            isNut={startFret <= 1 && lineIndex === 0}
-          />
-        ))}
-
         <g clipPath={`url(#${neckClipId})`}>
+          <path
+            d={neckPath}
+            fill={FRETBOARD_THEME_NECK_COLOR}
+          />
+
+          {Array.from({ length: visibleFretSpaces + 1 }, (_, lineIndex) => (
+            <FretboardFretLine
+              key={lineIndex}
+              x={fretLineX(lineIndex)}
+              yTop={-SPACE_TO_STRINGS}
+              yBottom={boardHeight + SPACE_TO_STRINGS}
+              isNut={startFret <= 1 && lineIndex === 0}
+            />
+          ))}
+
           {/* Fret markers */}
           {Array.from({ length: markerFretCount }, (_, i) => {
             const actualFret = markerStartFret + i;
