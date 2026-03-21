@@ -77,6 +77,7 @@ export const DEFINITIONS_GROUPED = {
       },
     ],
   },
+  // @todo Perhaps if we can superimpose conditions, this can be simplified by a lot
   'Arpeggios - Maj7': {
     'Maj7 Arpeggio': [
       { condition: { interval: '1' }, ...SCALE_ROOT },
@@ -92,7 +93,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 5, interval: ['3', '5'] }, ...SCALE_TONE },
       { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
     ],
-    'Maj7 Arpeggio (1st position) + 6-4-3-2': [
+    'Maj7 Arpeggio (1st position) + 6-4-3-2 (root position)': [
       { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
@@ -102,7 +103,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 5, interval: ['3', '5'] }, ...SCALE_TONE },
       { condition: { string: 6, interval: '1' }, ...CHORD_ROOT },
     ],
-    'Maj7 Arpeggio (1st position) + 4-3-2-1': [
+    'Maj7 Arpeggio (1st position) + 4-3-2-1 (3rd inversion)': [
       { condition: { string: 1, interval: '1' }, ...CHORD_ROOT },
       { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
@@ -125,7 +126,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
       { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
     ],
-    'Maj7 Arpeggio (1st/2nd position) + Left 6-4-3-2': [
+    'Maj7 Arpeggio (1st/2nd position) + Left 6-4-3-2 (root position)': [
       { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '7' }, ...SCALE_TONE },
@@ -138,7 +139,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
       { condition: { string: 6, interval: '1' }, ...CHORD_ROOT },
     ],
-    'Maj7 Arpeggio (1st/2nd position) + Left 4-3-2-1': [
+    'Maj7 Arpeggio (1st/2nd position) + Left 4-3-2-1 (3rd inversion)': [
       { condition: { string: 1, interval: '1' }, ...CHORD_ROOT },
       { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '7' }, ...SCALE_TONE },
@@ -151,7 +152,20 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
       { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
     ],
-    'Maj7 Arpeggio (1st/2nd position) + Right 6-4-3-2': [
+    'Maj7 Arpeggio (1st/2nd position) + 5-4-3-2 (2nd inversion)': [
+      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
+      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
+      { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
+      { condition: { string: 2, interval: '5' }, ...SCALE_TONE_ALT },
+      { condition: { string: 3, interval: '5' }, ...SCALE_TONE_ALT },
+      { condition: { string: 3, interval: '3' }, ...CHORD_TONE },
+      { condition: { string: 4, interval: '1' }, ...CHORD_ROOT },
+      { condition: { string: 4, interval: '7' }, ...SCALE_TONE },
+      { condition: { string: 5, interval: '5' }, ...CHORD_TONE },
+      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
+      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
+    ],
+    'Maj7 Arpeggio (1st/2nd position) + Right 6-4-3-2 (1st inversion)': [
       { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
@@ -164,7 +178,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '3' }, ...CHORD_TONE },
       { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
     ],
-    'Maj7 Arpeggio (1st/2nd position) + Right 4-3-2-1': [
+    'Maj7 Arpeggio (1st/2nd position) + Right 4-3-2-1 (root position)': [
       { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 1, interval: '3' }, ...CHORD_TONE },
       { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
@@ -187,7 +201,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 5, interval: ['5', '7'] }, ...SCALE_TONE },
       { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
     ],
-    'Maj7 Arpeggio (2nd position) + 6-4-3-2': [
+    'Maj7 Arpeggio (2nd position) + 6-4-3-2 (1st inversion)': [
       { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
@@ -197,7 +211,18 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 5, interval: ['5', '7'] }, ...SCALE_TONE },
       { condition: { string: 6, interval: '3' }, ...CHORD_TONE },
     ],
-    'Maj7 Arpeggio (2nd position) + 4-3-2-1': [
+    'Maj7 Arpeggio (2nd position) + 5-4-3-2 (3rd inversion)': [
+      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
+      { condition: { string: 2, interval: '1' }, ...CHORD_ROOT },
+      { condition: { string: 2, interval: '7' }, ...SCALE_TONE },
+      { condition: { string: 3, interval: '5' }, ...CHORD_TONE },
+      { condition: { string: 4, interval: '3' }, ...CHORD_TONE },
+      { condition: { string: 4, interval: '1' }, ...SCALE_ROOT },
+      { condition: { string: 5, interval: '7' }, ...CHORD_TONE },
+      { condition: { string: 5, interval: '5' }, ...SCALE_TONE },
+      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
+    ],
+    'Maj7 Arpeggio (2nd position) + 4-3-2-1 (root position)': [
       { condition: { string: 1, interval: '3' }, ...CHORD_TONE },
       { condition: { string: 2, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
@@ -219,7 +244,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '5' }, ...SCALE_TONE },
       { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
     ],
-    'Maj7 Arpeggio (3rd position) + 6-4-3-2': [
+    'Maj7 Arpeggio (3rd position) + 6-4-3-2 (2nd inversion)': [
       { condition: { string: 1, interval: ['3', '5'] }, ...SCALE_TONE },
       { condition: { string: 2, interval: '1' }, ...CHORD_ROOT },
       { condition: { string: 2, interval: '7' }, ...SCALE_TONE_ALT },
@@ -231,7 +256,19 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '5' }, ...CHORD_TONE },
       { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
     ],
-    'Maj7 Arpeggio (3rd position) + 4-3-2-1': [
+    'Maj7 Arpeggio (3rd position) + 5-4-3-2 (3rd inversion)': [
+      { condition: { string: 1, interval: ['3', '5'] }, ...SCALE_TONE },
+      { condition: { string: 2, interval: '1' }, ...CHORD_ROOT },
+      { condition: { string: 2, interval: '7' }, ...SCALE_TONE_ALT },
+      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
+      { condition: { string: 3, interval: '5' }, ...CHORD_TONE },
+      { condition: { string: 4, interval: '3' }, ...CHORD_TONE },
+      { condition: { string: 5, interval: '1' }, ...SCALE_ROOT },
+      { condition: { string: 5, interval: '7' }, ...CHORD_TONE },
+      { condition: { string: 6, interval: '5' }, ...SCALE_TONE },
+      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
+    ],
+    'Maj7 Arpeggio (3rd position) + 4-3-2-1 (1st inversion)': [
       { condition: { string: 1, interval: '5' }, ...CHORD_TONE },
       { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '1' }, ...CHORD_ROOT },
@@ -253,7 +290,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 5, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 6, interval: ['5', '7'] }, ...SCALE_TONE },
     ],
-    'Maj7 Arpeggio (4th position) + 6-4-3-2': [
+    'Maj7 Arpeggio (4th position) + 6-4-3-2 (3rd inversion)': [
       { condition: { string: 1, interval: ['5', '7'] }, ...SCALE_TONE },
       { condition: { string: 2, interval: '3' }, ...CHORD_TONE },
       { condition: { string: 3, interval: '1' }, ...CHORD_ROOT },
@@ -264,7 +301,17 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '7' }, ...CHORD_TONE },
       { condition: { string: 6, interval: '5' }, ...SCALE_TONE },
     ],
-    'Maj7 Arpeggio (4th position) + 4-3-2-1': [
+    'Maj7 Arpeggio (4th position) + 5-4-3-2 (root position)': [
+      { condition: { string: 1, interval: ['5', '7'] }, ...SCALE_TONE },
+      { condition: { string: 2, interval: '3' }, ...CHORD_TONE },
+      { condition: { string: 3, interval: '1' }, ...SCALE_ROOT },
+      { condition: { string: 3, interval: '7' }, ...CHORD_TONE },
+      { condition: { string: 4, interval: '5' }, ...CHORD_TONE },
+      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
+      { condition: { string: 5, interval: '1' }, ...CHORD_ROOT },
+      { condition: { string: 6, interval: ['5', '7'] }, ...SCALE_TONE },
+    ],
+    'Maj7 Arpeggio (4th position) + 4-3-2-1 (2nd inversion)': [
       { condition: { string: 1, interval: '7' }, ...CHORD_TONE },
       { condition: { string: 1, interval: '5' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '3' }, ...CHORD_TONE },
@@ -290,7 +337,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
     ],
-    'Maj7 Arpeggio (4th/1st position) + Left 6-4-3-2': [
+    'Maj7 Arpeggio (4th/1st position) + Left 6-4-3-2 (3rd inversion)': [
       { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '5' }, ...SCALE_TONE },
@@ -304,7 +351,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 6, interval: '7' }, ...CHORD_TONE },
     ],
-    'Maj7 Arpeggio (4th/1st position) + Left 4-3-2-1': [
+    'Maj7 Arpeggio (4th/1st position) + Left 4-3-2-1 (2nd inversion)': [
       { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 1, interval: '7' }, ...CHORD_TONE },
       { condition: { string: 2, interval: '5' }, ...SCALE_TONE },
@@ -318,7 +365,21 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
     ],
-    'Maj7 Arpeggio (4th/1st position) + Right 6-4-3-2': [
+    'Maj7 Arpeggio (4th/1st position) + 5-4-3-2 (1st inversion)': [
+      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
+      { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
+      { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
+      { condition: { string: 2, interval: '3' }, ...SCALE_TONE_ALT },
+      { condition: { string: 3, interval: '3' }, ...SCALE_TONE_ALT },
+      { condition: { string: 3, interval: '1' }, ...CHORD_ROOT },
+      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
+      { condition: { string: 4, interval: '7' }, ...CHORD_TONE_ALT },
+      { condition: { string: 4, interval: '5' }, ...SCALE_TONE },
+      { condition: { string: 5, interval: '3' }, ...CHORD_TONE },
+      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
+      { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
+    ],
+    'Maj7 Arpeggio (4th/1st position) + Right 6-4-3-2 (root position)': [
       { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
       { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
@@ -332,7 +393,7 @@ export const DEFINITIONS_GROUPED = {
       { condition: { string: 6, interval: '1' }, ...CHORD_ROOT },
       { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
     ],
-    'Maj7 Arpeggio (4th/1st position) + Right 4-3-2-1': [
+    'Maj7 Arpeggio (4th/1st position) + Right 4-3-2-1 (3rd inversion)': [
       { condition: { string: 1, interval: '1' }, ...CHORD_ROOT },
       { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
       { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
