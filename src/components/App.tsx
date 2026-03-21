@@ -251,7 +251,7 @@ export function App() {
         </div>
       </section>
 
-      <section>
+      <section className={styles.fretboardSection}>
         <Scrollable>
           <FretboardImg
             className={styles.fretboardImg}
