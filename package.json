@@ -23,9 +23,10 @@
   "private": true,
   "type": "module",
   "config": {
-    "name": "Fretium",
+    "name": "Fretium | Fretboard diagram generator",
     "shortName": "Fretium",
     "description": "Generate beautiful fretboard diagrams for guitar, bass, ukulele and more. Right in your browser, no installation required.",
+    "shortDescription": "Fretboard diagram generator",
     "themeColor": "#bc366a",
     "url": "https://fretium.cuesta.dev",
     "publicUrlBase": "https://fretium.cuesta.dev",

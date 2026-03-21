@@ -8,6 +8,7 @@ export type MyImportMetaEnv = {
   readonly PACKAGE_CONFIG_NAME: typeof packageJson.config.name;
   readonly PACKAGE_CONFIG_SHORT_NAME: typeof packageJson.config.shortName;
   readonly PACKAGE_CONFIG_DESCRIPTION: typeof packageJson.config.description;
+  readonly PACKAGE_CONFIG_SHORT_DESCRIPTION: typeof packageJson.config.shortDescription;
   readonly PACKAGE_CONFIG_THEME_COLOR: typeof packageJson.config.themeColor;
   readonly PACKAGE_CONFIG_PUBLIC_URL_BASE: typeof packageJson.config.publicUrlBase;
   readonly PACKAGE_CONFIG_REPOSITORY_URL: typeof packageJson.config.repositoryUrl;

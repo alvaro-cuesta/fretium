@@ -19,11 +19,11 @@ export function Layout(props: LayoutProps) {
               aria-hidden="true"
             />
             <span className={styles.headerTitle}>
-              {import.meta.env.PACKAGE_CONFIG_NAME}
+              {import.meta.env.PACKAGE_CONFIG_SHORT_NAME}
             </span>
           </a>{' '}
           <small className={styles.headerSubtitle}>
-            {import.meta.env.PACKAGE_CONFIG_DESCRIPTION}
+            {import.meta.env.PACKAGE_CONFIG_SHORT_DESCRIPTION}
           </small>
         </h1>
       </header>
