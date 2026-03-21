@@ -33,7 +33,7 @@ export type FretboardProps = {
   ref?: React.Ref<SVGSVGElement> | undefined;
 };
 
-const FRETBOARD_MARKS: Record<number, 'single' | 'double'> = {
+const FRETS_WITH_MARKERS: Record<number, 'single' | 'double'> = {
   3: 'single',
   5: 'single',
   7: 'single',
@@ -158,8 +158,6 @@ export function Fretboard({
     if (showOpenString) return actualFret * FRET_SPACING - FRET_SPACING / 2;
     return (actualFret - startFret + 1) * FRET_SPACING - FRET_SPACING / 2;
   };
-  const markerStartFret = startFret > 1 ? startFret - 1 : 1;
-  const markerFretCount = endFret - markerStartFret + 2;
   const openStringPaddingX = showOpenString
     ? FRET_SPACING / 2 + FRETBOARD_THEME_NOTE_RADIUS
     : 0;
@@ -182,6 +180,14 @@ export function Fretboard({
   const translateY = outerPaddingY - highestContentY;
   const totalWidth = translateX + neckWidth + baseMarginX;
   const totalHeight = translateY + neckBottomContentY + bottomSpaceFromNeck;
+
+  // If the nut is not shown, draw an additional left overhang fret
+  const hasLeftOverhang = startFret > 1;
+
+  const fretSelectedStart = startFret;
+  const fretSelectedEnd = endFret;
+  const fretsInNeckStart = Math.max(startFret - (hasLeftOverhang ? 1 : 0), 1);
+  const fretsInNeckEnd = endFret + 1; // We always have a right overhang
 
   return (
     <svg
@@ -211,56 +217,68 @@ export function Fretboard({
             fill={FRETBOARD_THEME_NECK_COLOR}
           />
 
-          {Array.from({ length: visibleFretSpaces + 1 }, (_, lineIndex) => (
-            <FretboardFretLine
-              key={lineIndex}
-              x={fretLineX(lineIndex)}
-              yTop={-SPACE_TO_STRINGS}
-              yBottom={boardHeight + SPACE_TO_STRINGS}
-              isNut={startFret <= 1 && lineIndex === 0}
-            />
-          ))}
+          {/* Fret lines */}
+          {Array.from(
+            // +1 because we want to include the end fret line
+            rangeInclusiveRight(fretsInNeckStart, fretsInNeckEnd + 1),
+            (fret, i) => (
+              <FretboardFretLine
+                key={fret}
+                x={fretLineX(
+                  i -
+                    // If there is overhang on the left, we need to shift all fret lines to the left to draw the line the neck
+                    (hasLeftOverhang ? 1 : 0),
+                )}
+                yTop={-SPACE_TO_STRINGS}
+                yBottom={boardHeight + SPACE_TO_STRINGS}
+                isNut={fret === 1}
+              />
+            ),
+          )}
 
           {/* Fret markers */}
-          {Array.from({ length: markerFretCount }, (_, i) => {
-            const actualFret = markerStartFret + i;
-            const fretModulo = ((actualFret - 1) % 12) + 1;
+          {Array.from(
+            rangeInclusiveRight(fretsInNeckStart, fretsInNeckEnd),
+            (fret) => {
+              const fretMarkerType = getFretMarkerType(fret);
+              const x = noteX(fret);
 
-            const markType = FRETBOARD_MARKS[fretModulo];
-            if (!markType) return null;
-
-            const x = noteX(actualFret);
-
-            switch (markType) {
-              case 'single': {
-                return (
-                  <FretboardMarkerCircle
-                    key={i}
-                    x={x}
-                    y={boardHeight * 0.5}
-                  />
-                );
-              }
-
-              case 'double': {
-                return (
-                  <g key={i}>
+              switch (fretMarkerType) {
+                case 'single': {
+                  return (
                     <FretboardMarkerCircle
+                      key={fret}
                       x={x}
-                      y={boardHeight * 0.3}
+                      y={boardHeight * 0.5}
                     />
-                    <FretboardMarkerCircle
-                      x={x}
-                      y={boardHeight * 0.7}
-                    />
-                  </g>
-                );
+                  );
+                }
+
+                case 'double': {
+                  return (
+                    <g key={fret}>
+                      <FretboardMarkerCircle
+                        x={x}
+                        y={boardHeight * 0.3}
+                      />
+                      <FretboardMarkerCircle
+                        x={x}
+                        y={boardHeight * 0.7}
+                      />
+                    </g>
+                  );
+                }
+
+                case null: {
+                  return null;
+                }
+
+                default: {
+                  checkIsNever(fretMarkerType);
+                }
               }
-              default: {
-                checkIsNever(markType);
-              }
-            }
-          })}
+            },
+          )}
 
           {/* Strings + Notes */}
           {stringRows.map((row, rowIndex) => {
@@ -275,11 +293,8 @@ export function Fretboard({
 
             // Notes
             const notes = Array.from(
-              {
-                length: endFret - (showOpenString ? 0 : startFret) + 1,
-              },
-              (_, i) => {
-                const fret = (showOpenString ? 0 : startFret) + i;
+              rangeInclusiveRight(fretSelectedStart, fretSelectedEnd),
+              (fret) => {
                 const note = transposeNote(row.openNote, fret);
                 if (!note) {
                   return null;
@@ -352,26 +367,38 @@ export function Fretboard({
         </g>
 
         {/* Fret labels */}
-        {Array.from({ length: visibleFretSpaces }, (_, i) => {
-          const actualFret = showOpenString ? i + 1 : startFret + i;
-          const fretModulo = ((actualFret - 1) % 12) + 1;
-          const isBoundaryFret =
-            actualFret === Math.max(1, startFret) || actualFret === endFret;
+        {Array.from(
+          rangeInclusiveRight(fretSelectedStart, fretSelectedEnd),
+          (fret) => {
+            const isBoundaryFret =
+              fret === Math.max(1, startFret) || fret === endFret;
 
-          if (!isBoundaryFret && !FRETBOARD_MARKS[fretModulo]) {
-            return null;
-          }
+            if (!isBoundaryFret && !getFretMarkerType(fret)) {
+              return null;
+            }
 
-          return (
-            <FretboardFretLabel
-              key={`label-${actualFret}`}
-              x={noteX(actualFret)}
-              y={boardHeight + FRET_LABEL_OFFSET}
-              fret={actualFret}
-            />
-          );
-        })}
+            return (
+              <FretboardFretLabel
+                key={fret}
+                x={noteX(fret)}
+                y={boardHeight + FRET_LABEL_OFFSET}
+                fret={fret}
+              />
+            );
+          },
+        )}
       </g>
     </svg>
   );
+}
+
+function* rangeInclusiveRight(start: number, end: number): Generator<number> {
+  for (let i = start; i <= end; i++) {
+    yield i;
+  }
+}
+
+function getFretMarkerType(fret: number): 'single' | 'double' | null {
+  const fretModulo = ((fret - 1) % 12) + 1;
+  return FRETS_WITH_MARKERS[fretModulo] ?? null;
 }
