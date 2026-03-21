@@ -1,22 +1,28 @@
 import { useId } from 'react';
 import type { Tuning } from '../../lib/instrument';
-import type { Note } from '../../lib/music';
 import {
-  getDisplayNoteFromRoot,
-  getIntervalLabelFromCondition,
-  getIntervalLabelFromRoot,
-  matchesCondition,
-  transposeNote,
+  LOOSE_INTERVAL_TO_NOTE_CLASS,
+  NOTE_TO_NOTE_CLASS,
+  semitonesToNoteClass,
+  type DegreeWithAccidental,
+  type Interval,
+  type LooseInterval,
+  type Note,
+  type NoteClass,
+} from '../../lib/music';
+import {
+  getAppliedRules,
+  type GetAppliedRulesResult,
   type RuleDefinition,
 } from '../../lib/rule-engine';
 import { checkIsNever } from '../../lib/type';
+import type { NoteDisplayMode } from '../App';
 import { FretboardFretLabel } from './FretboardFretLabel';
 import { FretboardFretLine } from './FretboardFretLine';
 import { FretboardMarkerCircle } from './FretboardMarkerCircle';
 import { FretboardNote } from './FretboardNote';
 import { FretboardString } from './FretboardString';
 import {
-  FRETBOARD_THEME_FRET_WIDTH,
   FRETBOARD_THEME_LABEL_FONT_SIZE,
   FRETBOARD_THEME_NECK_COLOR,
   FRETBOARD_THEME_NOTE_RADIUS,
@@ -28,7 +34,7 @@ export type FretboardProps = {
   tuning: Tuning<number>;
   startFret: number;
   endFret: number;
-  noteDisplayMode: 'note' | 'interval' | 'none';
+  noteDisplayMode: NoteDisplayMode;
   rootNote: Note;
   ref?: React.Ref<SVGSVGElement> | undefined;
 };
@@ -42,12 +48,12 @@ const FRETS_WITH_MARKERS: Record<number, 'single' | 'double'> = {
 };
 
 const FRETBOARD_CORNER_RADIUS = 14;
-const BOARD_PADDING_Y = 30;
+const BOARD_PADDING = 30;
 const FRET_SPACING = 62;
-const STRING_SPACING = 28;
+const OVERHANG_SPACING = FRET_SPACING * 0.4;
+const SPACING_BETWEEN_STRINGS = 28;
 const FRET_LABEL_OFFSET = 24;
 const SPACE_TO_STRINGS = 12;
-const NECK_OVERHANG_RATIO = 0.4;
 
 function getRoundedRectPath({
   x,
@@ -96,7 +102,7 @@ function getRoundedRectPath({
 
 export function Fretboard({
   definition,
-  tuning: tuning,
+  tuning,
   startFret,
   endFret,
   noteDisplayMode,
@@ -104,90 +110,97 @@ export function Fretboard({
   ref,
 }: FretboardProps) {
   const showOpenString = startFret === 0;
-  const visibleFretSpaces = showOpenString ? endFret : endFret - startFret + 1;
-
+  const hasNut = startFret <= 1;
+  const hasLeftOverhang = startFret > 1;
+  const firstVisibleFret = Math.max(1, startFret);
   const stringCount = tuning.length;
-  const boardWidth = visibleFretSpaces * FRET_SPACING;
-  const boardHeight = Math.max(0, (stringCount - 1) * STRING_SPACING);
-  const neckOverhang = FRET_SPACING * NECK_OVERHANG_RATIO;
-  const leftOverhang = startFret > 1 ? neckOverhang : 0;
-  const rightOverhang = neckOverhang;
-  const outerPaddingY = BOARD_PADDING_Y - SPACE_TO_STRINGS;
-  const baseMarginX = outerPaddingY;
-  const neckLeftX = -leftOverhang;
-  const neckTopY = -SPACE_TO_STRINGS;
-  const neckWidth = boardWidth + leftOverhang + rightOverhang;
-  const neckHeight = boardHeight + 2 * SPACE_TO_STRINGS;
+
+  const neckHeight =
+    SPACE_TO_STRINGS +
+    Math.max(0, (stringCount - 1) * SPACING_BETWEEN_STRINGS) +
+    SPACE_TO_STRINGS;
+
+  const fretLineX = (fret: number) => {
+    if (hasNut) {
+      return FRETBOARD_THEME_NUT_WIDTH / 2 + (fret - 1) * FRET_SPACING;
+    }
+
+    return OVERHANG_SPACING + (fret - firstVisibleFret) * FRET_SPACING;
+  };
+
+  const noteX = (fret: number) => {
+    if (fret === 0) {
+      return fretLineX(1) - FRET_SPACING / 2;
+    }
+
+    return fretLineX(fret) + FRET_SPACING / 2;
+  };
+
+  const neckWidth = fretLineX(endFret + 1) + OVERHANG_SPACING;
+
   const neckPath = getRoundedRectPath({
-    x: neckLeftX,
-    y: neckTopY,
+    x: 0,
+    y: 0,
     width: neckWidth,
     height: neckHeight,
     radius: FRETBOARD_CORNER_RADIUS,
-    roundLeft: startFret > 1,
+    roundLeft: hasLeftOverhang,
     roundRight: true,
   });
-  const stringStartX =
-    startFret <= 1 ? -FRETBOARD_THEME_NUT_WIDTH / 2 : neckLeftX;
-  const leftContentClipX = showOpenString
-    ? Math.min(stringStartX, -FRET_SPACING / 2 - FRETBOARD_THEME_NOTE_RADIUS)
-    : stringStartX;
-  const leftClipWidth = Math.max(0, neckLeftX - leftContentClipX);
 
-  const noteOccurrences = new Map<string, number>();
-  const stringRows = tuning.toReversed().map((openNote, rowIndex) => {
-    const occurrence = (noteOccurrences.get(openNote) ?? 0) + 1;
-    noteOccurrences.set(openNote, occurrence);
-
-    const originalIndex = stringCount - 1 - rowIndex;
-
-    return {
-      openNote,
-      y: rowIndex * STRING_SPACING,
-      gauge: Math.max(1.2, 3.2 - originalIndex * 0.35),
-      number: rowIndex + 1,
-    };
-  });
-
-  // @todo Is this even working?
   const neckClipId = `neck-clip-${useId()}`;
 
-  const fretLineX = (physicalLine: number) => physicalLine * FRET_SPACING;
-  const noteX = (actualFret: number) => {
-    if (actualFret === 0) return -FRET_SPACING / 2;
-    if (showOpenString) return actualFret * FRET_SPACING - FRET_SPACING / 2;
-    return (actualFret - startFret + 1) * FRET_SPACING - FRET_SPACING / 2;
-  };
-  const openStringPaddingX = showOpenString
-    ? FRET_SPACING / 2 + FRETBOARD_THEME_NOTE_RADIUS
+  const openNoteLeftEdgeX = showOpenString
+    ? noteX(0) - FRETBOARD_THEME_NOTE_RADIUS
     : 0;
-  const nutMarginCompensationX =
-    startFret === 1 ? FRETBOARD_THEME_NUT_WIDTH / 2 : 0;
-  const translateX =
-    baseMarginX + leftOverhang + openStringPaddingX + nutMarginCompensationX;
-  const fretLineStrokeHalf =
-    (startFret <= 1 ? FRETBOARD_THEME_NUT_WIDTH : FRETBOARD_THEME_FRET_WIDTH) /
-    2;
-  const highestContentY = -SPACE_TO_STRINGS - fretLineStrokeHalf;
-  const neckBottomContentY =
-    boardHeight + SPACE_TO_STRINGS + fretLineStrokeHalf;
-  const labelBottomContentY =
-    boardHeight + FRET_LABEL_OFFSET + FRETBOARD_THEME_LABEL_FONT_SIZE / 2;
-  const bottomSpaceFromNeck = Math.max(
-    outerPaddingY,
-    labelBottomContentY - neckBottomContentY,
-  );
-  const translateY = outerPaddingY - highestContentY;
-  const totalWidth = translateX + neckWidth + baseMarginX;
-  const totalHeight = translateY + neckBottomContentY + bottomSpaceFromNeck;
+  const extraLeftPadding = Math.max(0, -openNoteLeftEdgeX);
+  const translateX = BOARD_PADDING + extraLeftPadding;
+  const translateY = BOARD_PADDING;
 
-  // If the nut is not shown, draw an additional left overhang fret
-  const hasLeftOverhang = startFret > 1;
+  const visibleLabelFrets = Array.from(
+    rangeInclusiveRight(Math.max(1, startFret), endFret),
+  ).filter((fret) => {
+    const isBoundaryFret = fret === Math.max(1, startFret) || fret === endFret;
 
-  const fretSelectedStart = startFret;
-  const fretSelectedEnd = endFret;
-  const fretsInNeckStart = Math.max(startFret - (hasLeftOverhang ? 1 : 0), 1);
-  const fretsInNeckEnd = endFret + 1; // We always have a right overhang
+    return isBoundaryFret || getFretMarkerType(fret) !== null;
+  });
+
+  const contentBottomY =
+    visibleLabelFrets.length > 0
+      ? neckHeight + FRET_LABEL_OFFSET + FRETBOARD_THEME_LABEL_FONT_SIZE / 2
+      : neckHeight;
+  const totalWidth = translateX + neckWidth + BOARD_PADDING;
+  const totalHeight = translateY + contentBottomY + BOARD_PADDING;
+
+  const renderNote = (stringNumber: number, fret: number, y: number) => {
+    const appliedRulesResult = getAppliedRules(
+      tuning,
+      stringNumber,
+      fret,
+      rootNote,
+      definition,
+    );
+    if (!appliedRulesResult) {
+      return null;
+    }
+
+    const noteLabel = getNoteLabel(
+      noteDisplayMode,
+      rootNote,
+      appliedRulesResult,
+    );
+
+    return (
+      <FretboardNote
+        key={`${stringNumber}-${fret}`}
+        x={noteX(fret)}
+        y={y}
+        color={appliedRulesResult.appliedRules.color}
+        label={noteDisplayMode === 'none' ? null : noteLabel}
+        opacity={appliedRulesResult.appliedRules.opacity}
+      />
+    );
+  };
 
   return (
     <svg
@@ -200,37 +213,23 @@ export function Fretboard({
       <defs>
         <clipPath id={neckClipId}>
           <path d={neckPath} />
-          {leftClipWidth > 0 && (
-            <rect
-              x={leftContentClipX}
-              y={neckTopY}
-              width={leftClipWidth}
-              height={neckHeight}
-            />
-          )}
         </clipPath>
       </defs>
       <g transform={`translate(${translateX}, ${translateY})`}>
-        <g clipPath={`url(#${neckClipId})`}>
-          <path
-            d={neckPath}
-            fill={FRETBOARD_THEME_NECK_COLOR}
-          />
+        <path
+          d={neckPath}
+          fill={FRETBOARD_THEME_NECK_COLOR}
+        />
 
-          {/* Fret lines */}
+        <g clipPath={`url(#${neckClipId})`}>
           {Array.from(
-            // +1 because we want to include the end fret line
-            rangeInclusiveRight(fretsInNeckStart, fretsInNeckEnd + 1),
-            (fret, i) => (
+            rangeInclusiveRight(hasNut ? 1 : firstVisibleFret, endFret + 1),
+            (fret) => (
               <FretboardFretLine
                 key={fret}
-                x={fretLineX(
-                  i -
-                    // If there is overhang on the left, we need to shift all fret lines to the left to draw the line the neck
-                    (hasLeftOverhang ? 1 : 0),
-                )}
-                yTop={-SPACE_TO_STRINGS}
-                yBottom={boardHeight + SPACE_TO_STRINGS}
+                x={fretLineX(fret)}
+                yTop={0}
+                yBottom={neckHeight}
                 isNut={fret === 1}
               />
             ),
@@ -238,10 +237,12 @@ export function Fretboard({
 
           {/* Fret markers */}
           {Array.from(
-            rangeInclusiveRight(fretsInNeckStart, fretsInNeckEnd),
+            rangeInclusiveRight(hasNut ? 1 : firstVisibleFret - 1, endFret + 1),
             (fret) => {
               const fretMarkerType = getFretMarkerType(fret);
               const x = noteX(fret);
+              const middle = neckHeight * 0.5;
+              const stringAreaHeight = neckHeight - 2 * SPACE_TO_STRINGS;
 
               switch (fretMarkerType) {
                 case 'single': {
@@ -249,7 +250,7 @@ export function Fretboard({
                     <FretboardMarkerCircle
                       key={fret}
                       x={x}
-                      y={boardHeight * 0.5}
+                      y={middle}
                     />
                   );
                 }
@@ -259,11 +260,11 @@ export function Fretboard({
                     <g key={fret}>
                       <FretboardMarkerCircle
                         x={x}
-                        y={boardHeight * 0.3}
+                        y={SPACE_TO_STRINGS + stringAreaHeight * 0.3}
                       />
                       <FretboardMarkerCircle
                         x={x}
-                        y={boardHeight * 0.7}
+                        y={SPACE_TO_STRINGS + stringAreaHeight * 0.7}
                       />
                     </g>
                   );
@@ -280,113 +281,46 @@ export function Fretboard({
             },
           )}
 
-          {/* Strings + Notes */}
-          {stringRows.map((row, rowIndex) => {
-            // String
-            const string = (
-              <FretboardString
-                xLeft={stringStartX}
-                xRight={boardWidth + rightOverhang}
-                gauge={row.gauge}
-              />
-            );
-
-            // Notes
-            const notes = Array.from(
-              rangeInclusiveRight(fretSelectedStart, fretSelectedEnd),
-              (fret) => {
-                const note = transposeNote(row.openNote, fret);
-                if (!note) {
-                  return null;
-                }
-
-                const matchingRules = definition.filter((rule) =>
-                  matchesCondition(
-                    rule.condition,
-                    {
-                      string: row.number,
-                      fret,
-                      note,
-                    },
-                    {
-                      rootNote,
-                    },
-                  ),
-                );
-                if (matchingRules.length === 0) {
-                  return null;
-                }
-
-                const { condition: _condition, ...mergedProps } =
-                  matchingRules.reduce((acc, rule) => ({ ...acc, ...rule }));
-
-                const displayedNote =
-                  getDisplayNoteFromRoot(note, rootNote) ?? note;
-                const intervalLabelFromDefinition = matchingRules
-                  .toReversed()
-                  .find((rule) => rule.condition.interval !== undefined)
-                  ?.condition.interval;
-                const displayedInterval = intervalLabelFromDefinition
-                  ? getIntervalLabelFromCondition(
-                      note,
-                      intervalLabelFromDefinition,
-                      rootNote,
-                    )
-                  : null;
-
-                const noteLabel =
-                  noteDisplayMode === 'interval'
-                    ? (displayedInterval ??
-                      getIntervalLabelFromRoot(note, rootNote) ??
-                      displayedNote)
-                    : displayedNote;
-
-                return (
-                  <FretboardNote
-                    key={fret}
-                    x={noteX(fret)}
-                    color={mergedProps.color}
-                    label={noteDisplayMode === 'none' ? null : noteLabel}
-                    opacity={mergedProps.opacity}
-                  />
-                );
-              },
+          {tuning.toReversed().map((openNote, i) => {
+            const stringNumber = i + 1;
+            const y = SPACE_TO_STRINGS + i * SPACING_BETWEEN_STRINGS;
+            const gauge = Math.max(
+              1.2,
+              3.2 - (stringCount - stringNumber) * 0.35,
             );
 
             return (
-              <g
-                // eslint-disable-next-line react-x/no-array-index-key -- nothing else we can go by
-                key={rowIndex}
-                transform={`translate(0, ${row.y})`}
-              >
-                {string}
-                {notes}
+              <g key={`${openNote}-${stringNumber}`}>
+                <FretboardString
+                  xLeft={0}
+                  xRight={neckWidth}
+                  y={y}
+                  gauge={gauge}
+                />
+                {Array.from(
+                  rangeInclusiveRight(Math.max(1, startFret), endFret),
+                  (fret) => renderNote(stringNumber, fret, y),
+                )}
               </g>
             );
           })}
         </g>
 
-        {/* Fret labels */}
-        {Array.from(
-          rangeInclusiveRight(fretSelectedStart, fretSelectedEnd),
-          (fret) => {
-            const isBoundaryFret =
-              fret === Math.max(1, startFret) || fret === endFret;
+        {showOpenString &&
+          tuning.toReversed().map((_, i) => {
+            const stringNumber = i + 1;
+            const y = SPACE_TO_STRINGS + i * SPACING_BETWEEN_STRINGS;
+            return renderNote(stringNumber, 0, y);
+          })}
 
-            if (!isBoundaryFret && !getFretMarkerType(fret)) {
-              return null;
-            }
-
-            return (
-              <FretboardFretLabel
-                key={fret}
-                x={noteX(fret)}
-                y={boardHeight + FRET_LABEL_OFFSET}
-                fret={fret}
-              />
-            );
-          },
-        )}
+        {visibleLabelFrets.map((fret) => (
+          <FretboardFretLabel
+            key={fret}
+            x={noteX(fret)}
+            y={neckHeight + FRET_LABEL_OFFSET}
+            fret={fret}
+          />
+        ))}
       </g>
     </svg>
   );
@@ -401,4 +335,346 @@ function* rangeInclusiveRight(start: number, end: number): Generator<number> {
 function getFretMarkerType(fret: number): 'single' | 'double' | null {
   const fretModulo = ((fret - 1) % 12) + 1;
   return FRETS_WITH_MARKERS[fretModulo] ?? null;
+}
+
+const NOTE_CLASS_TO_DISPLAY_INTERVAL: Record<NoteClass, Interval> = {
+  0: 'P1',
+  1: 'm2',
+  2: 'M2',
+  3: 'm3',
+  4: 'M3',
+  5: 'P4',
+  6: 'TT',
+  7: 'P5',
+  8: 'm6',
+  9: 'M6',
+  10: 'm7',
+  11: 'M7',
+} as const;
+const NOTE_CLASS_TO_DISPLAY_DEGREE_WITH_ACCIDENTAL: Record<
+  NoteClass,
+  DegreeWithAccidental
+> = {
+  0: '1',
+  1: 'b2',
+  2: '2',
+  3: 'b3',
+  4: '3',
+  5: '4',
+  6: 'b5',
+  7: '5',
+  8: 'b6',
+  9: '6',
+  10: 'b7',
+  11: '7',
+} as const;
+
+const NOTE_CLASS_TO_DISPLAY_SHARP_NOTE: Readonly<Record<NoteClass, Note>> = {
+  0: 'C',
+  1: 'C#',
+  2: 'D',
+  3: 'D#',
+  4: 'E',
+  5: 'F',
+  6: 'F#',
+  7: 'G',
+  8: 'G#',
+  9: 'A',
+  10: 'A#',
+  11: 'B',
+};
+
+const NOTE_CLASS_TO_DISPLAY_FLAT_NOTE: Readonly<Record<NoteClass, Note>> = {
+  0: 'C',
+  1: 'Db',
+  2: 'D',
+  3: 'Eb',
+  4: 'E',
+  5: 'F',
+  6: 'Gb',
+  7: 'G',
+  8: 'Ab',
+  9: 'A',
+  10: 'Bb',
+  11: 'B',
+};
+
+const MATCHED_INTERVAL_TO_DISPLAY_INTERVAL: Record<LooseInterval, Interval> = {
+  P1: 'P1',
+  d2: 'd2',
+  m2: 'm2',
+  A1: 'A1',
+  S: 'S',
+  M2: 'M2',
+  d3: 'd3',
+  T: 'T',
+  m3: 'm3',
+  A2: 'A2',
+  M3: 'M3',
+  d4: 'd4',
+  P4: 'P4',
+  A3: 'A3',
+  d5: 'd5',
+  A4: 'A4',
+  TT: 'TT',
+  P5: 'P5',
+  d6: 'd6',
+  m6: 'm6',
+  A5: 'A5',
+  M6: 'M6',
+  d7: 'd7',
+  m7: 'm7',
+  A6: 'A6',
+  M7: 'M7',
+  d8: 'd8',
+  P8: 'P8',
+  A7: 'A7',
+  A8: 'A8',
+  AA1: 'AA1',
+  AA2: 'AA2',
+  AA3: 'AA3',
+  AA4: 'AA4',
+  AA5: 'AA5',
+  AA6: 'AA6',
+  AA7: 'AA7',
+  AA8: 'AA8',
+  d1: 'd1',
+  dd1: 'dd1',
+  dd2: 'dd2',
+  dd3: 'dd3',
+  dd4: 'dd4',
+  dd5: 'dd5',
+  dd6: 'dd6',
+  dd7: 'dd7',
+  dd8: 'dd8',
+
+  bb1: 'dd1',
+  b1: 'd1',
+  '1': 'P1',
+  '#1': 'A1',
+  '##1': 'AA1',
+
+  bb2: 'd2',
+  b2: 'm2',
+  '2': 'M2',
+  '#2': 'A2',
+  '##2': 'AA2',
+
+  bb3: 'd3',
+  b3: 'm3',
+  '3': 'M3',
+  '#3': 'A3',
+  '##3': 'AA3',
+
+  bb4: 'dd4',
+  b4: 'd4',
+  '4': 'P4',
+  '#4': 'A4',
+  '##4': 'AA4',
+
+  bb5: 'dd5',
+  b5: 'd5',
+  '5': 'P5',
+  '#5': 'A5',
+  '##5': 'AA5',
+
+  bb6: 'd6',
+  b6: 'm6',
+  '6': 'M6',
+  '#6': 'A6',
+  '##6': 'AA6',
+
+  bb7: 'd7',
+  b7: 'm7',
+  '7': 'M7',
+  '#7': 'A7',
+  '##7': 'AA7',
+
+  bb8: 'dd8',
+  b8: 'd8',
+  '8': 'P8',
+  '#8': 'A8',
+  '##8': 'AA8',
+};
+
+const MATCHED_INTERVAL_TO_DISPLAY_DEGREE_WITH_ACCIDENTAL: Record<
+  LooseInterval,
+  DegreeWithAccidental
+> = {
+  bb1: 'bb1',
+  b1: 'b1',
+  '1': '1',
+  '#1': '#1',
+  '##1': '##1',
+  bb2: 'bb2',
+  b2: 'b2',
+  '2': '2',
+  '#2': '#2',
+  '##2': '##2',
+  bb3: 'bb3',
+  b3: 'b3',
+  '3': '3',
+  '#3': '#3',
+  '##3': '##3',
+  bb4: 'bb4',
+  b4: 'b4',
+  '4': '4',
+  '#4': '#4',
+  '##4': '##4',
+  bb5: 'bb5',
+  b5: 'b5',
+  '5': '5',
+  '#5': '#5',
+  '##5': '##5',
+  bb6: 'bb6',
+  b6: 'b6',
+  '6': '6',
+  '#6': '#6',
+  '##6': '##6',
+  bb7: 'bb7',
+  b7: 'b7',
+  '7': '7',
+  '#7': '#7',
+  '##7': '##7',
+  bb8: 'bb8',
+  b8: 'b8',
+  '8': '8',
+  '#8': '#8',
+  '##8': '##8',
+
+  P1: '1',
+  d2: 'bb2',
+  m2: 'b2',
+  A1: '##1',
+  S: 'b2',
+  M2: '2',
+  d3: 'bb3',
+  T: '2',
+  m3: 'b3',
+  A2: '##2',
+  M3: '3',
+  d4: 'b4',
+  P4: '4',
+  A3: '#3',
+  d5: 'b5',
+  A4: '#4',
+  TT: 'b5',
+  P5: '5',
+  d6: 'bb6',
+  m6: 'b6',
+  A5: '#5',
+  M6: '6',
+  d7: 'bb7',
+  m7: 'b7',
+  A6: '#6',
+  M7: '7',
+  A7: '#7',
+  d8: 'b8',
+  P8: '8',
+  A8: '#8',
+  AA1: '##1',
+  AA2: '##2',
+  AA3: '##3',
+  AA4: '##4',
+  AA5: '##5',
+  AA6: '##6',
+  AA7: '##7',
+  AA8: '##8',
+  d1: 'b1',
+  dd1: 'bb1',
+  dd4: 'bb4',
+  dd5: 'bb5',
+  dd8: 'bb8',
+
+  // Fallbacks
+  dd2: '1',
+  dd3: '2',
+  dd6: '5',
+  dd7: '6',
+};
+
+function getNoteLabel(
+  noteDisplayMode: NoteDisplayMode,
+  rootNote: Note,
+  appliedRulesResult: GetAppliedRulesResult,
+) {
+  switch (noteDisplayMode) {
+    case 'interval':
+    case 'degree': {
+      const rootNoteClass = NOTE_TO_NOTE_CLASS[rootNote];
+      const noteSemitonesFromRoot = semitonesToNoteClass(
+        appliedRulesResult.noteClass - rootNoteClass,
+      );
+
+      const matchedInterval = getMatchedInterval(rootNote, appliedRulesResult);
+
+      switch (noteDisplayMode) {
+        case 'interval': {
+          return matchedInterval
+            ? MATCHED_INTERVAL_TO_DISPLAY_INTERVAL[matchedInterval]
+            : NOTE_CLASS_TO_DISPLAY_INTERVAL[noteSemitonesFromRoot];
+        }
+
+        case 'degree': {
+          return matchedInterval
+            ? MATCHED_INTERVAL_TO_DISPLAY_DEGREE_WITH_ACCIDENTAL[
+                matchedInterval
+              ]
+            : NOTE_CLASS_TO_DISPLAY_DEGREE_WITH_ACCIDENTAL[
+                noteSemitonesFromRoot
+              ];
+        }
+
+        default: {
+          return checkIsNever(noteDisplayMode);
+        }
+      }
+    }
+
+    case 'note': {
+      const shouldPreferFlatNoteNames = rootNote.includes('b');
+      return shouldPreferFlatNoteNames
+        ? NOTE_CLASS_TO_DISPLAY_FLAT_NOTE[appliedRulesResult.noteClass]
+        : NOTE_CLASS_TO_DISPLAY_SHARP_NOTE[appliedRulesResult.noteClass];
+    }
+
+    case 'none': {
+      return null;
+    }
+
+    default: {
+      return checkIsNever(noteDisplayMode);
+    }
+  }
+}
+
+function getMatchedInterval(
+  rootNote: Note,
+  appliedRulesResult: GetAppliedRulesResult,
+): LooseInterval | null {
+  const matchedIntervalCondition = appliedRulesResult.matchingRules
+    .toReversed()
+    .find((rule) => rule.condition.interval !== undefined)?.condition.interval;
+
+  if (!matchedIntervalCondition) {
+    return null;
+  }
+
+  const candidateIntervals: readonly LooseInterval[] =
+    typeof matchedIntervalCondition === 'string'
+      ? [matchedIntervalCondition]
+      : matchedIntervalCondition;
+
+  const rootNoteClass = NOTE_TO_NOTE_CLASS[rootNote];
+  const noteSemitonesFromRoot = semitonesToNoteClass(
+    appliedRulesResult.noteClass - rootNoteClass,
+  );
+
+  for (const interval of candidateIntervals) {
+    if (LOOSE_INTERVAL_TO_NOTE_CLASS[interval] === noteSemitonesFromRoot) {
+      return interval;
+    }
+  }
+
+  return null;
 }

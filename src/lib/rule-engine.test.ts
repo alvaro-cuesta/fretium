@@ -1,30 +1,29 @@
 import { describe, expect, test } from 'vitest';
-import {
-  getDisplayNoteFromRoot,
-  getIntervalLabelFromCondition,
-  getIntervalLabelFromRoot,
-  matchesCondition,
-} from './rule-engine';
+import { NOTE_TO_NOTE_CLASS } from './music';
+import { getMatchingRules, matchesCondition } from './rule-engine';
 
-describe('getDisplayNoteFromRoot', () => {
-  test('prefers flat enharmonics when root note is flat', () => {
-    expect(getDisplayNoteFromRoot('C#', 'Db')).toBe('Db');
-    expect(getDisplayNoteFromRoot('A#', 'Db')).toBe('Bb');
+describe('getMatchingRules', () => {
+  test('preserves interval labels from the matching definition rule', () => {
+    const matchingRulesResult = getMatchingRules(['A'], 1, 0, 'C', [
+      { condition: { interval: 'bb7' }, color: 'BLACK' },
+    ]);
+
+    expect(matchingRulesResult).not.toBeNull();
+    expect(matchingRulesResult?.matchingRules[0]?.condition.interval).toBe(
+      'bb7',
+    );
   });
 
-  test('keeps sharp enharmonics when root note is not flat', () => {
-    expect(getDisplayNoteFromRoot('C#', 'D')).toBe('C#');
-  });
-});
+  test('preserves array interval conditions on matching rules', () => {
+    const matchingRulesResult = getMatchingRules(['D#'], 1, 0, 'C', [
+      { condition: { interval: ['b3', '5'] }, color: 'BLACK' },
+    ]);
 
-describe('getIntervalLabelFromCondition', () => {
-  test('returns interval labels from definition instead of canonical semitone label', () => {
-    expect(getIntervalLabelFromCondition('A', 'bb7', 'C')).toBe('bb7');
-    expect(getIntervalLabelFromRoot('A', 'C')).toBe('6');
-  });
-
-  test('resolves interval from array conditions', () => {
-    expect(getIntervalLabelFromCondition('D#', ['b3', '5'], 'C')).toBe('b3');
+    expect(matchingRulesResult).not.toBeNull();
+    expect(matchingRulesResult?.matchingRules[0]?.condition.interval).toEqual([
+      'b3',
+      '5',
+    ]);
   });
 });
 
@@ -33,7 +32,7 @@ describe('matchesCondition', () => {
     expect(
       matchesCondition(
         { interval: 'bb7' },
-        { string: 1, fret: 0, note: 'A' },
+        { string: 1, fret: 0, noteClass: NOTE_TO_NOTE_CLASS.A },
         { rootNote: 'C' },
       ),
     ).toBe(true);

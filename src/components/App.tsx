@@ -37,7 +37,7 @@ const ROOT_NOTES = [
 const DEFAULT_DEFINITION_PRESET = 'Major scale' satisfies DefinitionPresetName;
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
-type NoteDisplayMode = 'note' | 'interval' | 'none';
+export type NoteDisplayMode = 'note' | 'interval' | 'degree' | 'none';
 
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({
@@ -190,7 +190,8 @@ export function App() {
               }}
             >
               <option value="note">Note name</option>
-              <option value="interval">Intervals (from root)</option>
+              <option value="interval">Intervals</option>
+              <option value="degree">Degrees</option>
               <option value="none">None</option>
             </select>
           </label>
