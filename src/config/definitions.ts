@@ -360,7 +360,6 @@ export const DEFINITIONS_GROUPED = {
       },
     ],
   },
-  // @todo Perhaps if we can superimpose conditions, this can be simplified by a lot
   'Arpeggios - Maj7': {
     'Maj7 Arpeggio': [
       { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
