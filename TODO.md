@@ -11,3 +11,4 @@
 - Add a way to customize diagram appearance (colors, fonts, sizes, shown elements...)
 - Add a way to display multiple diagrams at once (for chord progressions, scale variations...)
 - Add a way to display fingerings in diagrams
+- The controls section changes size as the diagram changes size, which can be a bit jarring.
