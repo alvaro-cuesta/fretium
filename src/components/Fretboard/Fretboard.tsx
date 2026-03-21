@@ -272,7 +272,7 @@ export function Fretboard({
                 return null;
               }
 
-              const matchingRule = definition.find((rule) =>
+              const matchingRules = definition.filter((rule) =>
                 matchesCondition(
                   rule.condition,
                   {
@@ -285,9 +285,12 @@ export function Fretboard({
                   },
                 ),
               );
-              if (!matchingRule) {
+              if (matchingRules.length === 0) {
                 return null;
               }
+
+              const { condition: _condition, ...mergedProps } =
+                matchingRules.reduce((acc, rule) => ({ ...acc, ...rule }));
 
               const noteLabel =
                 noteDisplayMode === 'interval'
@@ -299,9 +302,9 @@ export function Fretboard({
                   key={`${row.id}-${fret}`}
                   x={noteX(fret)}
                   y={y}
-                  color={matchingRule.color}
+                  color={mergedProps.color}
                   label={noteDisplayMode === 'none' ? null : noteLabel}
-                  opacity={matchingRule.opacity}
+                  opacity={mergedProps.opacity}
                 />
               );
             },

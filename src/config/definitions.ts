@@ -1,13 +1,299 @@
 import type { KeysOfUnion } from 'type-fest';
 import { objectValues } from '../../lib/object';
+import type { FretboardNoteColor } from '../components/Fretboard/theme';
 import type { RuleDefinition } from '../lib/rule-engine';
 
-const SCALE_ROOT = { color: '1-LIGHT' } as const;
-const SCALE_TONE = { color: '2-LIGHT' } as const;
-const SCALE_TONE_ALT = { color: '2-LIGHTER', opacity: 0.25 } as const;
-const CHORD_ROOT = { color: '1-STRONG' } as const;
-const CHORD_TONE = { color: '2-STRONG' } as const;
-const CHORD_TONE_ALT = { color: '2-STRONG', opacity: 0.25 } as const;
+const ALT_OPACITY = 0.25;
+
+const CHORD_ROOT_COLOR = '1-STRONG' as const;
+const CHORD_TONE_COLOR = '2-STRONG' as const;
+
+const SCALE_ROOT_COLOR = '1-LIGHT' as const;
+const SCALE_TONE_COLOR = '2-LIGHT' as const;
+
+const SCALE_ROOT = { color: SCALE_ROOT_COLOR } as const;
+const SCALE_TONE = { color: SCALE_TONE_COLOR } as const;
+
+function makeMaj7Arpeggio_1stPosition(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: '1' }, color: rootColor },
+    { condition: { string: 1, interval: '7' }, color: toneColor },
+    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: '3' }, color: toneColor },
+    { condition: { string: 4, interval: '1' }, color: rootColor },
+    { condition: { string: 4, interval: '7' }, color: toneColor },
+    { condition: { string: 5, interval: ['3', '5'] }, color: toneColor },
+    { condition: { string: 6, interval: '1' }, color: rootColor },
+  ] as const;
+}
+
+function makeMaj7Arpeggio_1st2ndPosition(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: '1' }, color: rootColor },
+    { condition: { string: 1, interval: '3' }, color: toneColor },
+    { condition: { string: 2, interval: '7' }, color: toneColor },
+    {
+      condition: { string: 2, interval: '5' },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    {
+      condition: { string: 3, interval: '5' },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    { condition: { string: 3, interval: '3' }, color: toneColor },
+    { condition: { string: 4, interval: '1' }, color: rootColor },
+    { condition: { string: 4, interval: '7' }, color: toneColor },
+    { condition: { string: 5, interval: '5' }, color: toneColor },
+    { condition: { string: 6, interval: '3' }, color: toneColor },
+    { condition: { string: 6, interval: '1' }, color: rootColor },
+  ] as const;
+}
+
+function makeMaj7Arpeggio_2ndPosition(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: '3' }, color: toneColor },
+    { condition: { string: 2, interval: '1' }, color: rootColor },
+    { condition: { string: 2, interval: '7' }, color: toneColor },
+    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: '3' }, color: toneColor },
+    { condition: { string: 4, interval: '1' }, color: rootColor },
+    { condition: { string: 5, interval: ['5', '7'] }, color: toneColor },
+    { condition: { string: 6, interval: '3' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Arpeggio_3rdPosition(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: ['3', '5'] }, color: toneColor },
+    { condition: { string: 2, interval: '1' }, color: rootColor },
+    {
+      condition: { string: 2, interval: '7' },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    {
+      condition: { string: 3, interval: '7' },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: '3' }, color: toneColor },
+    { condition: { string: 5, interval: '1' }, color: rootColor },
+    { condition: { string: 5, interval: '7' }, color: toneColor },
+    { condition: { string: 6, interval: '5' }, color: toneColor },
+    { condition: { string: 6, interval: '3' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Arpeggio_4thPosition(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: ['5', '7'] }, color: toneColor },
+    { condition: { string: 2, interval: '3' }, color: toneColor },
+    { condition: { string: 3, interval: '1' }, color: rootColor },
+    { condition: { string: 3, interval: '7' }, color: toneColor },
+    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 5, interval: '3' }, color: toneColor },
+    { condition: { string: 5, interval: '1' }, color: rootColor },
+    { condition: { string: 6, interval: ['5', '7'] }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Arpeggio_4th1stPosition(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: '1' }, color: rootColor },
+    { condition: { string: 1, interval: '7' }, color: toneColor },
+    { condition: { string: 2, interval: '5' }, color: toneColor },
+    {
+      condition: { string: 2, interval: '3' },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    {
+      condition: { string: 3, interval: '3' },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    { condition: { string: 3, interval: '1' }, color: rootColor },
+    {
+      condition: { string: 3, interval: '7' },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    {
+      condition: { string: 4, interval: '7' },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 5, interval: '3' }, color: toneColor },
+    { condition: { string: 6, interval: '1' }, color: rootColor },
+    { condition: { string: 6, interval: '7' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Chord_6432_RootPosition(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: '3' }, color: toneColor },
+    { condition: { string: 4, interval: '7' }, color: toneColor },
+    { condition: { string: 6, interval: '1' }, color: rootColor },
+  ] as const;
+}
+
+function makeMaj7Chord_6432_1stInversion(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 2, interval: '7' }, color: toneColor },
+    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: '1' }, color: rootColor },
+    { condition: { string: 6, interval: '3' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Chord_6432_2ndInversion(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 2, interval: '1' }, color: rootColor },
+    { condition: { string: 3, interval: '7' }, color: toneColor },
+    { condition: { string: 4, interval: '3' }, color: toneColor },
+    { condition: { string: 6, interval: '5' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Chord_6432_3rdInversion(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 2, interval: '3' }, color: toneColor },
+    { condition: { string: 3, interval: '1' }, color: rootColor },
+    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 6, interval: '7' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Chord_5432_RootPosition(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 2, interval: '3' }, color: toneColor },
+    { condition: { string: 3, interval: '7' }, color: toneColor },
+    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 5, interval: '1' }, color: rootColor },
+  ] as const;
+}
+
+function makeMaj7Chord_5432_1stInversion(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: '1' }, color: rootColor },
+    { condition: { string: 4, interval: '7' }, color: toneColor },
+    { condition: { string: 5, interval: '3' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Chord_5432_2ndInversion(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 2, interval: '7' }, color: toneColor },
+    { condition: { string: 3, interval: '3' }, color: toneColor },
+    { condition: { string: 4, interval: '1' }, color: rootColor },
+    { condition: { string: 5, interval: '5' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Chord_5432_3rdInversion(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 2, interval: '1' }, color: rootColor },
+    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: '3' }, color: toneColor },
+    { condition: { string: 5, interval: '7' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Chord_4321_RootPosition(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: '3' }, color: toneColor },
+    { condition: { string: 2, interval: '7' }, color: toneColor },
+    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: '1' }, color: rootColor },
+  ] as const;
+}
+
+function makeMaj7Chord_4321_1stInversion(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: '5' }, color: toneColor },
+    { condition: { string: 2, interval: '1' }, color: rootColor },
+    { condition: { string: 3, interval: '7' }, color: toneColor },
+    { condition: { string: 4, interval: '3' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Chord_4321_2ndInversion(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: '7' }, color: toneColor },
+    { condition: { string: 2, interval: '3' }, color: toneColor },
+    { condition: { string: 3, interval: '1' }, color: rootColor },
+    { condition: { string: 4, interval: '5' }, color: toneColor },
+  ] as const;
+}
+
+function makeMaj7Chord_4321_3rdInversion(
+  rootColor: FretboardNoteColor,
+  toneColor: FretboardNoteColor,
+) {
+  return [
+    { condition: { string: 1, interval: '1' }, color: rootColor },
+    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: '3' }, color: toneColor },
+    { condition: { string: 4, interval: '7' }, color: toneColor },
+  ] as const;
+}
 
 export const DEFINITIONS_GROUPED = {
   Scales: {
@@ -84,328 +370,126 @@ export const DEFINITIONS_GROUPED = {
       { condition: { interval: ['3', '5', '7'] }, ...SCALE_TONE },
     ],
     'Maj7 Arpeggio (1st position)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 3, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 4, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: ['3', '5'] }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
+      ...makeMaj7Arpeggio_1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
     'Maj7 Arpeggio (1st position) + 6-4-3-2 (root position)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 3, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 4, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: ['3', '5'] }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...CHORD_ROOT },
+      ...makeMaj7Arpeggio_1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_6432_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (1st position) + 4-3-2-1 (3rd inversion)': [
-      { condition: { string: 1, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 3, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 4, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: ['3', '5'] }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
+      ...makeMaj7Arpeggio_1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_4321_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (1st/2nd position)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '5' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 4, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
+      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
     'Maj7 Arpeggio (1st/2nd position) + Left 6-4-3-2 (root position)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...CHORD_TONE_ALT },
-      { condition: { string: 3, interval: '5' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 4, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...CHORD_ROOT },
+      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_6432_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (1st/2nd position) + Left 4-3-2-1 (3rd inversion)': [
-      { condition: { string: 1, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...CHORD_TONE_ALT },
-      { condition: { string: 3, interval: '5' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 4, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
+      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_4321_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (1st/2nd position) + 5-4-3-2 (2nd inversion)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 2, interval: '5' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '5' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 4, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
+      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_5432_2ndInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (1st/2nd position) + Right 6-4-3-2 (1st inversion)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 2, interval: '5' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '5' }, ...CHORD_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 4, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
+      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_6432_1stInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (1st/2nd position) + Right 4-3-2-1 (root position)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 2, interval: '5' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '5' }, ...CHORD_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 4, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
+      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_4321_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (2nd position)': [
-      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 2, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 3, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 5, interval: ['5', '7'] }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
     'Maj7 Arpeggio (2nd position) + 6-4-3-2 (1st inversion)': [
-      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 3, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 5, interval: ['5', '7'] }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...CHORD_TONE },
+      ...makeMaj7Arpeggio_2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_6432_1stInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (2nd position) + 5-4-3-2 (3rd inversion)': [
-      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 2, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 3, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 5, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_5432_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (2nd position) + 4-3-2-1 (root position)': [
-      { condition: { string: 1, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 2, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 2, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 3, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 5, interval: ['5', '7'] }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_4321_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (3rd position)': [
-      { condition: { string: 1, interval: ['3', '5'] }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 2, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 5, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_3rdPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
     'Maj7 Arpeggio (3rd position) + 6-4-3-2 (2nd inversion)': [
-      { condition: { string: 1, interval: ['3', '5'] }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 2, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 3, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 5, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_3rdPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_6432_2ndInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (3rd position) + 5-4-3-2 (3rd inversion)': [
-      { condition: { string: 1, interval: ['3', '5'] }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 2, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 5, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 6, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '3' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_3rdPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_5432_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (3rd position) + 4-3-2-1 (1st inversion)': [
-      { condition: { string: 1, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 1, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 2, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 3, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 5, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: ['3', '5'] }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_3rdPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_4321_1stInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th position)': [
-      { condition: { string: 1, interval: ['5', '7'] }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 3, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 6, interval: ['5', '7'] }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_4thPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th position) + 6-4-3-2 (3rd inversion)': [
-      { condition: { string: 1, interval: ['5', '7'] }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 3, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 6, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 6, interval: '5' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_4thPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_6432_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th position) + 5-4-3-2 (root position)': [
-      { condition: { string: 1, interval: ['5', '7'] }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 3, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 3, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 4, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 6, interval: ['5', '7'] }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_4thPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_5432_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th position) + 4-3-2-1 (2nd inversion)': [
-      { condition: { string: 1, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 1, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 3, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 4, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: ['5', '7'] }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_4thPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_4321_2ndInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th/1st position)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '3' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 4, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 4, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th/1st position) + Left 6-4-3-2 (3rd inversion)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '3' }, ...CHORD_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 4, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 4, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 6, interval: '7' }, ...CHORD_TONE },
+      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_6432_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th/1st position) + Left 4-3-2-1 (2nd inversion)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '7' }, ...CHORD_TONE },
-      { condition: { string: 2, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '3' }, ...CHORD_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 4, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 4, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_4321_2ndInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th/1st position) + 5-4-3-2 (1st inversion)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 2, interval: '3' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 4, interval: '7' }, ...CHORD_TONE_ALT },
-      { condition: { string: 4, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '3' }, ...CHORD_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_5432_1stInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th/1st position) + Right 6-4-3-2 (root position)': [
-      { condition: { string: 1, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 2, interval: '3' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...CHORD_TONE_ALT },
-      { condition: { string: 3, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 4, interval: '7' }, ...CHORD_TONE_ALT },
-      { condition: { string: 4, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_6432_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
     'Maj7 Arpeggio (4th/1st position) + Right 4-3-2-1 (3rd inversion)': [
-      { condition: { string: 1, interval: '1' }, ...CHORD_ROOT },
-      { condition: { string: 1, interval: '7' }, ...SCALE_TONE },
-      { condition: { string: 2, interval: '5' }, ...CHORD_TONE },
-      { condition: { string: 2, interval: '3' }, ...SCALE_TONE_ALT },
-      { condition: { string: 3, interval: '3' }, ...CHORD_TONE_ALT },
-      { condition: { string: 3, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 3, interval: '7' }, ...SCALE_TONE_ALT },
-      { condition: { string: 4, interval: '7' }, ...CHORD_TONE_ALT },
-      { condition: { string: 4, interval: '5' }, ...SCALE_TONE },
-      { condition: { string: 5, interval: '3' }, ...SCALE_TONE },
-      { condition: { string: 6, interval: '1' }, ...SCALE_ROOT },
-      { condition: { string: 6, interval: '7' }, ...SCALE_TONE },
+      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+      ...makeMaj7Chord_4321_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
+    ],
+  },
+  'Chords - Maj7': {
+    'Maj7 Chord (6-4-3-2) ': [
+      ...makeMaj7Chord_6432_RootPosition('1-STRONG', '1-LIGHT'),
+      ...makeMaj7Chord_6432_1stInversion('2-STRONG', '2-LIGHT'),
+      ...makeMaj7Chord_6432_2ndInversion('3-STRONG', '3-LIGHT'),
+      ...makeMaj7Chord_6432_3rdInversion('4-STRONG', '4-LIGHT'),
+    ],
+    'Maj7 Chord (5-4-3-2) ': [
+      ...makeMaj7Chord_5432_RootPosition('1-STRONG', '1-LIGHT'),
+      ...makeMaj7Chord_5432_1stInversion('2-STRONG', '2-LIGHT'),
+      ...makeMaj7Chord_5432_2ndInversion('3-STRONG', '3-LIGHT'),
+      ...makeMaj7Chord_5432_3rdInversion('4-STRONG', '4-LIGHT'),
+    ],
+    'Maj7 Chord (4-3-2-1) ': [
+      ...makeMaj7Chord_4321_RootPosition('1-STRONG', '1-LIGHT'),
+      ...makeMaj7Chord_4321_1stInversion('2-STRONG', '2-LIGHT'),
+      ...makeMaj7Chord_4321_2ndInversion('3-STRONG', '3-LIGHT'),
+      ...makeMaj7Chord_4321_3rdInversion('4-STRONG', '4-LIGHT'),
     ],
   },
 } as const satisfies Record<string, Record<string, RuleDefinition>>;

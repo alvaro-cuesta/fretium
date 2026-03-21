@@ -337,3 +337,30 @@ test('hides note labels when none display mode is selected', () => {
   expect(noteLabels.length).toBe(0);
   expect(screen.container.querySelector('circle')).not.toBeNull();
 });
+
+test('merges all matching rules with later rules winning per property', () => {
+  const definition: RuleDefinition = [
+    { condition: { note: 'A' }, color: 'BLACK', opacity: 0.5 },
+    { condition: { interval: '1' }, color: 'WHITE' },
+  ];
+
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      definition={definition}
+      tuning={['A']}
+      startFret={0}
+      endFret={0}
+      rootNote="A"
+    />,
+  );
+
+  const note = screen.getByText('A');
+  const noteGroup = note.closest('g');
+  const circle = noteGroup?.querySelector('circle');
+
+  // Last matching rule wins for color (WHITE = '#ffffff')
+  expect(circle?.getAttribute('fill')).toBe('#ffffff');
+  // Earlier rule's opacity is preserved since later rule has none
+  expect(noteGroup?.getAttribute('opacity')).toBe('0.5');
+});
