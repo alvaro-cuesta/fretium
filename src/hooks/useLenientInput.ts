@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react';
 
-export type UseLenientInputOptions<TValue> = {
+type UseLenientInputOptions<TValue> = {
   value: TValue;
   setValue: (nextValue: TValue) => void;
   deriveValue: (inputValue: string, currentValue: TValue) => TValue;
   formatValue: (value: TValue) => string;
 };
 
-export type UseLenientInputResult = {
+type UseLenientInputResult = {
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   onBlur: React.FocusEventHandler<HTMLInputElement>;
