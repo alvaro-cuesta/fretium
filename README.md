@@ -1,6 +1,10 @@
 <a id="fretium-fretboard-diagram-generator"></a>
 
-<h1><a href="https://fretium.cuesta.dev"><img src="./public/favicon.svg" width="24" height="24" /></a> Fretium, fretboard diagram generator</h1>
+<h1>
+  <p align="center">
+    <a href="https://fretium.cuesta.dev"><img src="./public/favicon.svg" width="24" height="24" /></a> Fretium, fretboard diagram generator
+  </p>
+</h1>
 
 <p align="center">
   <a href="#fretium-fretboard-diagram-generator">
