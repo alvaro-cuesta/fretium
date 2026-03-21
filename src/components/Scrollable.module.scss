@@ -2,6 +2,9 @@ $gradient-stop: 58%;
 
 .root {
   position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
 
   &::before,
   &::after {
@@ -46,12 +49,11 @@ $gradient-stop: 58%;
 
 .scroller {
   overflow: auto;
-  width: 100%;
+  width: fit-content;
   max-width: 100%;
   min-width: 0;
 }
 
 .content {
   display: inline-block;
-  min-width: 100%;
 }
