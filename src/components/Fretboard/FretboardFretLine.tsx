@@ -1,3 +1,10 @@
+import {
+  FRETBOARD_THEME_FRET_COLOR,
+  FRETBOARD_THEME_FRET_WIDTH,
+  FRETBOARD_THEME_NUT_COLOR,
+  FRETBOARD_THEME_NUT_WIDTH,
+} from './theme';
+
 type FretboardFretLineProps = {
   x: number;
   yTop: number;
@@ -12,8 +19,12 @@ export function FretboardFretLine(props: FretboardFretLineProps) {
       x2={props.x}
       y1={props.yTop}
       y2={props.yBottom}
-      stroke={props.isNut ? '#5a4535' : '#8a735f'}
-      strokeWidth={props.isNut ? 6 : 2}
+      stroke={
+        props.isNut ? FRETBOARD_THEME_NUT_COLOR : FRETBOARD_THEME_FRET_COLOR
+      }
+      strokeWidth={
+        props.isNut ? FRETBOARD_THEME_NUT_WIDTH : FRETBOARD_THEME_FRET_WIDTH
+      }
     />
   );
 }

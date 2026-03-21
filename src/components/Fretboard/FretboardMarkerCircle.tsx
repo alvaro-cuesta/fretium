@@ -1,3 +1,8 @@
+import {
+  FRETBOARD_THEME_MARKER_COLOR,
+  FRETBOARD_THEME_MARKER_RADIUS,
+} from './theme';
+
 type FretboardMarkerCircleProps = {
   x: number;
   y: number;
@@ -8,9 +13,8 @@ export function FretboardMarkerCircle(props: FretboardMarkerCircleProps) {
     <circle
       cx={props.x}
       cy={props.y}
-      r={4.5}
-      // fill="rgba(45, 45, 45, 0.4)"
-      fill="rgba(192, 192, 192, 1)"
+      r={FRETBOARD_THEME_MARKER_RADIUS}
+      fill={FRETBOARD_THEME_MARKER_COLOR}
     />
   );
 }

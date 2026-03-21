@@ -1,3 +1,5 @@
+import { FRETBOARD_THEME_STRING_COLOR } from './theme';
+
 type FreboardStringProps = {
   xLeft: number;
   xRight: number;
@@ -12,7 +14,7 @@ export function FretboardString(props: FreboardStringProps) {
       x2={props.xRight}
       y1={props.y}
       y2={props.y}
-      stroke="#6f7f8f"
+      stroke={FRETBOARD_THEME_STRING_COLOR}
       strokeWidth={props.gauge}
     />
   );

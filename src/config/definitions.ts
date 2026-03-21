@@ -1,6 +1,6 @@
 import type { KeysOfUnion } from 'type-fest';
 import { objectValues } from '../../lib/object';
-import type { FretboardNoteColor } from '../components/Fretboard/theme';
+import type { FretboardNoteColorName } from '../components/Fretboard/theme';
 import type { Rule, RuleDefinition } from '../lib/rule-engine';
 
 const ALT_OPACITY = 0.25;
@@ -19,8 +19,8 @@ function make7Arpeggio_GPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
@@ -41,8 +41,8 @@ function make7Arpeggio_EPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
@@ -71,8 +71,8 @@ function make7Arpeggio_DPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
@@ -93,8 +93,8 @@ function make7Arpeggio_CPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     {
@@ -125,8 +125,8 @@ function make7Arpeggio_APosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     {
@@ -150,8 +150,8 @@ function make7Arpeggio_AGPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
@@ -189,8 +189,8 @@ function make7Chord_6432_RootPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: fifthInterval }, color: toneColor },
@@ -204,8 +204,8 @@ function make7Chord_6432_1stInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
@@ -219,8 +219,8 @@ function make7Chord_6432_2ndInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: '1' }, color: rootColor },
@@ -234,8 +234,8 @@ function make7Chord_6432_3rdInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
@@ -249,8 +249,8 @@ function make7Chord_5321_RootPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: fifthInterval }, color: toneColor },
@@ -264,8 +264,8 @@ function make7Chord_5321_1stInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
@@ -279,8 +279,8 @@ function make7Chord_5321_2ndInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
@@ -294,8 +294,8 @@ function make7Chord_5321_3rdInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
@@ -309,8 +309,8 @@ function make7Chord_6543_RootPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
@@ -324,8 +324,8 @@ function make7Chord_6543_1stInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 3, interval: fifthInterval }, color: toneColor },
@@ -339,8 +339,8 @@ function make7Chord_6543_2ndInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
@@ -354,8 +354,8 @@ function make7Chord_6543_3rdInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 3, interval: '1' }, color: rootColor },
@@ -369,8 +369,8 @@ function make7Chord_5432_RootPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
@@ -384,8 +384,8 @@ function make7Chord_5432_1stInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: fifthInterval }, color: toneColor },
@@ -399,8 +399,8 @@ function make7Chord_5432_2ndInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
@@ -414,8 +414,8 @@ function make7Chord_5432_3rdInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: '1' }, color: rootColor },
@@ -429,8 +429,8 @@ function make7Chord_4321_RootPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
@@ -444,8 +444,8 @@ function make7Chord_4321_1stInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: fifthInterval }, color: toneColor },
@@ -459,8 +459,8 @@ function make7Chord_4321_2ndInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
@@ -474,8 +474,8 @@ function make7Chord_4321_3rdInversion(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
-  rootColor: FretboardNoteColor,
-  toneColor: FretboardNoteColor,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },

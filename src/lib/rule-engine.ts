@@ -1,4 +1,4 @@
-import type { FretboardNoteColor } from '../components/Fretboard/theme';
+import type { FretboardNoteColorName } from '../components/Fretboard/theme';
 import type { Note } from './music';
 
 const SHARP_NOTES = [
@@ -78,7 +78,7 @@ type RuleCondition = {
 
 export type Rule = {
   condition: RuleCondition;
-  color: FretboardNoteColor;
+  color: FretboardNoteColorName;
   opacity?: number;
 };
 

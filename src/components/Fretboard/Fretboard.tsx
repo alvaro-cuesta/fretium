@@ -1,5 +1,4 @@
 import { useId } from 'react';
-import { Fragment } from 'react/jsx-runtime';
 import type { Tuning } from '../../lib/instrument';
 import type { Note } from '../../lib/music';
 import {
@@ -16,6 +15,12 @@ import { FretboardFretLine } from './FretboardFretLine';
 import { FretboardMarkerCircle } from './FretboardMarkerCircle';
 import { FretboardNote } from './FretboardNote';
 import { FretboardString } from './FretboardString';
+import {
+  FRETBOARD_THEME_FRET_WIDTH,
+  FRETBOARD_THEME_LABEL_FONT_SIZE,
+  FRETBOARD_THEME_NOTE_RADIUS,
+  FRETBOARD_THEME_NUT_WIDTH,
+} from './theme';
 
 export type FretboardProps = {
   definition: RuleDefinition;
@@ -35,11 +40,13 @@ const FRETBOARD_MARKS: Record<number, 'single' | 'double'> = {
   12: 'double',
 };
 
-const FRETBOARD_NOTE_RADIUS = 10;
-const FRETBOARD_LABEL_FONT_SIZE = 10;
 const FRETBOARD_CORNER_RADIUS = 14;
-const FRETBOARD_NUT_WIDTH = 6;
-const FRETBOARD_FRET_WIDTH = 2;
+const BOARD_PADDING_Y = 30;
+const FRET_SPACING = 62;
+const STRING_SPACING = 28;
+const FRET_LABEL_OFFSET = 24;
+const SPACE_TO_STRINGS = 12;
+const NECK_OVERHANG_RATIO = 0.4;
 
 function getRoundedRectPath({
   x,
@@ -99,24 +106,17 @@ export function Fretboard({
   const visibleFretSpaces = showOpenString ? endFret : endFret - startFret + 1;
 
   const stringCount = tuning.length;
-
-  const boardPaddingY = 30;
-  const fretSpacing = 62;
-  const stringSpacing = 28;
-  const fretLabelOffset = 24;
-  const spaceToStrings = 12;
-
-  const boardWidth = visibleFretSpaces * fretSpacing;
-  const boardHeight = Math.max(0, (stringCount - 1) * stringSpacing);
-  const neckOverhang = fretSpacing * 0.4;
+  const boardWidth = visibleFretSpaces * FRET_SPACING;
+  const boardHeight = Math.max(0, (stringCount - 1) * STRING_SPACING);
+  const neckOverhang = FRET_SPACING * NECK_OVERHANG_RATIO;
   const leftOverhang = startFret > 1 ? neckOverhang : 0;
   const rightOverhang = neckOverhang;
-  const outerPaddingY = boardPaddingY - spaceToStrings;
+  const outerPaddingY = BOARD_PADDING_Y - SPACE_TO_STRINGS;
   const baseMarginX = outerPaddingY;
   const neckLeftX = -leftOverhang;
-  const neckTopY = -spaceToStrings;
+  const neckTopY = -SPACE_TO_STRINGS;
   const neckWidth = boardWidth + leftOverhang + rightOverhang;
-  const neckHeight = boardHeight + 2 * spaceToStrings;
+  const neckHeight = boardHeight + 2 * SPACE_TO_STRINGS;
   const neckPath = getRoundedRectPath({
     x: neckLeftX,
     y: neckTopY,
@@ -126,7 +126,8 @@ export function Fretboard({
     roundLeft: startFret > 1,
     roundRight: true,
   });
-  const stringStartX = startFret <= 1 ? -FRETBOARD_NUT_WIDTH / 2 : neckLeftX;
+  const stringStartX =
+    startFret <= 1 ? -FRETBOARD_THEME_NUT_WIDTH / 2 : neckLeftX;
 
   const noteOccurrences = new Map<string, number>();
   const stringRows = tuning.toReversed().map((openNote, rowIndex) => {
@@ -138,32 +139,36 @@ export function Fretboard({
     return {
       id: `${openNote}-${occurrence}`,
       openNote,
-      y: rowIndex * stringSpacing,
+      y: rowIndex * STRING_SPACING,
       gauge: Math.max(1.2, 3.2 - originalIndex * 0.35),
       number: rowIndex + 1,
     };
   });
 
+  // @todo Is this even working?
   const neckClipId = `neck-clip-${useId()}`;
 
-  const fretLineX = (physicalLine: number) => physicalLine * fretSpacing;
+  const fretLineX = (physicalLine: number) => physicalLine * FRET_SPACING;
   const noteX = (actualFret: number) => {
-    if (actualFret === 0) return -fretSpacing / 2;
-    if (showOpenString) return actualFret * fretSpacing - fretSpacing / 2;
-    return (actualFret - startFret + 1) * fretSpacing - fretSpacing / 2;
+    if (actualFret === 0) return -FRET_SPACING / 2;
+    if (showOpenString) return actualFret * FRET_SPACING - FRET_SPACING / 2;
+    return (actualFret - startFret + 1) * FRET_SPACING - FRET_SPACING / 2;
   };
   const openStringPaddingX = showOpenString
-    ? fretSpacing / 2 + FRETBOARD_NOTE_RADIUS
+    ? FRET_SPACING / 2 + FRETBOARD_THEME_NOTE_RADIUS
     : 0;
-  const nutMarginCompensationX = startFret === 1 ? FRETBOARD_NUT_WIDTH / 2 : 0;
+  const nutMarginCompensationX =
+    startFret === 1 ? FRETBOARD_THEME_NUT_WIDTH / 2 : 0;
   const translateX =
     baseMarginX + leftOverhang + openStringPaddingX + nutMarginCompensationX;
   const fretLineStrokeHalf =
-    (startFret <= 1 ? FRETBOARD_NUT_WIDTH : FRETBOARD_FRET_WIDTH) / 2;
-  const highestContentY = -spaceToStrings - fretLineStrokeHalf;
-  const neckBottomContentY = boardHeight + spaceToStrings + fretLineStrokeHalf;
+    (startFret <= 1 ? FRETBOARD_THEME_NUT_WIDTH : FRETBOARD_THEME_FRET_WIDTH) /
+    2;
+  const highestContentY = -SPACE_TO_STRINGS - fretLineStrokeHalf;
+  const neckBottomContentY =
+    boardHeight + SPACE_TO_STRINGS + fretLineStrokeHalf;
   const labelBottomContentY =
-    boardHeight + fretLabelOffset + FRETBOARD_LABEL_FONT_SIZE / 2;
+    boardHeight + FRET_LABEL_OFFSET + FRETBOARD_THEME_LABEL_FONT_SIZE / 2;
   const bottomSpaceFromNeck = Math.max(
     outerPaddingY,
     labelBottomContentY - neckBottomContentY,
@@ -195,8 +200,8 @@ export function Fretboard({
           <FretboardFretLine
             key={lineIndex}
             x={fretLineX(lineIndex)}
-            yTop={-spaceToStrings}
-            yBottom={boardHeight + spaceToStrings}
+            yTop={-SPACE_TO_STRINGS}
+            yBottom={boardHeight + SPACE_TO_STRINGS}
             isNut={startFret <= 1 && lineIndex === 0}
           />
         ))}
@@ -244,21 +249,15 @@ export function Fretboard({
           })}
         </g>
 
-        {stringRows.map((row) => {
-          const y = row.y;
-
-          return (
-            <Fragment key={`string-${row.id}`}>
-              <FretboardString
-                key={row.id}
-                xLeft={stringStartX}
-                xRight={boardWidth + rightOverhang}
-                y={y}
-                gauge={row.gauge}
-              />
-            </Fragment>
-          );
-        })}
+        {stringRows.map((row) => (
+          <FretboardString
+            key={row.id}
+            xLeft={stringStartX}
+            xRight={boardWidth + rightOverhang}
+            y={row.y}
+            gauge={row.gauge}
+          />
+        ))}
 
         {stringRows.map((row) => {
           const y = row.y;
@@ -343,7 +342,7 @@ export function Fretboard({
             <FretboardFretLabel
               key={`label-${actualFret}`}
               x={noteX(actualFret)}
-              y={boardHeight + fretLabelOffset}
+              y={boardHeight + FRET_LABEL_OFFSET}
               fret={actualFret}
             />
           );
