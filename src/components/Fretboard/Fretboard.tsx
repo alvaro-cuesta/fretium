@@ -22,12 +22,7 @@ import { FretboardFretLine } from './FretboardFretLine';
 import { FretboardMarkerCircle } from './FretboardMarkerCircle';
 import { FretboardNote } from './FretboardNote';
 import { FretboardString } from './FretboardString';
-import {
-  FRETBOARD_THEME_LABEL_FONT_SIZE,
-  FRETBOARD_THEME_NECK_COLOR,
-  FRETBOARD_THEME_NOTE_RADIUS,
-  FRETBOARD_THEME_NUT_WIDTH,
-} from './theme';
+import { FRETBOARD_THEME_NECK_COLOR, FRETBOARD_THEME_NUT_WIDTH } from './theme';
 
 export type FretboardProps = {
   definition: RuleDefinition;
@@ -48,11 +43,11 @@ const FRETS_WITH_MARKERS: Record<number, 'single' | 'double'> = {
 };
 
 const FRETBOARD_CORNER_RADIUS = 14;
-const BOARD_PADDING = 30;
-const FRET_SPACING = 62;
-const OVERHANG_SPACING = FRET_SPACING * 0.4;
+const BOARD_PADDING = 16;
+const FRET_SPACING = 64;
+const OVERHANG_SPACING = 24;
 const SPACING_BETWEEN_STRINGS = 28;
-const FRET_LABEL_OFFSET = 24;
+const FRET_LABEL_OFFSET = 12;
 const SPACE_TO_STRINGS = 12;
 
 function getRoundedRectPath({
@@ -112,7 +107,7 @@ export function Fretboard({
   const showOpenString = startFret === 0;
   const hasNut = startFret <= 1;
   const hasLeftOverhang = startFret > 1;
-  const firstVisibleFret = Math.max(1, startFret);
+  const firstNeckFret = Math.max(1, startFret);
   const stringCount = tuning.length;
 
   const neckHeight =
@@ -125,7 +120,7 @@ export function Fretboard({
       return FRETBOARD_THEME_NUT_WIDTH / 2 + (fret - 1) * FRET_SPACING;
     }
 
-    return OVERHANG_SPACING + (fret - firstVisibleFret) * FRET_SPACING;
+    return OVERHANG_SPACING + (fret - firstNeckFret) * FRET_SPACING;
   };
 
   const noteX = (fret: number) => {
@@ -150,27 +145,13 @@ export function Fretboard({
 
   const neckClipId = `neck-clip-${useId()}`;
 
-  const openNoteLeftEdgeX = showOpenString
-    ? noteX(0) - FRETBOARD_THEME_NOTE_RADIUS
-    : 0;
-  const extraLeftPadding = Math.max(0, -openNoteLeftEdgeX);
-  const translateX = BOARD_PADDING + extraLeftPadding;
+  const translateX = Math.max(BOARD_PADDING, showOpenString ? FRET_SPACING : 0);
   const translateY = BOARD_PADDING;
 
-  const visibleLabelFrets = Array.from(
-    rangeInclusiveRight(Math.max(1, startFret), endFret),
-  ).filter((fret) => {
-    const isBoundaryFret = fret === Math.max(1, startFret) || fret === endFret;
-
-    return isBoundaryFret || getFretMarkerType(fret) !== null;
-  });
-
-  const contentBottomY =
-    visibleLabelFrets.length > 0
-      ? neckHeight + FRET_LABEL_OFFSET + FRETBOARD_THEME_LABEL_FONT_SIZE / 2
-      : neckHeight;
+  const contentHeight = FRET_LABEL_OFFSET * 2;
   const totalWidth = translateX + neckWidth + BOARD_PADDING;
-  const totalHeight = translateY + contentBottomY + BOARD_PADDING;
+  const totalHeight =
+    translateY + neckHeight + Math.max(BOARD_PADDING, contentHeight);
 
   const renderNote = (stringNumber: number, fret: number, y: number) => {
     const appliedRulesResult = getAppliedRules(
@@ -216,14 +197,18 @@ export function Fretboard({
         </clipPath>
       </defs>
       <g transform={`translate(${translateX}, ${translateY})`}>
-        <path
-          d={neckPath}
-          fill={FRETBOARD_THEME_NECK_COLOR}
-        />
-
         <g clipPath={`url(#${neckClipId})`}>
+          <rect
+            x={0}
+            y={0}
+            width={neckWidth}
+            height={neckHeight}
+            fill={FRETBOARD_THEME_NECK_COLOR}
+          />
+
+          {/* Fret lines */}
           {Array.from(
-            rangeInclusiveRight(hasNut ? 1 : firstVisibleFret, endFret + 1),
+            rangeInclusiveRight(firstNeckFret, endFret + 1),
             (fret) => (
               <FretboardFretLine
                 key={fret}
@@ -237,7 +222,7 @@ export function Fretboard({
 
           {/* Fret markers */}
           {Array.from(
-            rangeInclusiveRight(hasNut ? 1 : firstVisibleFret - 1, endFret + 1),
+            rangeInclusiveRight(Math.max(1, firstNeckFret - 1), endFret + 1),
             (fret) => {
               const fretMarkerType = getFretMarkerType(fret);
               const x = noteX(fret);
@@ -281,6 +266,7 @@ export function Fretboard({
             },
           )}
 
+          {/* Strings and notes (inside neck) */}
           {tuning.toReversed().map((openNote, i) => {
             const stringNumber = i + 1;
             const y = SPACE_TO_STRINGS + i * SPACING_BETWEEN_STRINGS;
@@ -291,14 +277,17 @@ export function Fretboard({
 
             return (
               <g key={`${openNote}-${stringNumber}`}>
+                {/* Strings */}
                 <FretboardString
                   xLeft={0}
                   xRight={neckWidth}
                   y={y}
                   gauge={gauge}
                 />
+
+                {/* Notes */}
                 {Array.from(
-                  rangeInclusiveRight(Math.max(1, startFret), endFret),
+                  rangeInclusiveRight(firstNeckFret, endFret),
                   (fret) => renderNote(stringNumber, fret, y),
                 )}
               </g>
@@ -306,6 +295,7 @@ export function Fretboard({
           })}
         </g>
 
+        {/* Open string notes */}
         {showOpenString &&
           tuning.toReversed().map((_, i) => {
             const stringNumber = i + 1;
@@ -313,14 +303,21 @@ export function Fretboard({
             return renderNote(stringNumber, 0, y);
           })}
 
-        {visibleLabelFrets.map((fret) => (
-          <FretboardFretLabel
-            key={fret}
-            x={noteX(fret)}
-            y={neckHeight + FRET_LABEL_OFFSET}
-            fret={fret}
-          />
-        ))}
+        {/* Fret labels */}
+        {Array.from(rangeInclusiveRight(firstNeckFret, endFret))
+          .filter((fret) => {
+            const isBoundaryFret = fret === firstNeckFret || fret === endFret;
+
+            return isBoundaryFret || getFretMarkerType(fret) !== null;
+          })
+          .map((fret) => (
+            <FretboardFretLabel
+              key={fret}
+              x={noteX(fret)}
+              y={neckHeight + FRET_LABEL_OFFSET}
+              fret={fret}
+            />
+          ))}
       </g>
     </svg>
   );

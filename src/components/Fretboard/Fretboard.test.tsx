@@ -27,15 +27,15 @@ test('keeps the neck local coordinates anchored at the neck edge for open-string
   const noteGroup = note.closest('g');
   const neckGroup = svg.querySelector('svg > g');
   const clipPath = svg.querySelector('clipPath[id^="neck-clip-"]');
-  const neckShape = svg.querySelector('path[fill="rgba(120, 78, 43, 0.13)"]');
+  const neckShape = clipPath?.querySelector('path');
   const stringLine = svg.querySelector('line[stroke-width="3.2"]');
 
   expect(noteGroup).not.toBeNull();
   expect(neckGroup).not.toBeNull();
   expect(clipPath).not.toBeNull();
   expect(clipPath?.querySelector('rect')).toBeNull();
-  expect(neckGroup?.getAttribute('transform')).toBe('translate(68, 30)');
-  expect(noteGroup?.getAttribute('transform')).toBe('translate(-28, 12)');
+  expect(neckGroup?.getAttribute('transform')).toBe('translate(64, 16)');
+  expect(noteGroup?.getAttribute('transform')).toBe('translate(-29, 12)');
   expect(stringLine?.getAttribute('x1')).toBe('0');
   expect(neckShape?.getAttribute('d')?.startsWith('M 0 0')).toBe(true);
 });
@@ -57,10 +57,10 @@ test('sizes the viewBox from the translated neck bounds and label area', () => {
 
   const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
 
-  expect(svg.getAttribute('viewBox')).toBe('0 0 273.8 113');
+  expect(svg.getAttribute('viewBox')).toBe('0 0 251 64');
 });
 
-test('adds left svg padding for open notes by translating the neck group', () => {
+test('adds enough left svg padding to fit a full open-string fret', () => {
   const definition: RuleDefinition = [
     { condition: { note: 'E' }, color: 'BLACK' },
   ];
@@ -77,7 +77,7 @@ test('adds left svg padding for open notes by translating the neck group', () =>
 
   const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
 
-  expect(svg.getAttribute('viewBox')).toBe('0 0 125.8 84');
+  expect(svg.getAttribute('viewBox')).toBe('0 0 107 64');
 });
 
 test('keeps fret-one diagrams in the neck coordinate system including half the nut width', () => {
@@ -98,7 +98,7 @@ test('keeps fret-one diagrams in the neck coordinate system including half the n
   const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
   const clipPath = svg.querySelector('clipPath[id^="neck-clip-"]');
   const stringLine = svg.querySelector('line[stroke-width="3.2"]');
-  const neckShape = svg.querySelector('path[fill="rgba(120, 78, 43, 0.13)"]');
+  const neckShape = clipPath?.querySelector('path');
   const nutLine = svg.querySelector('line[stroke-width="6"]');
 
   expect(clipPath?.querySelector('rect')).toBeNull();
@@ -119,7 +119,7 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
   );
 
   const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
-  const neckShape = svg.querySelector('path[fill="rgba(120, 78, 43, 0.13)"]');
+  const neckShape = svg.querySelector('clipPath[id^="neck-clip-"] path');
   const fretLines = Array.from(svg.querySelectorAll('line[stroke-width="2"]'));
   const markers = Array.from(
     svg.querySelectorAll('circle[r="4.5"][fill="rgba(192, 192, 192, 1)"]'),
@@ -127,12 +127,12 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
 
   expect(neckShape?.getAttribute('d')?.startsWith('M 14 0')).toBe(true);
   expect(fretLines.map((line) => line.getAttribute('x1'))).toEqual([
-    '24.8',
-    '86.8',
+    '24',
+    '88',
   ]);
   expect(markers).toHaveLength(2);
-  expect(Number(markers[0]?.getAttribute('cx'))).toBeCloseTo(-6.2);
-  expect(Number(markers[1]?.getAttribute('cx'))).toBeCloseTo(117.8);
+  expect(Number(markers[0]?.getAttribute('cx'))).toBeCloseTo(-8);
+  expect(Number(markers[1]?.getAttribute('cx'))).toBeCloseTo(120);
 });
 
 test('explicitly centers note text on the note circle', () => {
