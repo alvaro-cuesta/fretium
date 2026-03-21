@@ -3,6 +3,8 @@ import { Fragment } from 'react/jsx-runtime';
 import type { Tuning } from '../../lib/instrument';
 import type { Note } from '../../lib/music';
 import {
+  getDisplayNoteFromRoot,
+  getIntervalLabelFromCondition,
   getIntervalLabelFromRoot,
   matchesCondition,
   transposeNote,
@@ -292,10 +294,26 @@ export function Fretboard({
               const { condition: _condition, ...mergedProps } =
                 matchingRules.reduce((acc, rule) => ({ ...acc, ...rule }));
 
+              const displayedNote =
+                getDisplayNoteFromRoot(note, rootNote) ?? note;
+              const intervalLabelFromDefinition = matchingRules
+                .toReversed()
+                .find((rule) => rule.condition.interval !== undefined)
+                ?.condition.interval;
+              const displayedInterval = intervalLabelFromDefinition
+                ? getIntervalLabelFromCondition(
+                    note,
+                    intervalLabelFromDefinition,
+                    rootNote,
+                  )
+                : null;
+
               const noteLabel =
                 noteDisplayMode === 'interval'
-                  ? (getIntervalLabelFromRoot(note, rootNote) ?? note)
-                  : note;
+                  ? (displayedInterval ??
+                    getIntervalLabelFromRoot(note, rootNote) ??
+                    displayedNote)
+                  : displayedNote;
 
               return (
                 <FretboardNote

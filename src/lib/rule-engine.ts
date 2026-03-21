@@ -45,6 +45,20 @@ const SEMITONE_INTERVAL_LABELS = [
   'b7',
   '7',
 ] as const;
+const FLAT_NOTES_BY_SHARP: Readonly<Record<SharpNote, Note>> = {
+  C: 'C',
+  'C#': 'Db',
+  D: 'D',
+  'D#': 'Eb',
+  E: 'E',
+  F: 'F',
+  'F#': 'Gb',
+  G: 'G',
+  'G#': 'Ab',
+  A: 'A',
+  'A#': 'Bb',
+  B: 'B',
+};
 
 type NumberRangeCondition = {
   gte?: number;
@@ -177,6 +191,20 @@ function parseIntervalToSemitones(interval: string): number | null {
   return octaveOffset + baseWithinOctave + accidentalOffset;
 }
 
+function toSemitonesWithinOctave(semitones: number): number {
+  return (
+    ((semitones % SHARP_NOTES.length) + SHARP_NOTES.length) % SHARP_NOTES.length
+  );
+}
+
+function shouldPreferFlatNoteNames(rootNote?: Note): boolean {
+  if (!rootNote) {
+    return false;
+  }
+
+  return rootNote.includes('b');
+}
+
 function matchesIntervalCondition(
   note: SharpNote,
   condition: string | readonly string[],
@@ -233,6 +261,57 @@ export function getIntervalLabelFromRoot(
   const semitonesFromRoot =
     (noteIndex - rootIndex + SHARP_NOTES.length) % SHARP_NOTES.length;
   return SEMITONE_INTERVAL_LABELS[semitonesFromRoot] ?? null;
+}
+
+export function getIntervalLabelFromCondition(
+  note: string,
+  condition: string | readonly string[],
+  rootNote?: Note,
+): string | null {
+  const normalizedRoot = normalizeNote(rootNote ?? DEFAULT_INTERVAL_ROOT);
+  const normalizedNote = normalizeNote(note);
+  if (!normalizedRoot || !normalizedNote) {
+    return null;
+  }
+
+  const rootIndex = SHARP_NOTES.indexOf(normalizedRoot);
+  const noteIndex = SHARP_NOTES.indexOf(normalizedNote);
+  if (rootIndex < 0 || noteIndex < 0) {
+    return null;
+  }
+
+  const noteSemitonesFromRoot = toSemitonesWithinOctave(noteIndex - rootIndex);
+  const intervals: readonly string[] =
+    typeof condition === 'string' ? [condition] : condition;
+
+  for (const interval of intervals) {
+    const semitones = parseIntervalToSemitones(interval);
+    if (semitones === null) {
+      continue;
+    }
+
+    if (toSemitonesWithinOctave(semitones) === noteSemitonesFromRoot) {
+      return interval.trim();
+    }
+  }
+
+  return null;
+}
+
+export function getDisplayNoteFromRoot(
+  note: string,
+  rootNote?: Note,
+): Note | null {
+  const normalizedNote = normalizeNote(note);
+  if (!normalizedNote) {
+    return null;
+  }
+
+  if (shouldPreferFlatNoteNames(rootNote)) {
+    return FLAT_NOTES_BY_SHARP[normalizedNote];
+  }
+
+  return normalizedNote;
 }
 
 export function matchesCondition(
