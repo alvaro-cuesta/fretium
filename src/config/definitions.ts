@@ -13,7 +13,7 @@ const SCALE_TONE_COLOR = '2-LIGHT' as const;
 
 type ThirdInterval = '3' | 'b3';
 type FifthInterval = '5' | 'b5';
-type SeventhInterval = '7' | 'b7';
+type SeventhInterval = '7' | 'b7' | 'bb7';
 
 function make7Arpeggio_GPosition(
   thirdInterval: ThirdInterval,
@@ -1361,10 +1361,12 @@ export const DEFINITIONS_GROUPED = {
   ...make7ArpeggioGroup('7', '3', '5', 'b7'),
   ...make7ArpeggioGroup('min7', 'b3', '5', 'b7'),
   ...make7ArpeggioGroup('min7b5', 'b3', 'b5', 'b7'),
+  ...make7ArpeggioGroup('dim7', 'b3', 'b5', 'bb7'),
   ...make7ChordGroup('Maj7', '3', '5', '7'),
   ...make7ChordGroup('7', '3', '5', 'b7'),
   ...make7ChordGroup('min7', 'b3', '5', 'b7'),
   ...make7ChordGroup('min7b5', 'b3', 'b5', 'b7'),
+  ...make7ChordGroup('dim7', 'b3', 'b5', 'bb7'),
 } as const satisfies Record<string, Record<string, RuleDefinition>>;
 
 export type DefinitionGroupName = keyof typeof DEFINITIONS_GROUPED;
