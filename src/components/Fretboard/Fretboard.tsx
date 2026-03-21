@@ -18,6 +18,7 @@ import { FretboardString } from './FretboardString';
 import {
   FRETBOARD_THEME_FRET_WIDTH,
   FRETBOARD_THEME_LABEL_FONT_SIZE,
+  FRETBOARD_THEME_NECK_COLOR,
   FRETBOARD_THEME_NOTE_RADIUS,
   FRETBOARD_THEME_NUT_WIDTH,
 } from './theme';
@@ -128,6 +129,10 @@ export function Fretboard({
   });
   const stringStartX =
     startFret <= 1 ? -FRETBOARD_THEME_NUT_WIDTH / 2 : neckLeftX;
+  const leftContentClipX = showOpenString
+    ? Math.min(stringStartX, -FRET_SPACING / 2 - FRETBOARD_THEME_NOTE_RADIUS)
+    : stringStartX;
+  const leftClipWidth = Math.max(0, neckLeftX - leftContentClipX);
 
   const noteOccurrences = new Map<string, number>();
   const stringRows = tuning.toReversed().map((openNote, rowIndex) => {
@@ -137,7 +142,6 @@ export function Fretboard({
     const originalIndex = stringCount - 1 - rowIndex;
 
     return {
-      id: `${openNote}-${occurrence}`,
       openNote,
       y: rowIndex * STRING_SPACING,
       gauge: Math.max(1.2, 3.2 - originalIndex * 0.35),
@@ -154,6 +158,8 @@ export function Fretboard({
     if (showOpenString) return actualFret * FRET_SPACING - FRET_SPACING / 2;
     return (actualFret - startFret + 1) * FRET_SPACING - FRET_SPACING / 2;
   };
+  const markerStartFret = startFret > 1 ? startFret - 1 : 1;
+  const markerFretCount = endFret - markerStartFret + 2;
   const openStringPaddingX = showOpenString
     ? FRET_SPACING / 2 + FRETBOARD_THEME_NOTE_RADIUS
     : 0;
@@ -188,12 +194,20 @@ export function Fretboard({
       <defs>
         <clipPath id={neckClipId}>
           <path d={neckPath} />
+          {leftClipWidth > 0 && (
+            <rect
+              x={leftContentClipX}
+              y={neckTopY}
+              width={leftClipWidth}
+              height={neckHeight}
+            />
+          )}
         </clipPath>
       </defs>
       <g transform={`translate(${translateX}, ${translateY})`}>
         <path
           d={neckPath}
-          fill="rgba(120, 78, 43, 0.13)"
+          fill={FRETBOARD_THEME_NECK_COLOR}
         />
 
         {Array.from({ length: visibleFretSpaces + 1 }, (_, lineIndex) => (
@@ -208,8 +222,8 @@ export function Fretboard({
 
         <g clipPath={`url(#${neckClipId})`}>
           {/* Fret markers */}
-          {Array.from({ length: visibleFretSpaces }, (_, i) => {
-            const actualFret = showOpenString ? i + 1 : startFret + i;
+          {Array.from({ length: markerFretCount }, (_, i) => {
+            const actualFret = markerStartFret + i;
             const fretModulo = ((actualFret - 1) % 12) + 1;
 
             const markType = FRETBOARD_MARKS[fretModulo];
@@ -247,87 +261,97 @@ export function Fretboard({
               }
             }
           })}
+
+          {/* Strings + Notes */}
+          {stringRows.map((row, rowIndex) => {
+            // String
+            const string = (
+              <FretboardString
+                xLeft={stringStartX}
+                xRight={boardWidth + rightOverhang}
+                gauge={row.gauge}
+              />
+            );
+
+            // Notes
+            const notes = Array.from(
+              {
+                length: endFret - (showOpenString ? 0 : startFret) + 1,
+              },
+              (_, i) => {
+                const fret = (showOpenString ? 0 : startFret) + i;
+                const note = transposeNote(row.openNote, fret);
+                if (!note) {
+                  return null;
+                }
+
+                const matchingRules = definition.filter((rule) =>
+                  matchesCondition(
+                    rule.condition,
+                    {
+                      string: row.number,
+                      fret,
+                      note,
+                    },
+                    {
+                      rootNote,
+                    },
+                  ),
+                );
+                if (matchingRules.length === 0) {
+                  return null;
+                }
+
+                const { condition: _condition, ...mergedProps } =
+                  matchingRules.reduce((acc, rule) => ({ ...acc, ...rule }));
+
+                const displayedNote =
+                  getDisplayNoteFromRoot(note, rootNote) ?? note;
+                const intervalLabelFromDefinition = matchingRules
+                  .toReversed()
+                  .find((rule) => rule.condition.interval !== undefined)
+                  ?.condition.interval;
+                const displayedInterval = intervalLabelFromDefinition
+                  ? getIntervalLabelFromCondition(
+                      note,
+                      intervalLabelFromDefinition,
+                      rootNote,
+                    )
+                  : null;
+
+                const noteLabel =
+                  noteDisplayMode === 'interval'
+                    ? (displayedInterval ??
+                      getIntervalLabelFromRoot(note, rootNote) ??
+                      displayedNote)
+                    : displayedNote;
+
+                return (
+                  <FretboardNote
+                    key={fret}
+                    x={noteX(fret)}
+                    color={mergedProps.color}
+                    label={noteDisplayMode === 'none' ? null : noteLabel}
+                    opacity={mergedProps.opacity}
+                  />
+                );
+              },
+            );
+
+            return (
+              <g
+                // eslint-disable-next-line react-x/no-array-index-key -- nothing else we can go by
+                key={rowIndex}
+                transform={`translate(0, ${row.y})`}
+              >
+                {string}
+                {notes}
+              </g>
+            );
+          })}
         </g>
 
-        {stringRows.map((row) => (
-          <FretboardString
-            key={row.id}
-            xLeft={stringStartX}
-            xRight={boardWidth + rightOverhang}
-            y={row.y}
-            gauge={row.gauge}
-          />
-        ))}
-
-        {stringRows.map((row) => {
-          const y = row.y;
-
-          return Array.from(
-            {
-              length: endFret - (showOpenString ? 0 : startFret) + 1,
-            },
-            (_, i) => {
-              const fret = (showOpenString ? 0 : startFret) + i;
-              const note = transposeNote(row.openNote, fret);
-              if (!note) {
-                return null;
-              }
-
-              const matchingRules = definition.filter((rule) =>
-                matchesCondition(
-                  rule.condition,
-                  {
-                    string: row.number,
-                    fret,
-                    note,
-                  },
-                  {
-                    rootNote,
-                  },
-                ),
-              );
-              if (matchingRules.length === 0) {
-                return null;
-              }
-
-              const { condition: _condition, ...mergedProps } =
-                matchingRules.reduce((acc, rule) => ({ ...acc, ...rule }));
-
-              const displayedNote =
-                getDisplayNoteFromRoot(note, rootNote) ?? note;
-              const intervalLabelFromDefinition = matchingRules
-                .toReversed()
-                .find((rule) => rule.condition.interval !== undefined)
-                ?.condition.interval;
-              const displayedInterval = intervalLabelFromDefinition
-                ? getIntervalLabelFromCondition(
-                    note,
-                    intervalLabelFromDefinition,
-                    rootNote,
-                  )
-                : null;
-
-              const noteLabel =
-                noteDisplayMode === 'interval'
-                  ? (displayedInterval ??
-                    getIntervalLabelFromRoot(note, rootNote) ??
-                    displayedNote)
-                  : displayedNote;
-
-              return (
-                <FretboardNote
-                  key={`${row.id}-${fret}`}
-                  x={noteX(fret)}
-                  y={y}
-                  color={mergedProps.color}
-                  label={noteDisplayMode === 'none' ? null : noteLabel}
-                  opacity={mergedProps.opacity}
-                />
-              );
-            },
-          );
-        })}
-
+        {/* Fret labels */}
         {Array.from({ length: visibleFretSpaces }, (_, i) => {
           const actualFret = showOpenString ? i + 1 : startFret + i;
           const fretModulo = ((actualFret - 1) % 12) + 1;

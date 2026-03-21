@@ -7,7 +7,7 @@ const REQUIRED_PROPS = {
   rootNote: 'C' as const,
 };
 
-test('renders open-string notes outside the neck clip path', () => {
+test('extends the neck clip path to include the open-string lane', () => {
   const definition: RuleDefinition = [
     { condition: { note: 'E' }, color: 'BLACK' },
   ];
@@ -25,12 +25,15 @@ test('renders open-string notes outside the neck clip path', () => {
   const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
   const note = screen.getByText('E');
   const noteGroup = note.closest('g');
-  const clippedGroup = svg.querySelector('g[clip-path^="url(#neck-clip-"]');
+  const clipPath = svg.querySelector('clipPath[id^="neck-clip-"]');
+  const openFretClip = clipPath?.querySelector('rect');
 
   expect(noteGroup).not.toBeNull();
-  expect(clippedGroup).not.toBeNull();
+  expect(clipPath).not.toBeNull();
+  expect(openFretClip).not.toBeNull();
   expect(noteGroup?.getAttribute('transform')).toBe('translate(-31, 0)');
-  expect(clippedGroup?.contains(note)).toBe(false);
+  expect(openFretClip?.getAttribute('x')).toBe('-41');
+  expect(openFretClip?.getAttribute('width')).toBe('41');
 });
 
 test('balances the top and bottom margins around the rendered fretboard content', () => {
@@ -117,6 +120,49 @@ test('keeps the neck flat against the nut at fret 1', () => {
 
   expect(neckShape?.getAttribute('d')?.startsWith('M 0 -12')).toBe(true);
   expect(stringLine?.getAttribute('x1')).toBe('-3');
+});
+
+test('extends the neck clip path to the left side of the nut at fret 1', () => {
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      definition={[]}
+      tuning={['E']}
+      startFret={1}
+      endFret={1}
+    />,
+  );
+
+  const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
+  const clipPath = svg.querySelector('clipPath[id^="neck-clip-"]');
+  const nutClip = clipPath?.querySelector('rect');
+
+  expect(clipPath).not.toBeNull();
+  expect(nutClip).not.toBeNull();
+  expect(nutClip?.getAttribute('x')).toBe('-3');
+  expect(nutClip?.getAttribute('width')).toBe('3');
+});
+
+test('renders fret markers on visible partial frets at both edges', () => {
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      definition={[]}
+      tuning={['E', 'A']}
+      startFret={4}
+      endFret={4}
+    />,
+  );
+
+  const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
+  const markers = Array.from(
+    svg.querySelectorAll('circle[r="4.5"][fill="rgba(192, 192, 192, 1)"]'),
+  );
+
+  expect(markers.map((marker) => marker.getAttribute('cx'))).toEqual([
+    '-31',
+    '93',
+  ]);
 });
 
 test('explicitly centers note text on the note circle', () => {

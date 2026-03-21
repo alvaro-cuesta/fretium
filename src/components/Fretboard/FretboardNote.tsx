@@ -9,26 +9,34 @@ import {
 
 type FretboardNoteProps = {
   x: number;
-  y: number;
+  y?: number | undefined;
   color: FretboardNoteColorName;
   label: string | null;
   opacity?: number | undefined;
 };
 
-export function FretboardNote(props: FretboardNoteProps) {
-  const color = FRETBOARD_THEME_NOTE_COLORS[props.color];
+export function FretboardNote({
+  x,
+  y = 0,
+  color: colorName,
+  label,
+  opacity = 1,
+}: FretboardNoteProps) {
+  const color = FRETBOARD_THEME_NOTE_COLORS[colorName];
 
   return (
     <g
-      transform={`translate(${props.x}, ${props.y})`}
-      opacity={props.opacity}
+      transform={`translate(${x}, ${y})`}
+      opacity={opacity}
     >
       <circle
         r={FRETBOARD_THEME_NOTE_RADIUS}
         fill={color.background}
       />
-      {props.label !== null && (
+      {label !== null && (
         <text
+          x={0}
+          y={0}
           fill={color.text}
           fontFamily={FRETBOARD_THEME_FONT_FAMILY}
           fontSize={FRETBOARD_THEME_NOTE_FONT_SIZE}
@@ -37,7 +45,7 @@ export function FretboardNote(props: FretboardNoteProps) {
           dominantBaseline="central"
           alignmentBaseline="central"
         >
-          {props.label}
+          {label}
         </text>
       )}
     </g>

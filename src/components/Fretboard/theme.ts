@@ -87,3 +87,5 @@ export const FRETBOARD_THEME_STRING_COLOR = '#6f7f8f';
 
 export const FRETBOARD_THEME_MARKER_RADIUS = 4.5;
 export const FRETBOARD_THEME_MARKER_COLOR = 'rgba(192, 192, 192, 1)';
+
+export const FRETBOARD_THEME_NECK_COLOR = 'rgba(120, 78, 43, 0.13)';
