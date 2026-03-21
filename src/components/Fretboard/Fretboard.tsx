@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import type { NoteDisplayMode } from '../../lib/config';
 import type { Tuning } from '../../lib/instrument';
 import {
   LOOSE_INTERVAL_TO_NOTE_CLASS,
@@ -16,7 +17,6 @@ import {
   type RuleDefinition,
 } from '../../lib/rule-engine';
 import { checkIsNever } from '../../lib/type';
-import type { NoteDisplayMode } from '../App';
 import { FretboardFretLabel } from './FretboardFretLabel';
 import { FretboardFretLine } from './FretboardFretLine';
 import { FretboardMarkerCircle } from './FretboardMarkerCircle';

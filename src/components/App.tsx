@@ -7,6 +7,7 @@ import {
 } from '../config/definitions.ts';
 import { INSTRUMENTS } from '../config/instruments.ts';
 import { useLenientInput } from '../hooks/useLenientInput.ts';
+import type { NoteDisplayMode } from '../lib/config.ts';
 import { clamp } from '../lib/math.ts';
 import type { Note } from '../lib/music.ts';
 import styles from './App.module.scss';
@@ -37,7 +38,6 @@ const ROOT_NOTES = [
 const DEFAULT_DEFINITION_PRESET = 'Major scale' satisfies DefinitionPresetName;
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
-export type NoteDisplayMode = 'note' | 'interval' | 'degree' | 'none';
 
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({

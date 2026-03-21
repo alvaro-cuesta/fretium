@@ -55,7 +55,6 @@ export function semitonesToNoteClass(semitones: number): NoteClass {
   return (((semitones % 12) + 12) % 12) as NoteClass;
 }
 
-// TODO: Add to selector
 export type Interval =
   | 'P1'
   | 'd2'
@@ -106,7 +105,7 @@ export type Interval =
   | 'dd7'
   | 'dd8';
 
-export const INTERVAL_TO_NOTE_CLASS: Readonly<Record<Interval, NoteClass>> = {
+const INTERVAL_TO_NOTE_CLASS: Readonly<Record<Interval, NoteClass>> = {
   A7: 0,
   P8: 0,
   P1: 0,
@@ -171,7 +170,7 @@ export const INTERVAL_TO_NOTE_CLASS: Readonly<Record<Interval, NoteClass>> = {
 export type DegreeWithAccidental =
   `${'bb' | 'b' | '' | '#' | '##'}${1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}`;
 
-export const DEGREE_WITH_ACCIDENTAL_TO_NOTE_CLASS: Readonly<
+const DEGREE_WITH_ACCIDENTAL_TO_NOTE_CLASS: Readonly<
   Record<DegreeWithAccidental, NoteClass>
 > = {
   bb1: 10,
