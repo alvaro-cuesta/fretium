@@ -11,11 +11,13 @@ const CHORD_TONE_COLOR = '2-STRONG' as const;
 const SCALE_ROOT_COLOR = '1-LIGHT' as const;
 const SCALE_TONE_COLOR = '2-LIGHT' as const;
 
-type SeventhInterval = '7' | 'b7';
 type ThirdInterval = '3' | 'b3';
+type FifthInterval = '5' | 'b5';
+type SeventhInterval = '7' | 'b7';
 
 function make7Arpeggio_GPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -23,12 +25,12 @@ function make7Arpeggio_GPosition(
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
     { condition: { string: 4, interval: '1' }, color: rootColor },
     { condition: { string: 4, interval: seventhInterval }, color: toneColor },
     {
-      condition: { string: 5, interval: [thirdInterval, '5'] },
+      condition: { string: 5, interval: [thirdInterval, fifthInterval] },
       color: toneColor,
     },
     { condition: { string: 6, interval: '1' }, color: rootColor },
@@ -37,6 +39,7 @@ function make7Arpeggio_GPosition(
 
 function make7Arpeggio_EPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -46,19 +49,19 @@ function make7Arpeggio_EPosition(
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
     {
-      condition: { string: 2, interval: '5' },
+      condition: { string: 2, interval: fifthInterval },
       color: toneColor,
       opacity: ALT_OPACITY,
     },
     {
-      condition: { string: 3, interval: '5' },
+      condition: { string: 3, interval: fifthInterval },
       color: toneColor,
       opacity: ALT_OPACITY,
     },
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
     { condition: { string: 4, interval: '1' }, color: rootColor },
     { condition: { string: 4, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 5, interval: '5' }, color: toneColor },
+    { condition: { string: 5, interval: fifthInterval }, color: toneColor },
     { condition: { string: 6, interval: thirdInterval }, color: toneColor },
     { condition: { string: 6, interval: '1' }, color: rootColor },
   ] as const;
@@ -66,6 +69,7 @@ function make7Arpeggio_EPosition(
 
 function make7Arpeggio_DPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -74,11 +78,11 @@ function make7Arpeggio_DPosition(
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
     { condition: { string: 2, interval: '1' }, color: rootColor },
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     { condition: { string: 4, interval: thirdInterval }, color: toneColor },
     { condition: { string: 4, interval: '1' }, color: rootColor },
     {
-      condition: { string: 5, interval: ['5', seventhInterval] },
+      condition: { string: 5, interval: [fifthInterval, seventhInterval] },
       color: toneColor,
     },
     { condition: { string: 6, interval: thirdInterval }, color: toneColor },
@@ -87,13 +91,14 @@ function make7Arpeggio_DPosition(
 
 function make7Arpeggio_CPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
     {
-      condition: { string: 1, interval: [thirdInterval, '5'] },
+      condition: { string: 1, interval: [thirdInterval, fifthInterval] },
       color: toneColor,
     },
     { condition: { string: 2, interval: '1' }, color: rootColor },
@@ -107,34 +112,35 @@ function make7Arpeggio_CPosition(
       color: toneColor,
       opacity: ALT_OPACITY,
     },
-    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     { condition: { string: 4, interval: thirdInterval }, color: toneColor },
     { condition: { string: 5, interval: '1' }, color: rootColor },
     { condition: { string: 5, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 6, interval: '5' }, color: toneColor },
+    { condition: { string: 6, interval: fifthInterval }, color: toneColor },
     { condition: { string: 6, interval: thirdInterval }, color: toneColor },
   ] as const;
 }
 
 function make7Arpeggio_APosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
     {
-      condition: { string: 1, interval: ['5', seventhInterval] },
+      condition: { string: 1, interval: [fifthInterval, seventhInterval] },
       color: toneColor,
     },
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
     { condition: { string: 3, interval: '1' }, color: rootColor },
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: fifthInterval }, color: toneColor },
     { condition: { string: 5, interval: thirdInterval }, color: toneColor },
     { condition: { string: 5, interval: '1' }, color: rootColor },
     {
-      condition: { string: 6, interval: ['5', seventhInterval] },
+      condition: { string: 6, interval: [fifthInterval, seventhInterval] },
       color: toneColor,
     },
   ] as const;
@@ -142,6 +148,7 @@ function make7Arpeggio_APosition(
 
 function make7Arpeggio_AGPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -149,7 +156,7 @@ function make7Arpeggio_AGPosition(
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     {
       condition: { string: 2, interval: thirdInterval },
       color: toneColor,
@@ -171,7 +178,7 @@ function make7Arpeggio_AGPosition(
       color: toneColor,
       opacity: ALT_OPACITY,
     },
-    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: fifthInterval }, color: toneColor },
     { condition: { string: 5, interval: thirdInterval }, color: toneColor },
     { condition: { string: 6, interval: '1' }, color: rootColor },
     { condition: { string: 6, interval: seventhInterval }, color: toneColor },
@@ -180,12 +187,13 @@ function make7Arpeggio_AGPosition(
 
 function make7Chord_6432_RootPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
-    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
     { condition: { string: 4, interval: seventhInterval }, color: toneColor },
     { condition: { string: 6, interval: '1' }, color: rootColor },
@@ -194,13 +202,14 @@ function make7Chord_6432_RootPosition(
 
 function make7Chord_6432_1stInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     { condition: { string: 4, interval: '1' }, color: rootColor },
     { condition: { string: 6, interval: thirdInterval }, color: toneColor },
   ] as const;
@@ -208,6 +217,7 @@ function make7Chord_6432_1stInversion(
 
 function make7Chord_6432_2ndInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -216,12 +226,13 @@ function make7Chord_6432_2ndInversion(
     { condition: { string: 2, interval: '1' }, color: rootColor },
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
     { condition: { string: 4, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 6, interval: '5' }, color: toneColor },
+    { condition: { string: 6, interval: fifthInterval }, color: toneColor },
   ] as const;
 }
 
 function make7Chord_6432_3rdInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -229,19 +240,20 @@ function make7Chord_6432_3rdInversion(
   return [
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
     { condition: { string: 3, interval: '1' }, color: rootColor },
-    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: fifthInterval }, color: toneColor },
     { condition: { string: 6, interval: seventhInterval }, color: toneColor },
   ] as const;
 }
 
 function make7Chord_5321_RootPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
-    { condition: { string: 1, interval: '5' }, color: toneColor },
+    { condition: { string: 1, interval: fifthInterval }, color: toneColor },
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
     { condition: { string: 5, interval: '1' }, color: rootColor },
@@ -250,13 +262,14 @@ function make7Chord_5321_RootPosition(
 
 function make7Chord_5321_1stInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     { condition: { string: 3, interval: '1' }, color: rootColor },
     { condition: { string: 5, interval: thirdInterval }, color: toneColor },
   ] as const;
@@ -264,6 +277,7 @@ function make7Chord_5321_1stInversion(
 
 function make7Chord_5321_2ndInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -272,12 +286,13 @@ function make7Chord_5321_2ndInversion(
     { condition: { string: 1, interval: '1' }, color: rootColor },
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 5, interval: '5' }, color: toneColor },
+    { condition: { string: 5, interval: fifthInterval }, color: toneColor },
   ] as const;
 }
 
 function make7Chord_5321_3rdInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -285,13 +300,14 @@ function make7Chord_5321_3rdInversion(
   return [
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
     { condition: { string: 2, interval: '1' }, color: rootColor },
-    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     { condition: { string: 5, interval: seventhInterval }, color: toneColor },
   ] as const;
 }
 
 function make7Chord_6543_RootPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -299,19 +315,20 @@ function make7Chord_6543_RootPosition(
   return [
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
     { condition: { string: 4, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 5, interval: '5' }, color: toneColor },
+    { condition: { string: 5, interval: fifthInterval }, color: toneColor },
     { condition: { string: 6, interval: '1' }, color: rootColor },
   ] as const;
 }
 
 function make7Chord_6543_1stInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
-    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     { condition: { string: 4, interval: '1' }, color: rootColor },
     { condition: { string: 5, interval: seventhInterval }, color: toneColor },
     { condition: { string: 6, interval: thirdInterval }, color: toneColor },
@@ -320,6 +337,7 @@ function make7Chord_6543_1stInversion(
 
 function make7Chord_6543_2ndInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -328,19 +346,20 @@ function make7Chord_6543_2ndInversion(
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
     { condition: { string: 4, interval: thirdInterval }, color: toneColor },
     { condition: { string: 5, interval: '1' }, color: rootColor },
-    { condition: { string: 6, interval: '5' }, color: toneColor },
+    { condition: { string: 6, interval: fifthInterval }, color: toneColor },
   ] as const;
 }
 
 function make7Chord_6543_3rdInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
     { condition: { string: 3, interval: '1' }, color: rootColor },
-    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: fifthInterval }, color: toneColor },
     { condition: { string: 5, interval: thirdInterval }, color: toneColor },
     { condition: { string: 6, interval: seventhInterval }, color: toneColor },
   ] as const;
@@ -348,6 +367,7 @@ function make7Chord_6543_3rdInversion(
 
 function make7Chord_5432_RootPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -355,19 +375,20 @@ function make7Chord_5432_RootPosition(
   return [
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: fifthInterval }, color: toneColor },
     { condition: { string: 5, interval: '1' }, color: rootColor },
   ] as const;
 }
 
 function make7Chord_5432_1stInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
-    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     { condition: { string: 3, interval: '1' }, color: rootColor },
     { condition: { string: 4, interval: seventhInterval }, color: toneColor },
     { condition: { string: 5, interval: thirdInterval }, color: toneColor },
@@ -376,6 +397,7 @@ function make7Chord_5432_1stInversion(
 
 function make7Chord_5432_2ndInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -384,19 +406,20 @@ function make7Chord_5432_2ndInversion(
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
     { condition: { string: 4, interval: '1' }, color: rootColor },
-    { condition: { string: 5, interval: '5' }, color: toneColor },
+    { condition: { string: 5, interval: fifthInterval }, color: toneColor },
   ] as const;
 }
 
 function make7Chord_5432_3rdInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
     { condition: { string: 2, interval: '1' }, color: rootColor },
-    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     { condition: { string: 4, interval: thirdInterval }, color: toneColor },
     { condition: { string: 5, interval: seventhInterval }, color: toneColor },
   ] as const;
@@ -404,6 +427,7 @@ function make7Chord_5432_3rdInversion(
 
 function make7Chord_4321_RootPosition(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -411,19 +435,20 @@ function make7Chord_4321_RootPosition(
   return [
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 3, interval: '5' }, color: toneColor },
+    { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     { condition: { string: 4, interval: '1' }, color: rootColor },
   ] as const;
 }
 
 function make7Chord_4321_1stInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
-    { condition: { string: 1, interval: '5' }, color: toneColor },
+    { condition: { string: 1, interval: fifthInterval }, color: toneColor },
     { condition: { string: 2, interval: '1' }, color: rootColor },
     { condition: { string: 3, interval: seventhInterval }, color: toneColor },
     { condition: { string: 4, interval: thirdInterval }, color: toneColor },
@@ -432,6 +457,7 @@ function make7Chord_4321_1stInversion(
 
 function make7Chord_4321_2ndInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
@@ -440,19 +466,20 @@ function make7Chord_4321_2ndInversion(
     { condition: { string: 1, interval: seventhInterval }, color: toneColor },
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
     { condition: { string: 3, interval: '1' }, color: rootColor },
-    { condition: { string: 4, interval: '5' }, color: toneColor },
+    { condition: { string: 4, interval: fifthInterval }, color: toneColor },
   ] as const;
 }
 
 function make7Chord_4321_3rdInversion(
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ): Rule[] {
   return [
     { condition: { string: 1, interval: '1' }, color: rootColor },
-    { condition: { string: 2, interval: '5' }, color: toneColor },
+    { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
     { condition: { string: 4, interval: seventhInterval }, color: toneColor },
   ] as const;
@@ -513,6 +540,7 @@ type ArpeggioGroup<TGroupName extends string> = Record<
 function make7ArpeggioGroup<const TGroupName extends string>(
   groupName: TGroupName,
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
 ): ArpeggioGroup<TGroupName> {
   return {
@@ -520,13 +548,16 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio`]: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
         {
-          condition: { interval: [thirdInterval, '5', seventhInterval] },
+          condition: {
+            interval: [thirdInterval, fifthInterval, seventhInterval],
+          },
           color: SCALE_TONE_COLOR,
         },
       ] as Rule[],
       [`${groupName} Arpeggio (G position)`]: [
         ...make7Arpeggio_GPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
@@ -535,12 +566,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (G position) + 6-4-3-2 (root position)`]: [
         ...make7Arpeggio_GPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6432_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -549,12 +582,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (G position) + 6-5-4-3 (root position)`]: [
         ...make7Arpeggio_GPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6543_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -563,12 +598,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (G position) + 4-3-2-1 (3rd inversion)`]: [
         ...make7Arpeggio_GPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_4321_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -577,6 +614,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (E position)`]: [
         ...make7Arpeggio_EPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
@@ -585,12 +623,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (E position) + Left 6-4-3-2 (root position)`]: [
         ...make7Arpeggio_EPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6432_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -599,12 +639,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (E position) + Left 4-3-2-1 (3rd inversion)`]: [
         ...make7Arpeggio_EPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_4321_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -613,12 +655,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (E position) + 6-5-4-3 (root position)`]: [
         ...make7Arpeggio_EPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6543_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -627,12 +671,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (E position) + 5-4-3-2 (2nd inversion)`]: [
         ...make7Arpeggio_EPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5432_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -641,12 +687,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (E position) + 5-3-2-1 (2nd inversion)`]: [
         ...make7Arpeggio_EPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5321_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -655,12 +703,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (E position) + Right 6-4-3-2 (1st inversion)`]: [
         ...make7Arpeggio_EPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6432_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -669,12 +719,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (E position) + Right 4-3-2-1 (root position)`]: [
         ...make7Arpeggio_EPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_4321_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -683,6 +735,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (D position)`]: [
         ...make7Arpeggio_DPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
@@ -691,12 +744,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (D position) + 6-4-3-2 (1st inversion)`]: [
         ...make7Arpeggio_DPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6432_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -705,12 +760,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (D position) + 6-5-4-3 (1st inversion)`]: [
         ...make7Arpeggio_DPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6543_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -719,12 +776,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (D position) + 5-4-3-2 (3rd inversion)`]: [
         ...make7Arpeggio_DPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5432_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -733,12 +792,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (D position) + 5-3-2-1 (3rd inversion)`]: [
         ...make7Arpeggio_DPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5321_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -747,12 +808,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (D position) + 4-3-2-1 (root position)`]: [
         ...make7Arpeggio_DPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_4321_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -761,6 +824,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (C position)`]: [
         ...make7Arpeggio_CPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
@@ -769,12 +833,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (C position) + 6-4-3-2 (2nd inversion)`]: [
         ...make7Arpeggio_CPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6432_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -783,12 +849,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (C position) + 6-5-4-3 (2nd inversion)`]: [
         ...make7Arpeggio_CPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6543_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -797,12 +865,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (C position) + 5-4-3-2 (3rd inversion)`]: [
         ...make7Arpeggio_CPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5432_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -811,12 +881,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (C position) + 5-3-2-1 (3rd inversion)`]: [
         ...make7Arpeggio_CPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5321_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -825,12 +897,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (C position) + 4-3-2-1 (1st inversion)`]: [
         ...make7Arpeggio_CPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_4321_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -839,6 +913,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A position)`]: [
         ...make7Arpeggio_APosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
@@ -847,12 +922,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A position) + 6-4-3-2 (3rd inversion)`]: [
         ...make7Arpeggio_APosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6432_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -861,12 +938,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A position) + 6-5-4-3 (3rd inversion)`]: [
         ...make7Arpeggio_APosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6543_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -875,12 +954,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A position) + 5-4-3-2 (root position)`]: [
         ...make7Arpeggio_APosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5432_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -889,12 +970,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A position) + 5-3-2-1 (root position)`]: [
         ...make7Arpeggio_APosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5321_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -903,12 +986,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A position) + 4-3-2-1 (2nd inversion)`]: [
         ...make7Arpeggio_APosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_4321_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -917,6 +1002,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A-G position)`]: [
         ...make7Arpeggio_AGPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
@@ -925,12 +1011,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A-G position) + Left 6-4-3-2 (3rd inversion)`]: [
         ...make7Arpeggio_AGPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6432_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -939,12 +1027,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A-G position) + Left 4-3-2-1 (2nd inversion)`]: [
         ...make7Arpeggio_AGPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_4321_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -953,12 +1043,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A-G position) + 6-5-4-3 (3rd inversion)`]: [
         ...make7Arpeggio_AGPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_6543_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -967,12 +1059,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A-G position) + 5-4-3-2 (1st inversion)`]: [
         ...make7Arpeggio_AGPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5432_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -981,12 +1075,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
       [`${groupName} Arpeggio (A-G position) + 5-3-2-1 (1st inversion)`]: [
         ...make7Arpeggio_AGPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           SCALE_ROOT_COLOR,
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_5321_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           CHORD_ROOT_COLOR,
           CHORD_TONE_COLOR,
@@ -996,12 +1092,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
         [
           ...make7Arpeggio_AGPosition(
             thirdInterval,
+            fifthInterval,
             seventhInterval,
             SCALE_ROOT_COLOR,
             SCALE_TONE_COLOR,
           ),
           ...make7Chord_6432_RootPosition(
             thirdInterval,
+            fifthInterval,
             seventhInterval,
             CHORD_ROOT_COLOR,
             CHORD_TONE_COLOR,
@@ -1011,12 +1109,14 @@ function make7ArpeggioGroup<const TGroupName extends string>(
         [
           ...make7Arpeggio_AGPosition(
             thirdInterval,
+            fifthInterval,
             seventhInterval,
             SCALE_ROOT_COLOR,
             SCALE_TONE_COLOR,
           ),
           ...make7Chord_4321_3rdInversion(
             thirdInterval,
+            fifthInterval,
             seventhInterval,
             CHORD_ROOT_COLOR,
             CHORD_TONE_COLOR,
@@ -1030,6 +1130,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
 function make7ChordGroup<const TGroupName extends string>(
   groupName: TGroupName,
   thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
 ) {
   return {
@@ -1037,24 +1138,28 @@ function make7ChordGroup<const TGroupName extends string>(
       [`${groupName} Chord Drop 3 (Bass 6th) | 6-4-3-2` as const]: [
         ...make7Chord_6432_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '1-STRONG',
           '1-LIGHT',
         ),
         ...make7Chord_6432_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '2-STRONG',
           '2-LIGHT',
         ),
         ...make7Chord_6432_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '3-STRONG',
           '3-LIGHT',
         ),
         ...make7Chord_6432_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '4-STRONG',
           '4-LIGHT',
@@ -1063,24 +1168,28 @@ function make7ChordGroup<const TGroupName extends string>(
       [`${groupName} Chord Drop 3 (Bass 5th) | 5-3-2-1` as const]: [
         ...make7Chord_5321_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '1-STRONG',
           '1-LIGHT',
         ),
         ...make7Chord_5321_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '2-STRONG',
           '2-LIGHT',
         ),
         ...make7Chord_5321_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '3-STRONG',
           '3-LIGHT',
         ),
         ...make7Chord_5321_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '4-STRONG',
           '4-LIGHT',
@@ -1089,24 +1198,28 @@ function make7ChordGroup<const TGroupName extends string>(
       [`${groupName} Chord Drop 2 (Bass 6th) | 6-5-4-3` as const]: [
         ...make7Chord_6543_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '1-STRONG',
           '1-LIGHT',
         ),
         ...make7Chord_6543_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '2-STRONG',
           '2-LIGHT',
         ),
         ...make7Chord_6543_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '3-STRONG',
           '3-LIGHT',
         ),
         ...make7Chord_6543_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '4-STRONG',
           '4-LIGHT',
@@ -1115,24 +1228,28 @@ function make7ChordGroup<const TGroupName extends string>(
       [`${groupName} Chord Drop 2 (Bass 5th) | 5-4-3-2` as const]: [
         ...make7Chord_5432_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '1-STRONG',
           '1-LIGHT',
         ),
         ...make7Chord_5432_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '2-STRONG',
           '2-LIGHT',
         ),
         ...make7Chord_5432_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '3-STRONG',
           '3-LIGHT',
         ),
         ...make7Chord_5432_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '4-STRONG',
           '4-LIGHT',
@@ -1141,24 +1258,28 @@ function make7ChordGroup<const TGroupName extends string>(
       [`${groupName} Chord Drop 2 (Bass 4th) | 4-3-2-1` as const]: [
         ...make7Chord_4321_RootPosition(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '1-STRONG',
           '1-LIGHT',
         ),
         ...make7Chord_4321_1stInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '2-STRONG',
           '2-LIGHT',
         ),
         ...make7Chord_4321_2ndInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '3-STRONG',
           '3-LIGHT',
         ),
         ...make7Chord_4321_3rdInversion(
           thirdInterval,
+          fifthInterval,
           seventhInterval,
           '4-STRONG',
           '4-LIGHT',
@@ -1236,12 +1357,14 @@ export const DEFINITIONS_GROUPED = {
       },
     ],
   },
-  ...make7ArpeggioGroup('Maj7', '3', '7'),
-  ...make7ArpeggioGroup('7', '3', 'b7'),
-  ...make7ArpeggioGroup('min7', 'b3', 'b7'),
-  ...make7ChordGroup('Maj7', '3', '7'),
-  ...make7ChordGroup('7', '3', 'b7'),
-  ...make7ChordGroup('min7', 'b3', 'b7'),
+  ...make7ArpeggioGroup('Maj7', '3', '5', '7'),
+  ...make7ArpeggioGroup('7', '3', '5', 'b7'),
+  ...make7ArpeggioGroup('min7', 'b3', '5', 'b7'),
+  ...make7ArpeggioGroup('min7b5', 'b3', 'b5', 'b7'),
+  ...make7ChordGroup('Maj7', '3', '5', '7'),
+  ...make7ChordGroup('7', '3', '5', 'b7'),
+  ...make7ChordGroup('min7', 'b3', '5', 'b7'),
+  ...make7ChordGroup('min7b5', 'b3', 'b5', 'b7'),
 } as const satisfies Record<string, Record<string, RuleDefinition>>;
 
 export type DefinitionGroupName = keyof typeof DEFINITIONS_GROUPED;
