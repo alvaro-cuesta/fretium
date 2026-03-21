@@ -18,6 +18,7 @@ export function FretboardImg(props: FretboardImgProps) {
     tuning,
     startFret,
     endFret,
+    showStringNames,
     noteDisplayMode,
     rootNote,
     className,
@@ -59,6 +60,7 @@ export function FretboardImg(props: FretboardImgProps) {
     tuning,
     startFret,
     endFret,
+    showStringNames,
     noteDisplayMode,
     rootNote,
   ]);
@@ -71,6 +73,7 @@ export function FretboardImg(props: FretboardImgProps) {
           tuning={tuning}
           startFret={startFret}
           endFret={endFret}
+          showStringNames={showStringNames}
           noteDisplayMode={noteDisplayMode}
           rootNote={rootNote}
           ref={svgRef}

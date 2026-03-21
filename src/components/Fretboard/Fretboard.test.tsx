@@ -3,6 +3,7 @@ import type { RuleDefinition } from '../../lib/rule-engine';
 import { Fretboard } from './Fretboard';
 
 const REQUIRED_PROPS = {
+  showStringNames: false,
   noteDisplayMode: 'note' as const,
   rootNote: 'C' as const,
 };
@@ -78,6 +79,53 @@ test('adds enough left svg padding to fit a full open-string fret', () => {
   const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
 
   expect(svg.getAttribute('viewBox')).toBe('0 0 107 64');
+});
+
+test('renders string names at the open-string position and expands the left margin', () => {
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      showStringNames={true}
+      definition={[]}
+      tuning={['E']}
+      startFret={1}
+      endFret={1}
+    />,
+  );
+
+  const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
+  const stringName = screen.getByText('E');
+  const neckGroup = svg.querySelector('svg > g');
+
+  expect(svg.getAttribute('viewBox')).toBe('0 0 171 64');
+  expect(neckGroup?.getAttribute('transform')).toBe('translate(64, 16)');
+  expect(stringName.getAttribute('x')).toBe('-29');
+  expect(stringName.getAttribute('y')).toBe('12');
+});
+
+test('paints open-string notes on top of string names', () => {
+  const definition: RuleDefinition = [
+    { condition: { note: 'E' }, color: 'BLACK' },
+  ];
+
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      showStringNames={true}
+      definition={definition}
+      tuning={['E']}
+      startFret={0}
+      endFret={0}
+    />,
+  );
+
+  const renderedLabels = screen.getAllByText('E');
+
+  expect(renderedLabels).toHaveLength(2);
+  expect(renderedLabels[0]?.tagName).toBe('text');
+  expect(
+    renderedLabels[1]?.closest('g')?.querySelector('circle'),
+  ).not.toBeNull();
 });
 
 test('keeps fret-one diagrams in the neck coordinate system including half the nut width', () => {

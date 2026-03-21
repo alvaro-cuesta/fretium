@@ -81,7 +81,7 @@ export const FRETBOARD_THEME_FRET_COLOR = '#8a735f';
 
 export const FRETBOARD_THEME_LABEL_FONT_SIZE = 10;
 export const FRETBOARD_THEME_LABEL_FONT_WEIGHT = 700;
-export const FRETBOARD_THEME_LABEL_COLOR = 'rgba(192, 192, 192, 1)';
+export const FRETBOARD_THEME_LABEL_COLOR = 'rgba(136, 136, 136, 1)';
 
 export const FRETBOARD_THEME_STRING_COLOR = '#6f7f8f';
 

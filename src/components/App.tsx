@@ -259,6 +259,7 @@ export function App() {
             tuning={resolvedInstrumentTuning.tuning}
             startFret={startFret}
             endFret={endFret}
+            showStringNames={true}
             noteDisplayMode={selectedNoteDisplayMode}
             rootNote={selectedRootNote}
           />

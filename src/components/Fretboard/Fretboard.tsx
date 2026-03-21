@@ -22,13 +22,21 @@ import { FretboardFretLine } from './FretboardFretLine';
 import { FretboardMarkerCircle } from './FretboardMarkerCircle';
 import { FretboardNote } from './FretboardNote';
 import { FretboardString } from './FretboardString';
-import { FRETBOARD_THEME_NECK_COLOR, FRETBOARD_THEME_NUT_WIDTH } from './theme';
+import {
+  FRETBOARD_THEME_FONT_FAMILY,
+  FRETBOARD_THEME_LABEL_COLOR,
+  FRETBOARD_THEME_LABEL_FONT_SIZE,
+  FRETBOARD_THEME_LABEL_FONT_WEIGHT,
+  FRETBOARD_THEME_NECK_COLOR,
+  FRETBOARD_THEME_NUT_WIDTH,
+} from './theme';
 
 export type FretboardProps = {
   definition: RuleDefinition;
   tuning: Tuning<number>;
   startFret: number;
   endFret: number;
+  showStringNames: boolean;
   noteDisplayMode: NoteDisplayMode;
   rootNote: Note;
   ref?: React.Ref<SVGSVGElement> | undefined;
@@ -49,6 +57,7 @@ const OVERHANG_SPACING = 24;
 const SPACING_BETWEEN_STRINGS = 28;
 const FRET_LABEL_OFFSET = 12;
 const SPACE_TO_STRINGS = 12;
+const OPEN_STRING_X = FRETBOARD_THEME_NUT_WIDTH / 2 - FRET_SPACING / 2;
 
 function getRoundedRectPath({
   x,
@@ -100,6 +109,7 @@ export function Fretboard({
   tuning,
   startFret,
   endFret,
+  showStringNames,
   noteDisplayMode,
   rootNote,
   ref,
@@ -145,13 +155,34 @@ export function Fretboard({
 
   const neckClipId = `neck-clip-${useId()}`;
 
-  const translateX = Math.max(BOARD_PADDING, showOpenString ? FRET_SPACING : 0);
+  const leftMargin = Math.max(
+    BOARD_PADDING,
+    showOpenString || showStringNames ? FRET_SPACING : 0,
+  );
+  const translateX = leftMargin;
   const translateY = BOARD_PADDING;
 
   const contentHeight = FRET_LABEL_OFFSET * 2;
   const totalWidth = translateX + neckWidth + BOARD_PADDING;
   const totalHeight =
     translateY + neckHeight + Math.max(BOARD_PADDING, contentHeight);
+
+  const renderStringName = (openNote: Note, y: number) => (
+    <text
+      key={`string-name-${openNote}-${y}`}
+      x={OPEN_STRING_X}
+      y={y}
+      fill={FRETBOARD_THEME_LABEL_COLOR}
+      fontFamily={FRETBOARD_THEME_FONT_FAMILY}
+      fontSize={FRETBOARD_THEME_LABEL_FONT_SIZE}
+      fontWeight={FRETBOARD_THEME_LABEL_FONT_WEIGHT}
+      textAnchor="middle"
+      dominantBaseline="central"
+      alignmentBaseline="central"
+    >
+      {openNote}
+    </text>
+  );
 
   const renderNote = (stringNumber: number, fret: number, y: number) => {
     const appliedRulesResult = getAppliedRules(
@@ -174,7 +205,7 @@ export function Fretboard({
     return (
       <FretboardNote
         key={`${stringNumber}-${fret}`}
-        x={noteX(fret)}
+        x={fret === 0 ? OPEN_STRING_X : noteX(fret)}
         y={y}
         color={appliedRulesResult.appliedRules.color}
         label={noteDisplayMode === 'none' ? null : noteLabel}
@@ -294,6 +325,13 @@ export function Fretboard({
             );
           })}
         </g>
+
+        {/* String names */}
+        {showStringNames &&
+          tuning.toReversed().map((openNote, i) => {
+            const y = SPACE_TO_STRINGS + i * SPACING_BETWEEN_STRINGS;
+            return renderStringName(openNote, y);
+          })}
 
         {/* Open string notes */}
         {showOpenString &&

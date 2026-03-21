@@ -1,12 +1,13 @@
 import { render, waitFor } from '@testing-library/react';
-import type { RuleDefinition } from '../lib/rule-engine.ts';
+import type { RuleDefinition } from '../lib/rule-engine';
+import { FretboardImg } from './FretboardImg';
 import styles from './FretboardImg.module.scss';
-import { FretboardImg } from './FretboardImg.tsx';
 
 const REQUIRED_PROPS = {
   definition: [] as RuleDefinition,
   startFret: 0,
   endFret: 12,
+  showStringNames: false,
   noteDisplayMode: 'note' as const,
   rootNote: 'C' as const,
 };
