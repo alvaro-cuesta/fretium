@@ -8,7 +8,6 @@ function defineInstrument<const TNumStrings extends number>(
   return instrument;
 }
 
-// @todo This isn't correctly typechecking that `openStrings` has the same number of strings as `strings`
 export const INSTRUMENTS = {
   Guitar: defineInstrument({
     strings: 6,
