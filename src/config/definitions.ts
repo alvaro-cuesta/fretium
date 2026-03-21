@@ -11,10 +11,7 @@ const CHORD_TONE_COLOR = '2-STRONG' as const;
 const SCALE_ROOT_COLOR = '1-LIGHT' as const;
 const SCALE_TONE_COLOR = '2-LIGHT' as const;
 
-const SCALE_ROOT = { color: SCALE_ROOT_COLOR } as const;
-const SCALE_TONE = { color: SCALE_TONE_COLOR } as const;
-
-function makeMaj7Arpeggio_1stPosition(
+function makeMaj7Arpeggio_GPosition(
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ) {
@@ -30,7 +27,7 @@ function makeMaj7Arpeggio_1stPosition(
   ] as const;
 }
 
-function makeMaj7Arpeggio_1st2ndPosition(
+function makeMaj7Arpeggio_EPosition(
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ) {
@@ -57,7 +54,7 @@ function makeMaj7Arpeggio_1st2ndPosition(
   ] as const;
 }
 
-function makeMaj7Arpeggio_2ndPosition(
+function makeMaj7Arpeggio_DPosition(
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ) {
@@ -73,7 +70,7 @@ function makeMaj7Arpeggio_2ndPosition(
   ] as const;
 }
 
-function makeMaj7Arpeggio_3rdPosition(
+function makeMaj7Arpeggio_CPosition(
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ) {
@@ -99,7 +96,7 @@ function makeMaj7Arpeggio_3rdPosition(
   ] as const;
 }
 
-function makeMaj7Arpeggio_4thPosition(
+function makeMaj7Arpeggio_APosition(
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ) {
@@ -115,7 +112,7 @@ function makeMaj7Arpeggio_4thPosition(
   ] as const;
 }
 
-function makeMaj7Arpeggio_4th1stPosition(
+function makeMaj7Arpeggio_AGPosition(
   rootColor: FretboardNoteColor,
   toneColor: FretboardNoteColor,
 ) {
@@ -298,194 +295,194 @@ function makeMaj7Chord_4321_3rdInversion(
 export const DEFINITIONS_GROUPED = {
   Scales: {
     'Major scale': [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
       {
         condition: { interval: ['2', '3', '4', '5', '6', '7'] },
-        ...SCALE_TONE,
+        color: SCALE_TONE_COLOR,
       },
     ],
     'Minor scale': [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
       {
         condition: { interval: ['2', 'b3', '4', '5', 'b6', 'b7'] },
-        ...SCALE_TONE,
+        color: SCALE_TONE_COLOR,
       },
     ],
   },
   'Scales - Modes': {
     Lydian: [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
       {
         condition: { interval: ['2', '3', '#4', '5', '6', '7'] },
-        ...SCALE_TONE,
+        color: SCALE_TONE_COLOR,
       },
     ],
     Ionian: [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
       {
         condition: { interval: ['2', '3', '4', '5', '6', '7'] },
-        ...SCALE_TONE,
+        color: SCALE_TONE_COLOR,
       },
     ],
     Mixolydian: [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
       {
         condition: { interval: ['2', '3', '4', '5', '6', 'b7'] },
-        ...SCALE_TONE,
+        color: SCALE_TONE_COLOR,
       },
     ],
     Dorian: [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
       {
         condition: { interval: ['2', 'b3', '4', '5', '6', 'b7'] },
-        ...SCALE_TONE,
+        color: SCALE_TONE_COLOR,
       },
     ],
     Aeolian: [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
       {
         condition: { interval: ['2', 'b3', '4', '5', 'b6', 'b7'] },
-        ...SCALE_TONE,
+        color: SCALE_TONE_COLOR,
       },
     ],
     Phrygian: [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
       {
         condition: { interval: ['b2', 'b3', '4', '5', 'b6', 'b7'] },
-        ...SCALE_TONE,
+        color: SCALE_TONE_COLOR,
       },
     ],
     Locrian: [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
       {
         condition: { interval: ['b2', 'b3', '4', 'b5', 'b6', 'b7'] },
-        ...SCALE_TONE,
+        color: SCALE_TONE_COLOR,
       },
     ],
   },
   // @todo Perhaps if we can superimpose conditions, this can be simplified by a lot
   'Arpeggios - Maj7': {
     'Maj7 Arpeggio': [
-      { condition: { interval: '1' }, ...SCALE_ROOT },
-      { condition: { interval: ['3', '5', '7'] }, ...SCALE_TONE },
+      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+      { condition: { interval: ['3', '5', '7'] }, color: SCALE_TONE_COLOR },
     ],
-    'Maj7 Arpeggio (1st position)': [
-      ...makeMaj7Arpeggio_1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (G position)': [
+      ...makeMaj7Arpeggio_GPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (1st position) + 6-4-3-2 (root position)': [
-      ...makeMaj7Arpeggio_1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (G position) + 6-4-3-2 (root position)': [
+      ...makeMaj7Arpeggio_GPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_6432_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (1st position) + 4-3-2-1 (3rd inversion)': [
-      ...makeMaj7Arpeggio_1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (G position) + 4-3-2-1 (3rd inversion)': [
+      ...makeMaj7Arpeggio_GPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_4321_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (1st/2nd position)': [
-      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (E position)': [
+      ...makeMaj7Arpeggio_EPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (1st/2nd position) + Left 6-4-3-2 (root position)': [
-      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (E position) + Left 6-4-3-2 (root position)': [
+      ...makeMaj7Arpeggio_EPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_6432_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (1st/2nd position) + Left 4-3-2-1 (3rd inversion)': [
-      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (E position) + Left 4-3-2-1 (3rd inversion)': [
+      ...makeMaj7Arpeggio_EPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_4321_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (1st/2nd position) + 5-4-3-2 (2nd inversion)': [
-      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (E position) + 5-4-3-2 (2nd inversion)': [
+      ...makeMaj7Arpeggio_EPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_5432_2ndInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (1st/2nd position) + Right 6-4-3-2 (1st inversion)': [
-      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (E position) + Right 6-4-3-2 (1st inversion)': [
+      ...makeMaj7Arpeggio_EPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_6432_1stInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (1st/2nd position) + Right 4-3-2-1 (root position)': [
-      ...makeMaj7Arpeggio_1st2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (E position) + Right 4-3-2-1 (root position)': [
+      ...makeMaj7Arpeggio_EPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_4321_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (2nd position)': [
-      ...makeMaj7Arpeggio_2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (D position)': [
+      ...makeMaj7Arpeggio_DPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (2nd position) + 6-4-3-2 (1st inversion)': [
-      ...makeMaj7Arpeggio_2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (D position) + 6-4-3-2 (1st inversion)': [
+      ...makeMaj7Arpeggio_DPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_6432_1stInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (2nd position) + 5-4-3-2 (3rd inversion)': [
-      ...makeMaj7Arpeggio_2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (D position) + 5-4-3-2 (3rd inversion)': [
+      ...makeMaj7Arpeggio_DPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_5432_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (2nd position) + 4-3-2-1 (root position)': [
-      ...makeMaj7Arpeggio_2ndPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (D position) + 4-3-2-1 (root position)': [
+      ...makeMaj7Arpeggio_DPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_4321_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (3rd position)': [
-      ...makeMaj7Arpeggio_3rdPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (C position)': [
+      ...makeMaj7Arpeggio_CPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (3rd position) + 6-4-3-2 (2nd inversion)': [
-      ...makeMaj7Arpeggio_3rdPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (C position) + 6-4-3-2 (2nd inversion)': [
+      ...makeMaj7Arpeggio_CPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_6432_2ndInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (3rd position) + 5-4-3-2 (3rd inversion)': [
-      ...makeMaj7Arpeggio_3rdPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (C position) + 5-4-3-2 (3rd inversion)': [
+      ...makeMaj7Arpeggio_CPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_5432_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (3rd position) + 4-3-2-1 (1st inversion)': [
-      ...makeMaj7Arpeggio_3rdPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (C position) + 4-3-2-1 (1st inversion)': [
+      ...makeMaj7Arpeggio_CPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_4321_1stInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th position)': [
-      ...makeMaj7Arpeggio_4thPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A position)': [
+      ...makeMaj7Arpeggio_APosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th position) + 6-4-3-2 (3rd inversion)': [
-      ...makeMaj7Arpeggio_4thPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A position) + 6-4-3-2 (3rd inversion)': [
+      ...makeMaj7Arpeggio_APosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_6432_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th position) + 5-4-3-2 (root position)': [
-      ...makeMaj7Arpeggio_4thPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A position) + 5-4-3-2 (root position)': [
+      ...makeMaj7Arpeggio_APosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_5432_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th position) + 4-3-2-1 (2nd inversion)': [
-      ...makeMaj7Arpeggio_4thPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A position) + 4-3-2-1 (2nd inversion)': [
+      ...makeMaj7Arpeggio_APosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_4321_2ndInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th/1st position)': [
-      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A-G position)': [
+      ...makeMaj7Arpeggio_AGPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th/1st position) + Left 6-4-3-2 (3rd inversion)': [
-      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A-G position) + Left 6-4-3-2 (3rd inversion)': [
+      ...makeMaj7Arpeggio_AGPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_6432_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th/1st position) + Left 4-3-2-1 (2nd inversion)': [
-      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A-G position) + Left 4-3-2-1 (2nd inversion)': [
+      ...makeMaj7Arpeggio_AGPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_4321_2ndInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th/1st position) + 5-4-3-2 (1st inversion)': [
-      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A-G position) + 5-4-3-2 (1st inversion)': [
+      ...makeMaj7Arpeggio_AGPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_5432_1stInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th/1st position) + Right 6-4-3-2 (root position)': [
-      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A-G position) + Right 6-4-3-2 (root position)': [
+      ...makeMaj7Arpeggio_AGPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_6432_RootPosition(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
-    'Maj7 Arpeggio (4th/1st position) + Right 4-3-2-1 (3rd inversion)': [
-      ...makeMaj7Arpeggio_4th1stPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
+    'Maj7 Arpeggio (A-G position) + Right 4-3-2-1 (3rd inversion)': [
+      ...makeMaj7Arpeggio_AGPosition(SCALE_ROOT_COLOR, SCALE_TONE_COLOR),
       ...makeMaj7Chord_4321_3rdInversion(CHORD_ROOT_COLOR, CHORD_TONE_COLOR),
     ],
   },
   'Chords - Maj7': {
-    'Maj7 Chord (6-4-3-2) ': [
+    'Maj7 Chord Drop 3 (Bass 6th) | 6-4-3-2 ': [
       ...makeMaj7Chord_6432_RootPosition('1-STRONG', '1-LIGHT'),
       ...makeMaj7Chord_6432_1stInversion('2-STRONG', '2-LIGHT'),
       ...makeMaj7Chord_6432_2ndInversion('3-STRONG', '3-LIGHT'),
       ...makeMaj7Chord_6432_3rdInversion('4-STRONG', '4-LIGHT'),
     ],
-    'Maj7 Chord (5-4-3-2) ': [
+    'Maj7 Chord Drop 2 (Bass 5th) | 5-4-3-2 ': [
       ...makeMaj7Chord_5432_RootPosition('1-STRONG', '1-LIGHT'),
       ...makeMaj7Chord_5432_1stInversion('2-STRONG', '2-LIGHT'),
       ...makeMaj7Chord_5432_2ndInversion('3-STRONG', '3-LIGHT'),
       ...makeMaj7Chord_5432_3rdInversion('4-STRONG', '4-LIGHT'),
     ],
-    'Maj7 Chord (4-3-2-1) ': [
+    'Maj7 Chord Drop 2 (Bass 4th) | 4-3-2-1 ': [
       ...makeMaj7Chord_4321_RootPosition('1-STRONG', '1-LIGHT'),
       ...makeMaj7Chord_4321_1stInversion('2-STRONG', '2-LIGHT'),
       ...makeMaj7Chord_4321_2ndInversion('3-STRONG', '3-LIGHT'),

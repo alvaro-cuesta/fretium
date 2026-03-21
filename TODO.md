@@ -14,4 +14,5 @@
 - Add a way to display string names in diagrams
 - Add a way to display fingerings in diagrams
 - https://www.jazzguitar.be/blog/wp-content/uploads/2014/06/drop-2-chord-chart.png
+- https://www.jazzguitar.be/blog/drop-3-chords-and-inversions/
 - Continue with arpeggios: 7, min7, m7b5, dim7
