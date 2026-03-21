@@ -10,6 +10,7 @@ import { clamp } from '../lib/math.ts';
 import type { Note } from '../lib/music.ts';
 import styles from './App.module.scss';
 import { FretboardImg } from './FretboardImg.tsx';
+import { Layout } from './Layout.tsx';
 import { Scrollable } from './Scrollable.tsx';
 
 const ROOT_NOTES = [
@@ -100,27 +101,7 @@ export function App() {
   );
 
   return (
-    <div className={styles.app}>
-      <header>
-        <h1>
-          <a
-            href={import.meta.env.PACKAGE_HOMEPAGE}
-            className={styles.titleLink}
-          >
-            <img
-              src="/favicon.svg"
-              className={styles.titleLogo}
-              aria-hidden="true"
-            />
-            <span className={styles.titleText}>
-              {import.meta.env.PACKAGE_CONFIG_NAME}
-            </span>
-          </a>{' '}
-          <small className={styles.subtitle}>
-            {import.meta.env.PACKAGE_CONFIG_DESCRIPTION}
-          </small>
-        </h1>
-      </header>
+    <Layout>
       <section className={styles.controlsSection}>
         <div className={styles.controlsRow}>
           <label className={styles.fieldGroup}>
@@ -264,28 +245,6 @@ export function App() {
           />
         </Scrollable>
       </section>
-
-      <footer>
-        <p>
-          Made by{' '}
-          <a
-            href={import.meta.env.PACKAGE_AUTHOR.url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {import.meta.env.PACKAGE_AUTHOR.name}
-          </a>
-          . Source code on{' '}
-          <a
-            href={import.meta.env.PACKAGE_CONFIG_REPOSITORY_URL}
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub
-          </a>
-          .
-        </p>
-      </footer>
-    </div>
+    </Layout>
   );
 }
