@@ -8,8 +8,10 @@ test('shows scroll gradients only while more content remains off-screen', async 
       <div style={{ width: 480 }}>Mock content</div>
     </Scrollable>,
   );
-  const viewport = container.querySelector(`.${styles.root}`);
-  const scroller = container.querySelector(`.${styles.scroller}`);
+  const viewport = container.querySelector<HTMLElement>(`.${styles.root}`);
+  const scroller = container.querySelector<HTMLDivElement>(
+    `.${styles.scroller}`,
+  );
 
   expect(viewport).not.toBeNull();
   expect(scroller).not.toBeNull();
@@ -22,6 +24,18 @@ test('shows scroll gradients only while more content remains off-screen', async 
     clientWidth: {
       configurable: true,
       value: 240,
+    },
+    clientHeight: {
+      configurable: true,
+      value: 90,
+    },
+    offsetWidth: {
+      configurable: true,
+      value: 252,
+    },
+    offsetHeight: {
+      configurable: true,
+      value: 102,
     },
     scrollLeft: {
       configurable: true,
@@ -39,6 +53,12 @@ test('shows scroll gradients only while more content remains off-screen', async 
   await waitFor(() => {
     expect(viewport.classList.contains(styles.fadeLeft)).toBe(false);
     expect(viewport.classList.contains(styles.fadeRight)).toBe(true);
+    expect(viewport.style.getPropertyValue('--scrollbar-block-size')).toBe(
+      '12px',
+    );
+    expect(viewport.style.getPropertyValue('--scrollbar-inline-size')).toBe(
+      '12px',
+    );
   });
 
   scroller.scrollLeft = 120;
