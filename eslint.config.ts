@@ -56,19 +56,7 @@ export default defineConfig([
           allowRegExp: true,
         },
       ],
-      '@typescript-eslint/no-deprecated': [
-        'error',
-        {
-          allow: [
-            // @todo Remove this once migrated to AudioWorkletNode
-            'ScriptProcessorNode',
-            'createScriptProcessor',
-            'AudioProcessingEvent',
-            'onaudioprocess',
-            'outputBuffer',
-          ],
-        },
-      ],
+      '@typescript-eslint/no-deprecated': 'error',
       '@typescript-eslint/unified-signatures': [
         'error',
         {
