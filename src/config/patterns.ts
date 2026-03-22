@@ -121,6 +121,32 @@ function make7Arpeggio_CPosition(
   ] as const;
 }
 
+function make7Arpeggio_CAPosition(
+  thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
+  seventhInterval: SeventhInterval,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
+): PatternRule[] {
+  return [
+    {
+      condition: { string: 1, interval: [fifthInterval, seventhInterval] },
+      color: toneColor,
+    },
+    { condition: { string: 2, interval: thirdInterval }, color: toneColor },
+    { condition: { string: 3, interval: '1' }, color: rootColor },
+    { condition: { string: 3, interval: seventhInterval }, color: toneColor },
+    { condition: { string: 4, interval: fifthInterval }, color: toneColor },
+    { condition: { string: 4, interval: thirdInterval }, color: toneColor },
+    { condition: { string: 5, interval: '1' }, color: rootColor },
+    { condition: { string: 5, interval: seventhInterval }, color: toneColor },
+    {
+      condition: { string: 6, interval: [thirdInterval, fifthInterval] },
+      color: toneColor,
+    },
+  ] as const;
+}
+
 function make7Arpeggio_APosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
@@ -903,6 +929,79 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           SCALE_TONE_COLOR,
         ),
         ...make7Chord_4321_1stInversion(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          CHORD_ROOT_COLOR,
+          CHORD_TONE_COLOR,
+        ),
+      ],
+      [`${groupName} Arpeggio (C-A position)`]: [
+        ...make7Arpeggio_CAPosition(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          SCALE_ROOT_COLOR,
+          SCALE_TONE_COLOR,
+        ),
+      ],
+      [`${groupName} Arpeggio (C-A position) + 6-5-4-3 (2nd inversion)`]: [
+        ...make7Arpeggio_CAPosition(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          SCALE_ROOT_COLOR,
+          SCALE_TONE_COLOR,
+        ),
+        ...make7Chord_6543_2ndInversion(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          CHORD_ROOT_COLOR,
+          CHORD_TONE_COLOR,
+        ),
+      ],
+      [`${groupName} Arpeggio (C-A position) + 5-4-3-2 (root position)`]: [
+        ...make7Arpeggio_CAPosition(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          SCALE_ROOT_COLOR,
+          SCALE_TONE_COLOR,
+        ),
+        ...make7Chord_5432_RootPosition(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          CHORD_ROOT_COLOR,
+          CHORD_TONE_COLOR,
+        ),
+      ],
+      [`${groupName} Arpeggio (C-A position) + 5-3-2-1 (root position)`]: [
+        ...make7Arpeggio_CAPosition(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          SCALE_ROOT_COLOR,
+          SCALE_TONE_COLOR,
+        ),
+        ...make7Chord_5321_RootPosition(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          CHORD_ROOT_COLOR,
+          CHORD_TONE_COLOR,
+        ),
+      ],
+      [`${groupName} Arpeggio (C-A position) + 4-3-2-1 (2nd inversion)`]: [
+        ...make7Arpeggio_CAPosition(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          SCALE_ROOT_COLOR,
+          SCALE_TONE_COLOR,
+        ),
+        ...make7Chord_4321_2ndInversion(
           thirdInterval,
           fifthInterval,
           seventhInterval,
