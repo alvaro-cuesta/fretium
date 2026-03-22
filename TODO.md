@@ -22,3 +22,5 @@
 ## Bugs
 
 - The controls section changes size as the diagram changes size, which can be a bit jarring
+- Sometimes during dev, when React Refresh does its thing, the `MutationObserver` seems to be disconnected from the actual SVG -- not sure how or when than happens, but it causes the diagram to stop updating until you refresh the page, which is a bit annoying during development
+  - This has been possibly solved but, since I haven't been able to reliably reproduce it, I'm not sure if the solution is actually working -- need to keep an eye on this and see if it happens again

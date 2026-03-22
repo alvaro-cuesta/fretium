@@ -64,36 +64,8 @@ export function useMutationObserverLifecycle<TNode extends Node>(
     [latestCallback],
   );
 
-  const disconnect = useCallback(() => {
-    mutationCleanupRef.current?.();
-    mutationCleanupRef.current = undefined;
-
-    observerRef.current?.disconnect();
-    observerRef.current = null;
-    observedNodeRef.current = null;
-  }, []);
-
-  useEffect(() => disconnect, [disconnect]);
-
-  useEffect(() => {
-    if (!didRunInitialDepsEffectRef.current) {
-      didRunInitialDepsEffectRef.current = true;
-      return;
-    }
-
-    runCallback([]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps, react-x/exhaustive-deps -- dynamic dependency list provided by hook consumer
-  }, deps);
-
-  return useCallback<MutationObserverLifecycleRefCallback<TNode>>(
-    (node) => {
-      disconnect();
-
-      if (!node) {
-        return;
-      }
-      observedNodeRef.current = node;
-
+  const observeNode = useCallback(
+    (node: TNode) => {
       const observer = new MutationObserver((mutations) => {
         runCallback(mutations);
       });
@@ -131,16 +103,6 @@ export function useMutationObserverLifecycle<TNode extends Node>(
       observer.observe(node, nextOptions);
       observerRef.current = observer;
       runCallback([]);
-
-      const cleanup = () => {
-        if (observerRef.current !== observer) {
-          return;
-        }
-
-        disconnect();
-      };
-
-      return cleanup;
     },
     [
       attributeFilter,
@@ -149,9 +111,74 @@ export function useMutationObserverLifecycle<TNode extends Node>(
       characterData,
       characterDataOldValue,
       childList,
-      disconnect,
       runCallback,
       subtree,
     ],
+  );
+
+  const disconnectObserver = useCallback(() => {
+    mutationCleanupRef.current?.();
+    mutationCleanupRef.current = undefined;
+
+    observerRef.current?.disconnect();
+    observerRef.current = null;
+  }, []);
+
+  const disconnect = useCallback(() => {
+    disconnectObserver();
+    observedNodeRef.current = null;
+  }, [disconnectObserver]);
+
+  useEffect(() => {
+    const node = observedNodeRef.current;
+
+    if (!node || observerRef.current) {
+      return;
+    }
+
+    observeNode(node);
+
+    return disconnectObserver;
+  }, [disconnectObserver, observeNode]);
+
+  useEffect(() => {
+    if (!didRunInitialDepsEffectRef.current) {
+      didRunInitialDepsEffectRef.current = true;
+      return;
+    }
+
+    runCallback([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-x/exhaustive-deps -- dynamic dependency list provided by hook consumer
+  }, deps);
+
+  return useCallback<MutationObserverLifecycleRefCallback<TNode>>(
+    (node) => {
+      if (!node) {
+        disconnect();
+        return;
+      }
+
+      if (observedNodeRef.current !== node) {
+        disconnect();
+        observedNodeRef.current = node;
+      }
+
+      if (!observerRef.current) {
+        observeNode(node);
+      }
+
+      observedNodeRef.current = node;
+
+      const cleanup = () => {
+        if (observedNodeRef.current !== node) {
+          return;
+        }
+
+        disconnect();
+      };
+
+      return cleanup;
+    },
+    [disconnect, observeNode],
   );
 }

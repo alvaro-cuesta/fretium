@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
+import { StrictMode } from 'react';
 import { useMutationObserverLifecycle } from './useMutationObserverLifecycle';
 
 type TestMutationObserverLifecycleCallback = Parameters<
@@ -11,6 +12,62 @@ type TestMutationObserverDeps = Parameters<
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+
+test('keeps observing through StrictMode effect replay', () => {
+  const callback = vi.fn<TestMutationObserverLifecycleCallback>();
+  const node = document.createElement('div');
+
+  class MockMutationObserver {
+    static latest: MockMutationObserver | null = null;
+    callback: MutationCallback;
+    isDisconnected = false;
+
+    constructor(observerCallback: MutationCallback) {
+      this.callback = observerCallback;
+      MockMutationObserver.latest = this;
+    }
+
+    observe() {
+      this.isDisconnected = false;
+    }
+
+    disconnect() {
+      this.isDisconnected = true;
+    }
+
+    emit() {
+      if (this.isDisconnected) {
+        return;
+      }
+
+      this.callback([], this as unknown as MutationObserver);
+    }
+  }
+
+  vi.stubGlobal('MutationObserver', MockMutationObserver);
+
+  const wrapper = ({ children }: React.PropsWithChildren) => (
+    <StrictMode>{children}</StrictMode>
+  );
+
+  const { result } = renderHook(
+    () => useMutationObserverLifecycle(callback, [], { childList: true }),
+    { wrapper },
+  );
+
+  act(() => {
+    result.current(node);
+  });
+
+  callback.mockClear();
+
+  act(() => {
+    MockMutationObserver.latest?.emit();
+  });
+
+  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback).toHaveBeenCalledWith(node, [], expect.any(Object));
 });
 
 test('keeps the same observer while the callback changes', () => {
