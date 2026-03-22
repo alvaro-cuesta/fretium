@@ -49,13 +49,13 @@ test('keeps the neck local coordinates anchored at the neck edge for open-string
   const neckShape = clipPath?.querySelector('path');
   const stringLine = svg.querySelector('line[stroke-width="3.2"]');
 
-  expect(noteGroup).not.toBeNull();
-  expect(neckGroup).not.toBeNull();
-  expect(clipPath).not.toBeNull();
-  expect(clipPath?.querySelector('rect')).toBeNull();
-  expect(neckGroup?.getAttribute('transform')).toBe('translate(64, 16)');
-  expect(noteGroup?.getAttribute('transform')).toBe('translate(-29, 12)');
-  expect(stringLine?.getAttribute('x1')).toBe('0');
+  expect(noteGroup).toBeInTheDocument();
+  expect(neckGroup).toBeInTheDocument();
+  expect(clipPath).toBeInTheDocument();
+  expect(clipPath?.querySelector('rect')).not.toBeInTheDocument();
+  expect(neckGroup).toHaveAttribute('transform', 'translate(64, 16)');
+  expect(noteGroup).toHaveAttribute('transform', 'translate(-29, 12)');
+  expect(stringLine).toHaveAttribute('x1', '0');
   expect(neckShape?.getAttribute('d')?.startsWith('M 0 0')).toBe(true);
 });
 
@@ -81,7 +81,7 @@ test('sizes the viewBox from the translated neck bounds and label area', () => {
     }),
   });
 
-  expect(svg.getAttribute('viewBox')).toBe('0 0 251 64');
+  expect(svg).toHaveAttribute('viewBox', '0 0 251 64');
 });
 
 test('adds enough left svg padding to fit a full open-string fret', () => {
@@ -101,7 +101,7 @@ test('adds enough left svg padding to fit a full open-string fret', () => {
     name: getDescription({ pattern: definition, tuning: ['E'] }),
   });
 
-  expect(svg.getAttribute('viewBox')).toBe('0 0 107 64');
+  expect(svg).toHaveAttribute('viewBox', '0 0 107 64');
 });
 
 test('renders string names at the open-string position and expands the left margin', () => {
@@ -128,10 +128,10 @@ test('renders string names at the open-string position and expands the left marg
   const stringName = screen.getByText('E');
   const neckGroup = svg.querySelector('svg > g');
 
-  expect(svg.getAttribute('viewBox')).toBe('0 0 171 64');
-  expect(neckGroup?.getAttribute('transform')).toBe('translate(64, 16)');
-  expect(stringName.getAttribute('x')).toBe('-29');
-  expect(stringName.getAttribute('y')).toBe('12');
+  expect(svg).toHaveAttribute('viewBox', '0 0 171 64');
+  expect(neckGroup).toHaveAttribute('transform', 'translate(64, 16)');
+  expect(stringName).toHaveAttribute('x', '-29');
+  expect(stringName).toHaveAttribute('y', '12');
 });
 
 test('paints open-string notes on top of string names', () => {
@@ -154,7 +154,7 @@ test('paints open-string notes on top of string names', () => {
   expect(renderedLabels[0]?.tagName).toBe('text');
   expect(
     renderedLabels[1]?.closest('g')?.querySelector('circle'),
-  ).not.toBeNull();
+  ).toBeInTheDocument();
 });
 
 test('keeps fret-one diagrams in the neck coordinate system including half the nut width', () => {
@@ -183,9 +183,9 @@ test('keeps fret-one diagrams in the neck coordinate system including half the n
   const neckShape = clipPath?.querySelector('path');
   const nutLine = svg.querySelector('line[stroke-width="6"]');
 
-  expect(clipPath?.querySelector('rect')).toBeNull();
-  expect(stringLine?.getAttribute('x1')).toBe('0');
-  expect(nutLine?.getAttribute('x1')).toBe('3');
+  expect(clipPath?.querySelector('rect')).not.toBeInTheDocument();
+  expect(stringLine).toHaveAttribute('x1', '0');
+  expect(nutLine).toHaveAttribute('x1', '3');
   expect(neckShape?.getAttribute('d')?.startsWith('M 0 0')).toBe(true);
 });
 
@@ -240,7 +240,8 @@ test('describes the rendered fretboard in the aria label', () => {
     />,
   );
 
-  expect(screen.getByRole('img').getAttribute('aria-label')).toBe(
+  expect(screen.getByRole('img')).toHaveAttribute(
+    'aria-label',
     'Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale pattern, frets: 3 through 7, root note: D, note labels: degrees, string names: shown.',
   );
 });
@@ -260,10 +261,10 @@ test('explicitly centers note text on the note circle', () => {
 
   const note = screen.getByText('E');
 
-  expect(note.getAttribute('x')).toBe('0');
-  expect(note.getAttribute('y')).toBe('0');
-  expect(note.getAttribute('dominant-baseline')).toBe('central');
-  expect(note.getAttribute('alignment-baseline')).toBe('central');
+  expect(note).toHaveAttribute('x', '0');
+  expect(note).toHaveAttribute('y', '0');
+  expect(note).toHaveAttribute('dominant-baseline', 'central');
+  expect(note).toHaveAttribute('alignment-baseline', 'central');
 });
 
 test('always shows fret labels for the visible start and end frets', () => {
@@ -277,8 +278,8 @@ test('always shows fret labels for the visible start and end frets', () => {
     />,
   );
 
-  expect(screen.queryByText('1')).not.toBeNull();
-  expect(screen.queryByText('4')).not.toBeNull();
+  expect(screen.queryByText('1')).toBeInTheDocument();
+  expect(screen.queryByText('4')).toBeInTheDocument();
 });
 
 test('shows the ending fret label for open-string diagrams', () => {
@@ -292,7 +293,7 @@ test('shows the ending fret label for open-string diagrams', () => {
     />,
   );
 
-  expect(screen.queryByText('1')).not.toBeNull();
+  expect(screen.queryByText('1')).toBeInTheDocument();
 });
 
 test('supports string and fret DSL selectors', () => {
@@ -332,9 +333,9 @@ test('supports array and range DSL selectors', () => {
   );
 
   const renderedNoteTexts = ['G', 'G#', 'C', 'C#'];
-  expect(
-    renderedNoteTexts.every((note) => screen.queryByText(note) !== null),
-  ).toBe(true);
+  for (const note of renderedNoteTexts) {
+    expect(screen.queryByText(note)).toBeInTheDocument();
+  }
 });
 
 test('supports interval DSL selectors', () => {
@@ -352,7 +353,7 @@ test('supports interval DSL selectors', () => {
     />,
   );
 
-  expect(screen.queryByText('D#')).not.toBeNull();
+  expect(screen.queryByText('D#')).toBeInTheDocument();
 });
 
 test('resolves interval DSL selectors against the provided root note', () => {
@@ -371,7 +372,7 @@ test('resolves interval DSL selectors against the provided root note', () => {
     />,
   );
 
-  expect(screen.queryByText('C')).not.toBeNull();
+  expect(screen.queryByText('C')).toBeInTheDocument();
 });
 
 test('supports natural interval selectors against the provided root note', () => {
@@ -390,7 +391,7 @@ test('supports natural interval selectors against the provided root note', () =>
     />,
   );
 
-  expect(screen.queryByText('A')).not.toBeNull();
+  expect(screen.queryByText('A')).toBeInTheDocument();
 });
 
 test('shows interval labels when interval display mode is selected', () => {
@@ -416,7 +417,7 @@ test('shows interval labels when interval display mode is selected', () => {
 
   expect(noteLabels).toContain('P1');
   expect(noteLabels).toContain('M2');
-  expect(screen.queryByText('A')).toBeNull();
+  expect(screen.queryByText('A')).not.toBeInTheDocument();
 });
 
 test('shows degree labels when degree display mode is selected', () => {
@@ -443,7 +444,7 @@ test('shows degree labels when degree display mode is selected', () => {
   expect(noteLabels).toContain('1');
   expect(noteLabels).toContain('2');
   expect(noteLabels).toContain('b3');
-  expect(screen.queryByText('A')).toBeNull();
+  expect(screen.queryByText('A')).not.toBeInTheDocument();
 });
 
 test('shows note names by default', () => {
@@ -459,8 +460,8 @@ test('shows note names by default', () => {
     />,
   );
 
-  expect(screen.queryByText('A')).not.toBeNull();
-  expect(screen.queryByText('1')).toBeNull();
+  expect(screen.queryByText('A')).toBeInTheDocument();
+  expect(screen.queryByText('1')).not.toBeInTheDocument();
 });
 
 test('hides note labels when none display mode is selected', () => {
@@ -482,7 +483,7 @@ test('hides note labels when none display mode is selected', () => {
   );
 
   expect(noteLabels.length).toBe(0);
-  expect(screen.container.querySelector('circle')).not.toBeNull();
+  expect(screen.container.querySelector('circle')).toBeInTheDocument();
 });
 
 test('merges all matching rules with later rules winning per property', () => {
@@ -507,7 +508,7 @@ test('merges all matching rules with later rules winning per property', () => {
   const circle = noteGroup?.querySelector('circle');
 
   // Last matching rule wins for color (WHITE = '#ffffff')
-  expect(circle?.getAttribute('fill')).toBe('#ffffff');
+  expect(circle).toHaveAttribute('fill', '#ffffff');
   // Earlier rule's opacity is preserved since later rule has none
-  expect(noteGroup?.getAttribute('opacity')).toBe('0.5');
+  expect(noteGroup).toHaveAttribute('opacity', '0.5');
 });

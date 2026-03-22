@@ -40,16 +40,14 @@ test('scales the rendered image height with the tuning string count', async () =
     document.querySelector<HTMLImageElement>(`img[alt="${initialAlt}"]`),
   );
 
-  expect(img).not.toBeNull();
+  expect(img).toBeInTheDocument();
 
   if (!img) {
     throw new Error('Expected the fretboard image to render.');
   }
 
-  expect(img.classList.contains(styles.fretboardImg)).toBe(true);
-  expect(img.style.getPropertyValue('--fretboard-string-scale')).toBe(
-    String(4 / 6),
-  );
+  expect(img).toHaveClass(styles.fretboardImg);
+  expect(img).toHaveStyle({ '--fretboard-string-scale': String(4 / 6) });
 
   rerender(
     <FretboardImg
@@ -59,9 +57,7 @@ test('scales the rendered image height with the tuning string count', async () =
   );
 
   await waitFor(() => {
-    expect(img.style.getPropertyValue('--fretboard-string-scale')).toBe(
-      String(8 / 6),
-    );
+    expect(img).toHaveStyle({ '--fretboard-string-scale': String(8 / 6) });
   });
 
   createObjectUrl.mockRestore();
@@ -101,13 +97,13 @@ test('uses descriptive alt text and a metadata-based svg filename', async () => 
     ),
   );
 
-  expect(img).not.toBeNull();
+  expect(img).toBeInTheDocument();
 
   if (!img) {
     throw new Error('Expected the fretboard image to render.');
   }
 
-  expect(img.getAttribute('src')).toBe('blob:mock-fretboard');
+  expect(img).toHaveAttribute('src', 'blob:mock-fretboard');
 
   createObjectUrl.mockRestore();
   revokeObjectUrl.mockRestore();

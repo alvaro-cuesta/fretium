@@ -13,8 +13,8 @@ test('shows scroll gradients only while more content remains off-screen', async 
     `.${styles.scroller}`,
   );
 
-  expect(viewport).not.toBeNull();
-  expect(scroller).not.toBeNull();
+  expect(viewport).toBeInTheDocument();
+  expect(scroller).toBeInTheDocument();
 
   if (!viewport || !scroller) {
     throw new Error('Expected the scrollable viewport and scroller to render.');
@@ -51,27 +51,25 @@ test('shows scroll gradients only while more content remains off-screen', async 
   fireEvent(window, new Event('resize'));
 
   await waitFor(() => {
-    expect(viewport.classList.contains(styles.fadeLeft)).toBe(false);
-    expect(viewport.classList.contains(styles.fadeRight)).toBe(true);
-    expect(viewport.style.getPropertyValue('--scrollbar-block-size')).toBe(
-      '12px',
-    );
-    expect(viewport.style.getPropertyValue('--scrollbar-inline-size')).toBe(
-      '12px',
-    );
+    expect(viewport).not.toHaveClass(styles.fadeLeft);
+    expect(viewport).toHaveClass(styles.fadeRight);
+    expect(viewport).toHaveStyle({
+      '--scrollbar-block-size': '12px',
+      '--scrollbar-inline-size': '12px',
+    });
   });
 
   scroller.scrollLeft = 120;
   fireEvent.scroll(scroller);
 
-  expect(viewport.classList.contains(styles.fadeLeft)).toBe(true);
-  expect(viewport.classList.contains(styles.fadeRight)).toBe(true);
+  expect(viewport).toHaveClass(styles.fadeLeft);
+  expect(viewport).toHaveClass(styles.fadeRight);
 
   scroller.scrollLeft = 240;
   fireEvent.scroll(scroller);
 
-  expect(viewport.classList.contains(styles.fadeLeft)).toBe(true);
-  expect(viewport.classList.contains(styles.fadeRight)).toBe(false);
+  expect(viewport).toHaveClass(styles.fadeLeft);
+  expect(viewport).not.toHaveClass(styles.fadeRight);
 
   Object.defineProperty(scroller, 'scrollWidth', {
     configurable: true,
@@ -81,7 +79,7 @@ test('shows scroll gradients only while more content remains off-screen', async 
   fireEvent(window, new Event('resize'));
 
   await waitFor(() => {
-    expect(viewport.classList.contains(styles.fadeLeft)).toBe(false);
-    expect(viewport.classList.contains(styles.fadeRight)).toBe(false);
+    expect(viewport).not.toHaveClass(styles.fadeLeft);
+    expect(viewport).not.toHaveClass(styles.fadeRight);
   });
 });
