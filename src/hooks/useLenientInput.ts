@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 type UseLenientInputOptions<TValue> = {
   value: TValue;
@@ -13,6 +13,13 @@ type UseLenientInputResult = {
   onBlur: React.FocusEventHandler<HTMLInputElement>;
 };
 
+/**
+ * Keeps the user's raw text visible until blur while synchronizing a parsed value upstream.
+ *
+ * For non-primitive values, callers should keep `value` referentially stable when the semantic
+ * value has not changed. Passing a distinct but equal object/array instance is treated as an
+ * external value change and resynchronizes the displayed text from `formatValue(value)`.
+ */
 export function useLenientInput<TValue>({
   value,
   setValue,
@@ -46,9 +53,12 @@ export function useLenientInput<TValue>({
     });
   }, [formatValue, value]);
 
-  return {
-    value: displayedValue,
-    onChange,
-    onBlur,
-  };
+  return useMemo(
+    () => ({
+      value: displayedValue,
+      onChange,
+      onBlur,
+    }),
+    [displayedValue, onChange, onBlur],
+  );
 }

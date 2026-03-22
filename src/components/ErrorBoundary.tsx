@@ -6,7 +6,7 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { useTimeout } from '../hooks/useTimeout.ts';
+import { useImperativeTimeout } from '../hooks/useImperativeTimeout.ts';
 import styles from './ErrorBoundary.module.scss';
 
 const COPY_SUCCESS_DURATION_MS = 3000;
@@ -62,7 +62,7 @@ function formatErrorSummary(error: unknown): string {
 
 function ErrorBoundaryContent({ error }: ErrorBoundaryState) {
   const [copyState, setCopyState] = useState<CopyState>('idle');
-  const resetCopyState = useTimeout();
+  const resetCopyState = useImperativeTimeout();
 
   const issueUrl = import.meta.env.PACKAGE_BUGS;
   const errorDetails = formatErrorSummary(error);

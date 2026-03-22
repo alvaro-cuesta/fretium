@@ -1,6 +1,8 @@
 import cx from 'classnames';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import type { Exact } from 'type-fest';
+import { useImperativeAnimationFrame } from '../hooks/useImperativeAnimationFrame.ts';
+import { useMutationObserverLifecycle } from '../hooks/useMutationObserverLifecycle.ts';
 import { svgElementToFile } from '../lib/file.ts';
 import {
   getFretboardDescription,
@@ -63,8 +65,8 @@ export function FretboardImg(props: FretboardImgProps) {
     rootNote,
   });
 
-  const svgRef = useRef<SVGSVGElement>(null);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const animationFrame = useImperativeAnimationFrame();
 
   const regenerateImgUrl = useCallback(
     (svgElement: SVGSVGElement) => {
@@ -74,7 +76,6 @@ export function FretboardImg(props: FretboardImgProps) {
       const file = new File([blob], filename, { type: 'image/svg+xml' });
       const objectUrl = URL.createObjectURL(file);
 
-      // eslint-disable-next-line react-x/set-state-in-effect -- I don't think there's any way to do cleanup here without using `useEffect` + `setState`?
       setImgUrl(objectUrl);
 
       return () => {
@@ -84,23 +85,21 @@ export function FretboardImg(props: FretboardImgProps) {
     [filename],
   );
 
-  // @todo React Refresh isn't triggering this `useEffect` so the image doesn't update on code edits
-  useEffect(() => {
-    if (!svgRef.current) return;
-    return regenerateImgUrl(svgRef.current);
-  }, [
-    regenerateImgUrl,
-    pattern,
-    patternName,
-    instrumentName,
-    tuningName,
-    tuning,
-    startFret,
-    endFret,
-    showStringNames,
-    noteDisplayMode,
-    rootNote,
-  ]);
+  // We have to use a MutationObserver here because during development any change to the code changed the SVG element
+  // but did NOT rerun the surrounding code, so the image did not update until some unrelated state changed.
+  //
+  // Keeping this observer-based sync also handles manual DOM changes without extra React state plumbing.
+  const mutationObserverRef = useMutationObserverLifecycle<SVGSVGElement>(
+    // Coalesce attach, dependency, and mutation bursts into a single regeneration.
+    (svgElement) => animationFrame.schedule(() => regenerateImgUrl(svgElement)),
+    [animationFrame, regenerateImgUrl],
+    {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      characterData: true,
+    },
+  );
 
   return (
     <>
@@ -116,7 +115,7 @@ export function FretboardImg(props: FretboardImgProps) {
           showStringNames={showStringNames}
           noteDisplayMode={noteDisplayMode}
           rootNote={rootNote}
-          ref={svgRef}
+          ref={mutationObserverRef}
         />
       </div>
 

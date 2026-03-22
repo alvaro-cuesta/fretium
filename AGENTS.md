@@ -22,6 +22,11 @@ Fretium is a browser-based fretboard diagram generator.
   pnpm test --run path/to/file.test.ts
   ```
 
+- For type-level test assertions, use Vitest's typechecking infrastructure with
+  `.test-d.ts` files and `expectTypeOf`/`assertType`, wrapped in normal Vitest
+  `test(...)` (or `describe`, `it`, etc.) blocks, rather than adding TSC-only fixtures or
+  `@ts-expect-error` probes to runtime test files.
+
 - Use per-file runs during tight iteration loops, then run the full suite in final validation.
 
 ## Fast iteration loop

@@ -147,3 +147,37 @@ test('keeps invalid text editable until blur before applying parse fallback', ()
   expect(result.current.input.value).toBe('6');
   expect(result.current.currentValue).toBe(6);
 });
+
+test('treats a distinct but equal object value as an external resync', () => {
+  const stableValue = { fret: 6 };
+  const setValue = vi.fn();
+  const { result, rerender } = renderHook(
+    ({ value }) =>
+      useLenientInput({
+        value,
+        setValue,
+        deriveValue: (_inputValue: string, currentValue: { fret: number }) =>
+          currentValue,
+        formatValue: (nextValue: { fret: number }) => String(nextValue.fret),
+      }),
+    {
+      initialProps: {
+        value: stableValue,
+      },
+    },
+  );
+
+  act(() => {
+    result.current.onChange(changeValue('abc'));
+  });
+
+  expect(result.current.value).toBe('abc');
+
+  rerender({ value: stableValue });
+
+  expect(result.current.value).toBe('abc');
+
+  rerender({ value: { fret: 6 } });
+
+  expect(result.current.value).toBe('6');
+});

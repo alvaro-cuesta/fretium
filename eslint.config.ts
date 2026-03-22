@@ -29,6 +29,18 @@ export default defineConfig([
       },
     },
     rules: {
+      'react-hooks/exhaustive-deps': [
+        'warn',
+        {
+          additionalHooks: '(useMutationObserverLifecycle)',
+        },
+      ],
+      'react-x/exhaustive-deps': [
+        'warn',
+        {
+          additionalHooks: '(useMutationObserverLifecycle)',
+        },
+      ],
       '@typescript-eslint/no-unused-vars': [
         'error',
         {

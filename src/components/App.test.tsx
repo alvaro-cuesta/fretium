@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { App } from './App';
 
 // Basic test to ensure the app renders without crashing
-test('renders core controls with defaults and shows the default fretboard image', () => {
+test('renders core controls with defaults and shows the default fretboard image', async () => {
   render(<App />);
 
   expect(screen.getByText(/Fretium/)).toBeInTheDocument();
@@ -11,5 +11,7 @@ test('renders core controls with defaults and shows the default fretboard image'
   expect(screen.getByLabelText('Root note')).toHaveValue('C');
   expect(screen.getByLabelText('Start fret')).toHaveValue(0);
   expect(screen.getByLabelText('End fret')).toHaveValue(14);
-  expect(screen.getByAltText(/major scale pattern/i)).toBeInTheDocument();
+  expect(
+    await screen.findByAltText(/major scale pattern/i),
+  ).toBeInTheDocument();
 });

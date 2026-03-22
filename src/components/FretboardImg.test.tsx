@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import * as animationFrameHook from '../hooks/useImperativeAnimationFrame';
 import { getFretboardDescription } from '../lib/fretboard';
 import type { Pattern } from '../lib/pattern-engine';
 import { FretboardImg } from './FretboardImg';
@@ -15,6 +16,32 @@ const REQUIRED_PROPS = {
   noteDisplayMode: 'note' as const,
   rootNote: 'C' as const,
 };
+
+const asCleanup = (value: unknown): (() => void) | undefined => {
+  return typeof value === 'function' ? (value as () => void) : undefined;
+};
+
+beforeEach(() => {
+  vi.spyOn(animationFrameHook, 'useImperativeAnimationFrame').mockReturnValue({
+    schedule: (callback) => {
+      const cleanup = asCleanup(callback());
+
+      return () => {
+        cleanup?.();
+      };
+    },
+    unschedule: () => {
+      // no-op
+    },
+    clear: () => {
+      // no-op
+    },
+  });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 test('scales the rendered image height with the tuning string count', async () => {
   const createObjectUrl = vi
