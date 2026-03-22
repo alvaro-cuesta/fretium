@@ -1,18 +1,42 @@
 # Instructions for coding agents
 
-This project is **Fretium**, a **fretboard diagram generator** for guitar, bass, ukulele, and other stringed instruments. Generate chord and scale diagrams directly in your browser.
+Fretium is a browser-based fretboard diagram generator.
 
-## Development workflow and gotchas
+## Defaults
 
-This is a general guide for development workflow and best practices when working on this project. It is not exhaustive, but it should cover the most common scenarios. It is of paramount importance to follow these instructions to ensure a smooth development experience and maintain code quality.
+- Use `pnpm` for all commands.
+- Keep edits minimal and focused on the user request.
+- Prefer targeted checks during iteration; run full validation before finishing.
 
-### Running tests
+## Testing
 
-Always run tests with `--run` to ensure that watch mode is disabled, or you will get stuck.
+- Always run tests with `--run` to avoid watch mode:
 
-### Validation phase
+  ```sh
+  pnpm test --run
+  ```
 
-Once finished you should always run all tests, lint checks and build the project, as a final validation step.
+- When iterating on a specific test file, run only that file:
+
+  ```sh
+  pnpm test --run path/to/file.test.ts
+  ```
+
+- Use per-file runs during tight iteration loops, then run the full suite in final validation.
+
+## Fast iteration loop
+
+Run only what is needed while developing:
+
+- TypeScript/runtime changes: `pnpm lint:tsc`
+- Lint/style-sensitive changes: `pnpm lint:eslint` and/or `pnpm lint:prettier`
+- Dependency/unused-export-sensitive changes: `pnpm lint:knip`
+- Import graph/module structure changes: `pnpm lint:madge`
+- Behavioral changes: `pnpm test --run path/to/file.test.ts` while iterating, then `pnpm test --run` before completion
+
+## Final validation (required)
+
+Before completing a task, run all of these unless the task was purely non-code (e.g. documentation):
 
 ```sh
 pnpm lint:tsc
