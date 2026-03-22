@@ -3,6 +3,13 @@ import { App } from './App';
 
 // Basic test to ensure the app renders without crashing
 test('renders core controls with defaults and shows the default fretboard image', async () => {
+  const createObjectUrl = vi
+    .spyOn(URL, 'createObjectURL')
+    .mockReturnValue('blob:mock-fretboard');
+  const revokeObjectUrl = vi
+    .spyOn(URL, 'revokeObjectURL')
+    .mockImplementation(() => undefined);
+
   render(<App />);
 
   expect(screen.getByText(/Fretium/)).toBeInTheDocument();
@@ -14,4 +21,14 @@ test('renders core controls with defaults and shows the default fretboard image'
   expect(
     await screen.findByAltText(/major scale pattern/i),
   ).toBeInTheDocument();
+  expect(
+    await screen.findByRole('link', { name: 'Download SVG' }),
+  ).toHaveAttribute('href', 'blob:mock-fretboard');
+  expect(screen.getByRole('link', { name: 'Download SVG' })).toHaveAttribute(
+    'download',
+    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-c]-[labels-note]-[with-string-names].svg',
+  );
+
+  createObjectUrl.mockRestore();
+  revokeObjectUrl.mockRestore();
 });

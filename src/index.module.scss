@@ -141,7 +141,8 @@ select {
   }
 }
 
-button {
+button,
+.linkButton {
   font: inherit;
   color: var(--text-h);
   background: color-mix(in srgb, var(--bg) 88%, var(--text-h) 12%);
@@ -149,6 +150,10 @@ button {
   border-radius: 12px;
   padding: 10px 14px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   transition:
     border-color 120ms ease,
     box-shadow 120ms ease,

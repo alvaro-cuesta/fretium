@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Exact } from 'type-fest';
 import { useImperativeAnimationFrame } from '../hooks/useImperativeAnimationFrame.ts';
 import { useMutationObserverLifecycle } from '../hooks/useMutationObserverLifecycle.ts';
@@ -11,8 +11,15 @@ import {
 import { Fretboard, type FretboardProps } from './Fretboard/Fretboard.tsx';
 import styles from './FretboardImg.module.scss';
 
+export type ImgChangeEvent = {
+  url: string;
+  filename: string;
+};
+
 type FretboardImgProps = Omit<FretboardProps, 'ref'> &
-  React.ImgHTMLAttributes<HTMLImageElement>;
+  React.ImgHTMLAttributes<HTMLImageElement> & {
+    onImgChange?: (event: ImgChangeEvent | null) => void;
+  };
 
 type FretboardImgStyle = React.CSSProperties & {
   '--fretboard-string-scale'?: number;
@@ -32,6 +39,7 @@ export function FretboardImg(props: FretboardImgProps) {
     rootNote,
     className,
     style,
+    onImgChange,
     ...imgProps
   } = props;
 
@@ -105,6 +113,16 @@ export function FretboardImg(props: FretboardImgProps) {
       characterData: true,
     },
   );
+
+  useEffect(() => {
+    onImgChange?.(imgUrl ? { url: imgUrl, filename } : null);
+  }, [imgUrl, filename, onImgChange]);
+
+  useEffect(() => {
+    return () => {
+      onImgChange?.(null);
+    };
+  }, [onImgChange]);
 
   return (
     <>

@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './components/App.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
-import './index.scss';
+import './index.module.scss';
 
 const $root = document.getElementById('root');
 if (!$root) {

@@ -1,3 +1,4 @@
+import cx from 'classnames';
 import { useState } from 'react';
 import { objectEntries, objectKeys } from '../../lib/object.ts';
 import { INSTRUMENTS } from '../config/instruments.ts';
@@ -7,11 +8,12 @@ import {
   type PatternName,
 } from '../config/patterns.ts';
 import { useLenientInput } from '../hooks/useLenientInput.ts';
-import type { NoteDisplayMode } from '../lib/fretboard.ts';
+import globalStyles from '../index.module.scss';
+import { type NoteDisplayMode } from '../lib/fretboard.ts';
 import { clamp } from '../lib/math.ts';
 import type { Note } from '../lib/music.ts';
 import styles from './App.module.scss';
-import { FretboardImg } from './FretboardImg.tsx';
+import { FretboardImg, type ImgChangeEvent } from './FretboardImg.tsx';
 import { Layout } from './Layout.tsx';
 import { Scrollable } from './Scrollable.tsx';
 
@@ -83,6 +85,7 @@ function deriveFretValue(
 }
 
 export function App() {
+  const [fretboardImg, setFretboardImg] = useState<ImgChangeEvent | null>(null);
   const [selectedPattern, setSelectedPattern] =
     useState<PatternName>(DEFAULT_PATTERN);
   const [selectedRootNote, setSelectedRootNote] =
@@ -253,6 +256,7 @@ export function App() {
         <Scrollable>
           <FretboardImg
             className={styles.fretboardImg}
+            onImgChange={setFretboardImg}
             pattern={pattern}
             patternName={selectedPattern}
             instrumentName={resolvedInstrumentTuning.instrumentName}
@@ -265,6 +269,16 @@ export function App() {
             rootNote={selectedRootNote}
           />
         </Scrollable>
+
+        {fretboardImg && (
+          <a
+            href={fretboardImg.url}
+            download={fretboardImg.filename}
+            className={cx(globalStyles.linkButton, styles.downloadButton)}
+          >
+            💾
+          </a>
+        )}
       </section>
     </Layout>
   );
