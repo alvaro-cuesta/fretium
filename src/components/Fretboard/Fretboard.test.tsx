@@ -7,6 +7,10 @@ const REQUIRED_PROPS = {
   patternName: 'Major scale',
   instrumentName: 'Guitar',
   tuningName: 'Standard',
+  showBackgroundNeck: true,
+  showStrings: true,
+  showFretLines: true,
+  showFretMarkers: true,
   showFretLabels: true,
   showStringNames: false,
   showDropShadows: true,
@@ -232,6 +236,40 @@ test('renders a subtle drop shadow filter behind filled notes', () => {
   expect(dropShadow).toBeInTheDocument();
 });
 
+test('omits disabled neck layers while keeping notes rendered', () => {
+  const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
+
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      pattern={definition}
+      tuning={['E']}
+      startFret={1}
+      endFret={1}
+      showBackgroundNeck={false}
+      showStrings={false}
+      showFretLines={false}
+    />,
+  );
+
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: definition,
+      tuning: ['E'],
+      startFret: 1,
+      endFret: 1,
+      showBackgroundNeck: false,
+      showStrings: false,
+      showFretLines: false,
+    }),
+  });
+
+  expect(svg.querySelector('g[clip-path] > rect')).not.toBeInTheDocument();
+  expect(svg.querySelector('line[stroke-width="6"]')).not.toBeInTheDocument();
+  expect(svg.querySelector('line[stroke-width="3.2"]')).not.toBeInTheDocument();
+  expect(screen.getByText('F')).toBeInTheDocument();
+});
+
 test('keeps fret-one diagrams in the neck coordinate system including half the nut width', () => {
   const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
 
@@ -309,6 +347,10 @@ test('describes the rendered fretboard in the aria label', () => {
       tuning={['E', 'A', 'D', 'G', 'B', 'E']}
       startFret={3}
       endFret={7}
+      showBackgroundNeck={false}
+      showStrings={false}
+      showFretLines={false}
+      showFretMarkers={false}
       showFretLabels={true}
       showStringNames={true}
       showDropShadows={true}
@@ -321,6 +363,32 @@ test('describes the rendered fretboard in the aria label', () => {
     'aria-label',
     'Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale, frets: 3 through 7, root note: D, note labels: degrees, fret labels: shown, string names: shown.',
   );
+});
+
+test('omits fret markers when disabled', () => {
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      pattern={[]}
+      tuning={['E', 'A']}
+      startFret={2}
+      endFret={4}
+      showFretMarkers={false}
+    />,
+  );
+
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: [],
+      tuning: ['E', 'A'],
+      startFret: 2,
+      endFret: 4,
+    }),
+  });
+
+  expect(
+    svg.querySelectorAll('circle[r="4.5"][fill="rgba(192, 192, 192, 1)"]'),
+  ).toHaveLength(0);
 });
 
 test('explicitly centers note text on the note circle', () => {

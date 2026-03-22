@@ -36,6 +36,10 @@ export function FretboardImg(props: FretboardImgProps) {
     tuning,
     startFret,
     endFret,
+    showBackgroundNeck,
+    showStrings,
+    showFretLines,
+    showFretMarkers,
     showFretLabels,
     showStringNames,
     showDropShadows,
@@ -152,6 +156,10 @@ export function FretboardImg(props: FretboardImgProps) {
           tuning={tuning}
           startFret={startFret}
           endFret={endFret}
+          showBackgroundNeck={showBackgroundNeck}
+          showStrings={showStrings}
+          showFretLines={showFretLines}
+          showFretMarkers={showFretMarkers}
           showFretLabels={showFretLabels}
           showStringNames={showStringNames}
           showDropShadows={showDropShadows}

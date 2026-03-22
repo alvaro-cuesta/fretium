@@ -48,6 +48,10 @@ export type FretboardProps = {
   tuning: Tuning<number>;
   startFret: number;
   endFret: number;
+  showBackgroundNeck: boolean;
+  showStrings: boolean;
+  showFretLines: boolean;
+  showFretMarkers: boolean;
   showFretLabels: boolean;
   showStringNames: boolean;
   showDropShadows: boolean;
@@ -130,6 +134,10 @@ export function Fretboard({
   tuning,
   startFret,
   endFret,
+  showBackgroundNeck,
+  showStrings,
+  showFretLines,
+  showFretMarkers,
   showFretLabels,
   showStringNames,
   showDropShadows,
@@ -321,75 +329,79 @@ export function Fretboard({
       <g transform={`translate(${translateX}, ${translateY})`}>
         <g clipPath={`url(#${neckClipId})`}>
           {/* Neck background */}
-          <rect
-            x={0}
-            y={0}
-            width={neckWidth}
-            height={neckHeight}
-            fill={FRETBOARD_THEME_NECK_COLOR}
-          />
+          {showBackgroundNeck && (
+            <rect
+              x={0}
+              y={0}
+              width={neckWidth}
+              height={neckHeight}
+              fill={FRETBOARD_THEME_NECK_COLOR}
+            />
+          )}
 
           {/* Fret lines */}
-          {Array.from(
-            rangeInclusiveRight(firstNeckFret, endFret + 1),
-            (fret) => (
-              <FretboardFretLine
-                key={fret}
-                x={fretLineX(fret)}
-                yTop={0}
-                yBottom={neckHeight}
-                isNut={fret === 1}
-                shadowFilterId={
-                  showDropShadows ? fretShadowFilterId : undefined
-                }
-              />
-            ),
-          )}
+          {showFretLines &&
+            Array.from(
+              rangeInclusiveRight(firstNeckFret, endFret + 1),
+              (fret) => (
+                <FretboardFretLine
+                  key={fret}
+                  x={fretLineX(fret)}
+                  yTop={0}
+                  yBottom={neckHeight}
+                  isNut={fret === 1}
+                  shadowFilterId={
+                    showDropShadows ? fretShadowFilterId : undefined
+                  }
+                />
+              ),
+            )}
 
           {/* Fret markers */}
-          {Array.from(
-            rangeInclusiveRight(Math.max(1, firstNeckFret - 1), endFret + 1),
-            (fret) => {
-              const fretMarkerType = getFretMarkerType(fret);
-              const x = noteX(fret);
-              const middle = neckHeight * 0.5;
+          {showFretMarkers &&
+            Array.from(
+              rangeInclusiveRight(Math.max(1, firstNeckFret - 1), endFret + 1),
+              (fret) => {
+                const fretMarkerType = getFretMarkerType(fret);
+                const x = noteX(fret);
+                const middle = neckHeight * 0.5;
 
-              switch (fretMarkerType) {
-                case 'single': {
-                  return (
-                    <FretboardMarkerCircle
-                      key={fret}
-                      x={x}
-                      y={middle}
-                    />
-                  );
-                }
-
-                case 'double': {
-                  return (
-                    <g key={fret}>
+                switch (fretMarkerType) {
+                  case 'single': {
+                    return (
                       <FretboardMarkerCircle
+                        key={fret}
                         x={x}
-                        y={middle - SPACING_BETWEEN_STRINGS}
+                        y={middle}
                       />
-                      <FretboardMarkerCircle
-                        x={x}
-                        y={middle + SPACING_BETWEEN_STRINGS}
-                      />
-                    </g>
-                  );
-                }
+                    );
+                  }
 
-                case null: {
-                  return null;
-                }
+                  case 'double': {
+                    return (
+                      <g key={fret}>
+                        <FretboardMarkerCircle
+                          x={x}
+                          y={middle - SPACING_BETWEEN_STRINGS}
+                        />
+                        <FretboardMarkerCircle
+                          x={x}
+                          y={middle + SPACING_BETWEEN_STRINGS}
+                        />
+                      </g>
+                    );
+                  }
 
-                default: {
-                  checkIsNever(fretMarkerType);
+                  case null: {
+                    return null;
+                  }
+
+                  default: {
+                    checkIsNever(fretMarkerType);
+                  }
                 }
-              }
-            },
-          )}
+              },
+            )}
 
           {/* Strings and notes (inside neck) */}
           {tuning.toReversed().map((openNote, i) => {
@@ -403,15 +415,17 @@ export function Fretboard({
             return (
               <g key={`${openNote}-${stringNumber}`}>
                 {/* Strings */}
-                <FretboardString
-                  xLeft={-STRING_CLIP_OVERHANG}
-                  xRight={neckWidth + STRING_CLIP_OVERHANG}
-                  y={y}
-                  gauge={gauge}
-                  shadowFilterId={
-                    showDropShadows ? stringShadowFilterId : undefined
-                  }
-                />
+                {showStrings && (
+                  <FretboardString
+                    xLeft={-STRING_CLIP_OVERHANG}
+                    xRight={neckWidth + STRING_CLIP_OVERHANG}
+                    y={y}
+                    gauge={gauge}
+                    shadowFilterId={
+                      showDropShadows ? stringShadowFilterId : undefined
+                    }
+                  />
+                )}
 
                 {/* Notes */}
                 {Array.from(

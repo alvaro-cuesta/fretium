@@ -58,6 +58,10 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(screen.getByLabelText('Root note')).toHaveValue('C');
   expect(screen.getByLabelText('Start fret')).toHaveValue(0);
   expect(screen.getByLabelText('End fret')).toHaveValue(14);
+  expect(screen.getByLabelText('Background')).toBeChecked();
+  expect(screen.getByLabelText('Strings')).toBeChecked();
+  expect(screen.getByLabelText('Fret lines')).toBeChecked();
+  expect(screen.getByLabelText('Fret markers')).toBeChecked();
   expect(screen.getByLabelText('Fret labels')).toBeChecked();
   expect(screen.getByLabelText('String labels')).toBeChecked();
   expect(screen.getByLabelText('Drop shadows')).toBeChecked();

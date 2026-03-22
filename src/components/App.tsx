@@ -44,6 +44,10 @@ const DEFAULT_PATTERN = 'Major scale' satisfies PatternName;
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
 const DEFAULT_PNG_EXPORT_SCALE = 2 as const;
+const DEFAULT_SHOW_BACKGROUND_NECK = true;
+const DEFAULT_SHOW_STRINGS = true;
+const DEFAULT_SHOW_FRET_LINES = true;
+const DEFAULT_SHOW_FRET_MARKERS = true;
 const DEFAULT_SHOW_FRET_LABELS = true;
 const DEFAULT_SHOW_STRING_LABELS = true;
 const DEFAULT_SHOW_DROP_SHADOWS = true;
@@ -112,6 +116,14 @@ export function App() {
     useState<Note>(DEFAULT_ROOT_NOTE);
   const [selectedNoteDisplayMode, setSelectedNoteDisplayMode] =
     useState<NoteDisplayMode>(DEFAULT_NOTE_DISPLAY_MODE);
+  const [showBackgroundNeck, setShowBackgroundNeck] = useState(
+    DEFAULT_SHOW_BACKGROUND_NECK,
+  );
+  const [showStrings, setShowStrings] = useState(DEFAULT_SHOW_STRINGS);
+  const [showFretLines, setShowFretLines] = useState(DEFAULT_SHOW_FRET_LINES);
+  const [showFretMarkers, setShowFretMarkers] = useState(
+    DEFAULT_SHOW_FRET_MARKERS,
+  );
   const [showFretLabels, setShowFretLabels] = useState(
     DEFAULT_SHOW_FRET_LABELS,
   );
@@ -283,6 +295,54 @@ export function App() {
             <input
               className={styles.checkboxInput}
               type="checkbox"
+              checked={showBackgroundNeck}
+              onChange={(e) => {
+                setShowBackgroundNeck(e.target.checked);
+              }}
+            />
+            <span className={styles.checkboxLabel}>Background</span>
+          </label>
+
+          <label className={styles.checkboxField}>
+            <input
+              className={styles.checkboxInput}
+              type="checkbox"
+              checked={showStrings}
+              onChange={(e) => {
+                setShowStrings(e.target.checked);
+              }}
+            />
+            <span className={styles.checkboxLabel}>Strings</span>
+          </label>
+
+          <label className={styles.checkboxField}>
+            <input
+              className={styles.checkboxInput}
+              type="checkbox"
+              checked={showFretLines}
+              onChange={(e) => {
+                setShowFretLines(e.target.checked);
+              }}
+            />
+            <span className={styles.checkboxLabel}>Fret lines</span>
+          </label>
+
+          <label className={styles.checkboxField}>
+            <input
+              className={styles.checkboxInput}
+              type="checkbox"
+              checked={showFretMarkers}
+              onChange={(e) => {
+                setShowFretMarkers(e.target.checked);
+              }}
+            />
+            <span className={styles.checkboxLabel}>Fret markers</span>
+          </label>
+
+          <label className={styles.checkboxField}>
+            <input
+              className={styles.checkboxInput}
+              type="checkbox"
               checked={showFretLabels}
               onChange={(e) => {
                 setShowFretLabels(e.target.checked);
@@ -332,6 +392,10 @@ export function App() {
             tuning={resolvedInstrumentTuning.tuning}
             startFret={startFret}
             endFret={endFret}
+            showBackgroundNeck={showBackgroundNeck}
+            showStrings={showStrings}
+            showFretLines={showFretLines}
+            showFretMarkers={showFretMarkers}
             showFretLabels={showFretLabels}
             showStringNames={showStringLabels}
             showDropShadows={showDropShadows}
