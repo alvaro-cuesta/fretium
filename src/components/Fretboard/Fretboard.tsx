@@ -1,5 +1,8 @@
 import { useId } from 'react';
-import type { NoteDisplayMode } from '../../lib/fretboard';
+import {
+  getFretboardDescription,
+  type NoteDisplayMode,
+} from '../../lib/fretboard';
 import type { Tuning } from '../../lib/instrument';
 import {
   LOOSE_INTERVAL_TO_NOTE_CLASS,
@@ -33,6 +36,9 @@ import {
 
 export type FretboardProps = {
   pattern: Pattern;
+  patternName: string;
+  instrumentName: string;
+  tuningName: string;
   tuning: Tuning<number>;
   startFret: number;
   endFret: number;
@@ -106,6 +112,9 @@ function getRoundedRectPath({
 
 export function Fretboard({
   pattern,
+  patternName,
+  instrumentName,
+  tuningName,
   tuning,
   startFret,
   endFret,
@@ -114,6 +123,19 @@ export function Fretboard({
   rootNote,
   ref,
 }: FretboardProps) {
+  const description = getFretboardDescription({
+    pattern,
+    patternName,
+    instrumentName,
+    tuningName,
+    tuning,
+    startFret,
+    endFret,
+    showStringNames,
+    noteDisplayMode,
+    rootNote,
+  });
+
   const showOpenString = startFret === 0;
   const hasNut = startFret <= 1;
   const hasLeftOverhang = startFret > 1;
@@ -217,8 +239,7 @@ export function Fretboard({
   return (
     <svg
       role="img"
-      // @todo better aria-label based on props
-      aria-label="Fretboard diagram"
+      aria-label={description}
       viewBox={`0 0 ${totalWidth} ${totalHeight}`}
       ref={ref}
     >

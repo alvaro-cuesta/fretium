@@ -1,12 +1,30 @@
 import { render } from '@testing-library/react';
+import { getFretboardDescription } from '../../lib/fretboard';
 import type { Pattern } from '../../lib/pattern-engine';
-import { Fretboard } from './Fretboard';
+import { Fretboard, type FretboardProps } from './Fretboard';
 
 const REQUIRED_PROPS = {
+  patternName: 'Major scale',
+  instrumentName: 'Guitar',
+  tuningName: 'Standard',
   showStringNames: false,
   noteDisplayMode: 'note' as const,
   rootNote: 'C' as const,
 };
+
+function getDescription(props: Partial<Omit<FretboardProps, 'ref'>> = {}) {
+  return getFretboardDescription({
+    pattern: [],
+    patternName: 'Major scale',
+    instrumentName: 'Guitar',
+    tuningName: 'Standard',
+    tuning: ['E'],
+    startFret: 0,
+    endFret: 0,
+    ...REQUIRED_PROPS,
+    ...props,
+  });
+}
 
 test('keeps the neck local coordinates anchored at the neck edge for open-string diagrams', () => {
   const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
@@ -21,7 +39,9 @@ test('keeps the neck local coordinates anchored at the neck edge for open-string
     />,
   );
 
-  const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
+  const svg = screen.getByRole('img', {
+    name: getDescription({ pattern: definition, tuning: ['E'] }),
+  });
   const note = screen.getByText('E');
   const noteGroup = note.closest('g');
   const neckGroup = svg.querySelector('svg > g');
@@ -52,7 +72,14 @@ test('sizes the viewBox from the translated neck bounds and label area', () => {
     />,
   );
 
-  const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: definition,
+      tuning: ['E'],
+      startFret: 1,
+      endFret: 3,
+    }),
+  });
 
   expect(svg.getAttribute('viewBox')).toBe('0 0 251 64');
 });
@@ -70,7 +97,9 @@ test('adds enough left svg padding to fit a full open-string fret', () => {
     />,
   );
 
-  const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
+  const svg = screen.getByRole('img', {
+    name: getDescription({ pattern: definition, tuning: ['E'] }),
+  });
 
   expect(svg.getAttribute('viewBox')).toBe('0 0 107 64');
 });
@@ -87,7 +116,15 @@ test('renders string names at the open-string position and expands the left marg
     />,
   );
 
-  const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: [],
+      tuning: ['E'],
+      startFret: 1,
+      endFret: 1,
+      showStringNames: true,
+    }),
+  });
   const stringName = screen.getByText('E');
   const neckGroup = svg.querySelector('svg > g');
 
@@ -133,7 +170,14 @@ test('keeps fret-one diagrams in the neck coordinate system including half the n
     />,
   );
 
-  const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: definition,
+      tuning: ['E'],
+      startFret: 1,
+      endFret: 1,
+    }),
+  });
   const clipPath = svg.querySelector('clipPath[id^="neck-clip-"]');
   const stringLine = svg.querySelector('line[stroke-width="3.2"]');
   const neckShape = clipPath?.querySelector('path');
@@ -156,7 +200,14 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
     />,
   );
 
-  const svg = screen.getByRole('img', { name: 'Fretboard diagram' });
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: [],
+      tuning: ['E', 'A'],
+      startFret: 4,
+      endFret: 4,
+    }),
+  });
   const neckShape = svg.querySelector('clipPath[id^="neck-clip-"] path');
   const fretLines = Array.from(svg.querySelectorAll('line[stroke-width="2"]'));
   const markers = Array.from(
@@ -171,6 +222,27 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
   expect(markers).toHaveLength(2);
   expect(Number(markers[0]?.getAttribute('cx'))).toBeCloseTo(-8);
   expect(Number(markers[1]?.getAttribute('cx'))).toBeCloseTo(120);
+});
+
+test('describes the rendered fretboard in the aria label', () => {
+  const screen = render(
+    <Fretboard
+      pattern={[]}
+      patternName="Major scale"
+      instrumentName="Guitar"
+      tuningName="Standard"
+      tuning={['E', 'A', 'D', 'G', 'B', 'E']}
+      startFret={3}
+      endFret={7}
+      showStringNames={true}
+      noteDisplayMode="degree"
+      rootNote="D"
+    />,
+  );
+
+  expect(screen.getByRole('img').getAttribute('aria-label')).toBe(
+    'Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale pattern, frets: 3 through 7, root note: D, note labels: degrees, string names: shown.',
+  );
 });
 
 test('explicitly centers note text on the note circle', () => {

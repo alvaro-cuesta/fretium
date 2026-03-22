@@ -1,0 +1,240 @@
+import {
+  getFretboardDescription,
+  getFretboardImageFilename,
+} from './fretboard';
+import type { Note } from './music';
+import type { Pattern } from './pattern-engine';
+
+const PROPS_BASE = {
+  pattern: [] as Pattern,
+  patternName: 'Major scale',
+  instrumentName: 'Guitar',
+  tuningName: 'Standard',
+  tuning: ['E', 'A', 'D', 'G', 'B', 'E'] as Note[],
+  showStringNames: false,
+  noteDisplayMode: 'note' as const,
+  rootNote: 'C' as const,
+};
+
+describe('getFretboardDescription', () => {
+  test('describes open strings (fret 0-0)', () => {
+    const description = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+    });
+
+    expect(description).toContain('open strings');
+    expect(description).not.toContain('fret 0');
+  });
+
+  test('describes open strings through a fret', () => {
+    const description = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 12,
+    });
+
+    expect(description).toContain('open strings through fret 12');
+  });
+
+  test('describes a single fret (not open strings)', () => {
+    const description = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 5,
+      endFret: 5,
+    });
+
+    expect(description).toContain('frets: 5');
+  });
+
+  test('describes multiple frets', () => {
+    const description = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 3,
+      endFret: 7,
+    });
+
+    expect(description).toContain('frets: 3 through 7');
+  });
+
+  test('includes pattern name', () => {
+    const description = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+    });
+
+    expect(description).toContain('Major scale pattern');
+  });
+
+  test('includes tuning', () => {
+    const description = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+    });
+
+    expect(description).toContain('Standard');
+  });
+
+  test('includes root note', () => {
+    const description = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+      rootNote: 'D',
+    });
+
+    expect(description).toContain('root note: D');
+  });
+
+  test('includes note display label', () => {
+    const descriptionNote = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+      noteDisplayMode: 'note',
+    });
+    expect(descriptionNote).toContain('note labels: names');
+
+    const descriptionInterval = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+      noteDisplayMode: 'interval',
+    });
+    expect(descriptionInterval).toContain('note labels: intervals');
+
+    const descriptionDegree = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+      noteDisplayMode: 'degree',
+    });
+    expect(descriptionDegree).toContain('note labels: degrees');
+
+    const descriptionNone = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+      noteDisplayMode: 'none',
+    });
+    expect(descriptionNone).toContain('note labels: nonde');
+  });
+
+  test('includes string names label', () => {
+    const withStringNames = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+      showStringNames: true,
+    });
+    expect(withStringNames).toContain('string names: shown');
+
+    const withoutStringNames = getFretboardDescription({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+      showStringNames: false,
+    });
+    expect(withoutStringNames).toContain('string names: hidden');
+  });
+});
+
+describe('getFretboardImageFilename', () => {
+  test('uses open-strings slug for fret 0-0', () => {
+    const filename = getFretboardImageFilename({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+    });
+
+    expect(filename).toContain('[open-strings]');
+    expect(filename).not.toContain('[frets-0-0]');
+  });
+
+  test('uses open-strings-frets-0-X slug for open strings through fret X', () => {
+    const filename = getFretboardImageFilename({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 12,
+    });
+
+    expect(filename).toContain('[open-strings-frets-0-12]');
+  });
+
+  test('uses frets-X-Y slug for multiple frets', () => {
+    const filename = getFretboardImageFilename({
+      ...PROPS_BASE,
+      startFret: 3,
+      endFret: 7,
+    });
+
+    expect(filename).toContain('[frets-3-7]');
+  });
+
+  test('has correct format with all segments', () => {
+    const filename = getFretboardImageFilename({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 12,
+      showStringNames: true,
+      noteDisplayMode: 'degree',
+      rootNote: 'D',
+    });
+
+    expect(filename).toMatch(
+      /fretium-\[.*\]-\[.*\]-\[.*\]-\[.*\]-\[.*\]-\[.*\]\.svg/,
+    );
+    expect(filename).toContain('[guitar-standard-EADGBE]');
+    expect(filename).toContain('[major-scale]');
+    expect(filename).toContain('[open-strings-frets-0-12]');
+    expect(filename).toContain('[root-d]');
+    expect(filename).toContain('[labels-degree]');
+    expect(filename).toContain('[with-string-names]');
+  });
+
+  test('ends with .svg', () => {
+    const filename = getFretboardImageFilename({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+    });
+
+    expect(filename).toMatch(/\.svg$/);
+  });
+
+  test('converts pattern name to lowercase slug', () => {
+    const filename = getFretboardImageFilename({
+      ...PROPS_BASE,
+      patternName: 'Major Scale',
+      startFret: 0,
+      endFret: 0,
+    });
+
+    expect(filename).toContain('[major-scale]');
+  });
+
+  test('handles accidentals in root note slug', () => {
+    const filename = getFretboardImageFilename({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+      rootNote: 'C#',
+    });
+
+    expect(filename).toContain('[root-c-sharp]');
+  });
+
+  test('handles flat accidentals in root note slug', () => {
+    const filename = getFretboardImageFilename({
+      ...PROPS_BASE,
+      startFret: 0,
+      endFret: 0,
+      rootNote: 'Db',
+    });
+
+    expect(filename).toContain('[root-d-flat]');
+  });
+});

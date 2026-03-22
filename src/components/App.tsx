@@ -47,6 +47,8 @@ const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
       label: `${instrumentName} ${tuningName}`,
       tuning,
       stringCount: instrument.strings,
+      instrumentName,
+      tuningName,
     })),
   }),
 );
@@ -252,6 +254,9 @@ export function App() {
           <FretboardImg
             className={styles.fretboardImg}
             pattern={pattern}
+            patternName={selectedPattern}
+            instrumentName={resolvedInstrumentTuning.instrumentName}
+            tuningName={resolvedInstrumentTuning.tuningName}
             tuning={resolvedInstrumentTuning.tuning}
             startFret={startFret}
             endFret={endFret}
