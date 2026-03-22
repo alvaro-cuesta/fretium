@@ -12,7 +12,6 @@
   - Needs editing capabilities in the fretboard
   - Needs a way to save patterns (to hash? to file? to local storage?)
 - Add current options to hash? E.g. selected instrument, tuning, chord/scale, diagram options...
-- Add more ways to export diagrams (e.g. PNG)
 - Add a way to customize diagram appearance (colors, fonts, sizes, shown elements...)
 - Add a way to display multiple diagrams at once (for chord progressions, scale variations...)
 - Add a way to display fingerings in diagrams

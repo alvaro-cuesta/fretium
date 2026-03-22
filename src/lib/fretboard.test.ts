@@ -1,6 +1,6 @@
 import {
   getFretboardDescription,
-  getFretboardImageFilename,
+  getFretboardImageFilenameBase,
 } from './fretboard';
 import type { Note } from './music';
 import type { Pattern } from './pattern-engine';
@@ -144,7 +144,7 @@ describe('getFretboardDescription', () => {
 
 describe('getFretboardImageFilename', () => {
   test('uses open-strings slug for fret 0-0', () => {
-    const filename = getFretboardImageFilename({
+    const filename = getFretboardImageFilenameBase({
       ...PROPS_BASE,
       startFret: 0,
       endFret: 0,
@@ -155,7 +155,7 @@ describe('getFretboardImageFilename', () => {
   });
 
   test('uses open-strings-frets-0-X slug for open strings through fret X', () => {
-    const filename = getFretboardImageFilename({
+    const filename = getFretboardImageFilenameBase({
       ...PROPS_BASE,
       startFret: 0,
       endFret: 12,
@@ -165,7 +165,7 @@ describe('getFretboardImageFilename', () => {
   });
 
   test('uses frets-X-Y slug for multiple frets', () => {
-    const filename = getFretboardImageFilename({
+    const filename = getFretboardImageFilenameBase({
       ...PROPS_BASE,
       startFret: 3,
       endFret: 7,
@@ -175,7 +175,7 @@ describe('getFretboardImageFilename', () => {
   });
 
   test('has correct format with all segments', () => {
-    const filename = getFretboardImageFilename({
+    const filename = getFretboardImageFilenameBase({
       ...PROPS_BASE,
       startFret: 0,
       endFret: 12,
@@ -185,7 +185,7 @@ describe('getFretboardImageFilename', () => {
     });
 
     expect(filename).toMatch(
-      /fretium-\[.*\]-\[.*\]-\[.*\]-\[.*\]-\[.*\]-\[.*\]\.svg/,
+      /fretium-\[.*\]-\[.*\]-\[.*\]-\[.*\]-\[.*\]-\[.*\]/,
     );
     expect(filename).toContain('[guitar-standard-EADGBE]');
     expect(filename).toContain('[major-scale]');
@@ -196,17 +196,17 @@ describe('getFretboardImageFilename', () => {
   });
 
   test('ends with .svg', () => {
-    const filename = getFretboardImageFilename({
+    const filename = getFretboardImageFilenameBase({
       ...PROPS_BASE,
       startFret: 0,
       endFret: 0,
     });
 
-    expect(filename).toMatch(/\.svg$/);
+    expect(filename).not.toMatch(/\.svg$/);
   });
 
   test('converts pattern name to lowercase slug', () => {
-    const filename = getFretboardImageFilename({
+    const filename = getFretboardImageFilenameBase({
       ...PROPS_BASE,
       patternName: 'Major Scale',
       startFret: 0,
@@ -217,7 +217,7 @@ describe('getFretboardImageFilename', () => {
   });
 
   test('handles accidentals in root note slug', () => {
-    const filename = getFretboardImageFilename({
+    const filename = getFretboardImageFilenameBase({
       ...PROPS_BASE,
       startFret: 0,
       endFret: 0,
@@ -228,7 +228,7 @@ describe('getFretboardImageFilename', () => {
   });
 
   test('handles flat accidentals in root note slug', () => {
-    const filename = getFretboardImageFilename({
+    const filename = getFretboardImageFilenameBase({
       ...PROPS_BASE,
       startFret: 0,
       endFret: 0,

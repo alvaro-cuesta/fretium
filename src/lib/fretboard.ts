@@ -131,7 +131,7 @@ export function getFretboardDescription(props: FretboardMetadataProps): string {
   return `Fretium diagram for ${metadata.instrumentLabel} ${metadata.tuningLabel} (${tuningNotes}), pattern: ${metadata.patternNameLabel} pattern, frets: ${metadata.fretRangeLabel}, root note: ${metadata.rootNoteLabel}, note labels: ${metadata.noteDisplayLabel}, string names: ${metadata.stringNamesLabel}.`;
 }
 
-export function getFretboardImageFilename(
+export function getFretboardImageFilenameBase(
   props: FretboardMetadataProps,
 ): string {
   const metadata = getFretboardDerivedMetadata(props);
@@ -147,5 +147,5 @@ export function getFretboardImageFilename(
     metadata.stringNamesSlug,
   ];
 
-  return `fretium-${segments.map((s) => `[${s}]`).join('-')}.svg`;
+  return `fretium-${segments.map((s) => `[${s}]`).join('-')}`;
 }

@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { objectEntries, objectKeys } from '../../lib/object.ts';
 import { INSTRUMENTS } from '../config/instruments.ts';
 import {
@@ -9,12 +9,15 @@ import {
 } from '../config/patterns.ts';
 import { useLenientInput } from '../hooks/useLenientInput.ts';
 import globalStyles from '../index.module.scss';
+import { downloadBlob, PNG_CONTENT_TYPE } from '../lib/file.ts';
 import { type NoteDisplayMode } from '../lib/fretboard.ts';
+import { rasterizeImage } from '../lib/image.ts';
 import { clamp } from '../lib/math.ts';
 import type { Note } from '../lib/music.ts';
 import styles from './App.module.scss';
 import { FretboardImg, type ImgChangeEvent } from './FretboardImg.tsx';
 import { Layout } from './Layout.tsx';
+import { MenuButton } from './MenuButton.tsx';
 import { Scrollable } from './Scrollable.tsx';
 
 const ROOT_NOTES = [
@@ -40,6 +43,7 @@ const ROOT_NOTES = [
 const DEFAULT_PATTERN = 'Major scale' satisfies PatternName;
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
+const DEFAULT_PNG_EXPORT_SCALE = 2 as const;
 
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({
@@ -84,15 +88,29 @@ function deriveFretValue(
   return clamp(parsedValue, min, max);
 }
 
+async function downloadPng(filename: string, image: HTMLImageElement) {
+  const pngBlob = await rasterizeImage(
+    image,
+    PNG_CONTENT_TYPE,
+    DEFAULT_PNG_EXPORT_SCALE,
+  );
+
+  downloadBlob(pngBlob, `${filename}.png`);
+}
+
 export function App() {
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
   const [fretboardImg, setFretboardImg] = useState<ImgChangeEvent | null>(null);
   const [selectedPattern, setSelectedPattern] =
     useState<PatternName>(DEFAULT_PATTERN);
+  const pattern = PATTERNS[selectedPattern];
   const [selectedRootNote, setSelectedRootNote] =
     useState<Note>(DEFAULT_ROOT_NOTE);
   const [selectedNoteDisplayMode, setSelectedNoteDisplayMode] =
     useState<NoteDisplayMode>(DEFAULT_NOTE_DISPLAY_MODE);
 
+  // Instrument tuning
   const [selectedInstrumentTuning, setSelectedInstrumentTuning] = useState(
     DEFAULT_INSTRUMENT_TUNING_VALUE,
   );
@@ -104,27 +122,23 @@ export function App() {
     throw new Error('Expected at least one instrument tuning to be available.');
   }
 
-  const pattern = PATTERNS[selectedPattern];
-
   // Start/end fret
   const [startFret, setStartFret] = useState(DEFAULT_START_FRET);
   const [endFret, setEndFret] = useState(DEFAULT_END_FRET);
-
-  const startFretInput = useLenientInput<number>({
+  const startFretInputProps = useLenientInput<number>({
     value: startFret,
     setValue: setStartFret,
     deriveValue: (inputValue, currentValue) =>
       deriveFretValue(inputValue, currentValue, MIN_FRET, endFret),
     formatValue: (value) => String(value),
   });
-  const endFretInput = useLenientInput<number>({
+  const endFretInputProps = useLenientInput<number>({
     value: endFret,
     setValue: setEndFret,
     deriveValue: (inputValue, currentValue) =>
       deriveFretValue(inputValue, currentValue, startFret, MAX_FRET),
     formatValue: (value) => String(value),
   });
-
   return (
     <Layout>
       <section className={styles.controlsSection}>
@@ -170,7 +184,7 @@ export function App() {
                 type="number"
                 min={MIN_FRET}
                 max={endFret}
-                {...startFretInput}
+                {...startFretInputProps}
               />
             </label>
             <label className={styles.fieldGroup}>
@@ -180,7 +194,7 @@ export function App() {
                 type="number"
                 min={startFret}
                 max={MAX_FRET}
-                {...endFretInput}
+                {...endFretInputProps}
               />
             </label>
           </div>
@@ -255,8 +269,11 @@ export function App() {
       <section className={styles.fretboardSection}>
         <Scrollable>
           <FretboardImg
+            imgRef={imgRef}
             className={styles.fretboardImg}
-            onImgChange={setFretboardImg}
+            onImgChange={(nextFretboardImg) => {
+              setFretboardImg(nextFretboardImg);
+            }}
             pattern={pattern}
             patternName={selectedPattern}
             instrumentName={resolvedInstrumentTuning.instrumentName}
@@ -271,13 +288,45 @@ export function App() {
         </Scrollable>
 
         {fretboardImg && (
-          <a
-            href={fretboardImg.url}
-            download={fretboardImg.filename}
-            className={cx(globalStyles.linkButton, styles.downloadButton)}
+          <MenuButton
+            ariaLabel="Download options"
+            transitionMs={220}
+            className={styles.downloadMenu}
+            renderMenu={({ closeMenu, menuItemClassName }) => (
+              <>
+                <a
+                  role="menuitem"
+                  href={fretboardImg.url}
+                  download={`${fretboardImg.filenameBase}.svg`}
+                  aria-label="Download SVG"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={closeMenu}
+                >
+                  .SVG
+                </a>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  aria-label="Download PNG"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    closeMenu();
+
+                    if (!imgRef.current) {
+                      return;
+                    }
+
+                    void downloadPng(fretboardImg.filenameBase, imgRef.current);
+                  }}
+                >
+                  .PNG
+                </button>
+              </>
+            )}
           >
-            💾
-          </a>
+            <span aria-hidden="true">💾</span>
+          </MenuButton>
         )}
       </section>
     </Layout>

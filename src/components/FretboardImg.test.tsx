@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import * as animationFrameHook from '../hooks/useImperativeAnimationFrame';
 import { getFretboardDescription } from '../lib/fretboard';
 import type { Pattern } from '../lib/pattern-engine';
-import { FretboardImg } from './FretboardImg';
+import { FretboardImg, type ImgChangeEvent } from './FretboardImg';
 import styles from './FretboardImg.module.scss';
 
 const REQUIRED_PROPS = {
@@ -131,6 +131,44 @@ test('uses descriptive alt text and a metadata-based svg filename', async () => 
   }
 
   expect(img).toHaveAttribute('src', 'blob:mock-fretboard');
+
+  createObjectUrl.mockRestore();
+  revokeObjectUrl.mockRestore();
+});
+
+test('reports serialized SVG data with the generated image metadata', async () => {
+  const createObjectUrl = vi
+    .spyOn(URL, 'createObjectURL')
+    .mockReturnValue('blob:mock-fretboard');
+  const revokeObjectUrl = vi
+    .spyOn(URL, 'revokeObjectURL')
+    .mockImplementation(() => undefined);
+  const onImgChange = vi.fn<(event: ImgChangeEvent | null) => void>();
+
+  render(
+    <FretboardImg
+      {...REQUIRED_PROPS}
+      tuning={['E', 'A', 'D', 'G', 'B', 'E']}
+      onImgChange={onImgChange}
+    />,
+  );
+
+  await waitFor(() => {
+    expect(onImgChange).toHaveBeenCalled();
+  });
+
+  const [lastImgChange] = onImgChange.mock.calls.at(-1) ?? [];
+
+  expect(lastImgChange).not.toBeNull();
+
+  if (!lastImgChange) {
+    throw new Error('Expected the latest image change event to be defined.');
+  }
+
+  expect(lastImgChange.url).toBe('blob:mock-fretboard');
+  expect(lastImgChange.filenameBase).toBe(
+    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-c]-[labels-note]-[no-string-names]',
+  );
 
   createObjectUrl.mockRestore();
   revokeObjectUrl.mockRestore();

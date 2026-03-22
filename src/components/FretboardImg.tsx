@@ -1,24 +1,26 @@
 import cx from 'classnames';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Exact } from 'type-fest';
 import { useImperativeAnimationFrame } from '../hooks/useImperativeAnimationFrame.ts';
 import { useMutationObserverLifecycle } from '../hooks/useMutationObserverLifecycle.ts';
-import { svgElementToFile } from '../lib/file.ts';
+import { SVG_CONTENT_TYPE } from '../lib/file.ts';
 import {
   getFretboardDescription,
-  getFretboardImageFilename,
+  getFretboardImageFilenameBase,
 } from '../lib/fretboard.ts';
+import { svgElementToFileContents } from '../lib/image.ts';
 import { Fretboard, type FretboardProps } from './Fretboard/Fretboard.tsx';
 import styles from './FretboardImg.module.scss';
 
 export type ImgChangeEvent = {
   url: string;
-  filename: string;
+  filenameBase: string;
 };
 
 type FretboardImgProps = Omit<FretboardProps, 'ref'> &
   React.ImgHTMLAttributes<HTMLImageElement> & {
-    onImgChange?: (event: ImgChangeEvent | null) => void;
+    imgRef?: React.Ref<HTMLImageElement> | undefined;
+    onImgChange?: ((event: ImgChangeEvent | null) => void) | undefined;
   };
 
 type FretboardImgStyle = React.CSSProperties & {
@@ -40,6 +42,7 @@ export function FretboardImg(props: FretboardImgProps) {
     className,
     style,
     onImgChange,
+    imgRef,
     ...imgProps
   } = props;
 
@@ -60,7 +63,7 @@ export function FretboardImg(props: FretboardImgProps) {
     noteDisplayMode,
     rootNote,
   });
-  const filename = getFretboardImageFilename({
+  const filenameBase = getFretboardImageFilenameBase({
     pattern,
     patternName,
     instrumentName,
@@ -73,18 +76,28 @@ export function FretboardImg(props: FretboardImgProps) {
     rootNote,
   });
 
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [imgData, setImgData] = useState<ImgChangeEvent | null>(null);
   const animationFrame = useImperativeAnimationFrame();
+  const onImgChangeRef = useRef(onImgChange);
+
+  useEffect(() => {
+    onImgChangeRef.current = onImgChange;
+  }, [onImgChange]);
 
   const regenerateImgUrl = useCallback(
     (svgElement: SVGSVGElement) => {
-      const svgData = svgElementToFile(svgElement);
-      const blob = new Blob([svgData], { type: 'image/svg+xml' });
+      const svgData = svgElementToFileContents(svgElement);
+      const blob = new Blob([svgData], { type: SVG_CONTENT_TYPE });
       // @todo this is not working to make "Right click > Save image as..." have a filename :/
-      const file = new File([blob], filename, { type: 'image/svg+xml' });
+      const file = new File([blob], `${filenameBase}.svg`, {
+        type: SVG_CONTENT_TYPE,
+      });
       const objectUrl = URL.createObjectURL(file);
 
-      setImgUrl(objectUrl);
+      setImgData({
+        url: objectUrl,
+        filenameBase,
+      });
 
       return () => {
         // Defer revocation to ensure the URL is not revoked before the actual DOM has changed
@@ -95,7 +108,7 @@ export function FretboardImg(props: FretboardImgProps) {
         }, 0);
       };
     },
-    [filename],
+    [filenameBase],
   );
 
   // We have to use a MutationObserver here because during development any change to the code changed the SVG element
@@ -115,14 +128,14 @@ export function FretboardImg(props: FretboardImgProps) {
   );
 
   useEffect(() => {
-    onImgChange?.(imgUrl ? { url: imgUrl, filename } : null);
-  }, [imgUrl, filename, onImgChange]);
+    onImgChange?.(imgData);
+  }, [imgData, onImgChange]);
 
   useEffect(() => {
     return () => {
-      onImgChange?.(null);
+      onImgChangeRef.current?.(null);
     };
-  }, [onImgChange]);
+  }, []);
 
   return (
     <>
@@ -142,10 +155,11 @@ export function FretboardImg(props: FretboardImgProps) {
         />
       </div>
 
-      {imgUrl && (
+      {imgData && (
         <img
           {...imgProps}
-          src={imgUrl}
+          ref={imgRef}
+          src={imgData.url}
           alt={description}
           className={cx(styles.fretboardImg, className)}
           style={

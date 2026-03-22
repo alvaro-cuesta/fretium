@@ -133,11 +133,13 @@ select {
   &:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 4px var(--accent-bg);
+    box-shadow:
+      inset 0 0 0 1px var(--accent),
+      0 0 0 4px var(--accent-bg);
   }
 
   &:hover {
-    border-color: var(--accent-border);
+    box-shadow: inset 0 0 0 1px var(--accent-border);
   }
 }
 
@@ -167,11 +169,13 @@ button,
 
   &:focus-visible {
     border-color: var(--accent);
-    box-shadow: 0 0 0 4px var(--accent-bg);
+    box-shadow:
+      inset 0 0 0 1px var(--accent),
+      0 0 0 4px var(--accent-bg);
   }
 
   &:hover:not(:disabled) {
-    border-color: var(--accent-border);
+    box-shadow: inset 0 0 0 1px var(--accent-border);
   }
 
   &:active:not(:disabled) {

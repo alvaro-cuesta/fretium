@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { useLatest } from './useLatest';
 
 type MutationObserverLifecycleRefCallback<TNode extends Node> = (
   node: TNode | null,
@@ -25,8 +26,7 @@ export function useMutationObserverLifecycle<TNode extends Node>(
   deps: React.DependencyList,
   options: MutationObserverInit,
 ): MutationObserverLifecycleRefCallback<TNode> {
-  const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  const latestCallback = useLatest(callback);
 
   const observedNodeRef = useRef<TNode | null>(null);
   const observerRef = useRef<MutationObserver | null>(null);
@@ -45,17 +45,24 @@ export function useMutationObserverLifecycle<TNode extends Node>(
     subtree,
   } = options;
 
-  const runCallback = useCallback((mutations: MutationRecord[]) => {
-    const node = observedNodeRef.current;
-    const observer = observerRef.current;
+  const runCallback = useCallback(
+    (mutations: MutationRecord[]) => {
+      const node = observedNodeRef.current;
+      const observer = observerRef.current;
 
-    if (!node || !observer) {
-      return;
-    }
+      if (!node || !observer) {
+        return;
+      }
 
-    mutationCleanupRef.current?.();
-    mutationCleanupRef.current = callbackRef.current(node, mutations, observer);
-  }, []);
+      mutationCleanupRef.current?.();
+      mutationCleanupRef.current = latestCallback.current(
+        node,
+        mutations,
+        observer,
+      );
+    },
+    [latestCallback],
+  );
 
   const disconnect = useCallback(() => {
     mutationCleanupRef.current?.();
