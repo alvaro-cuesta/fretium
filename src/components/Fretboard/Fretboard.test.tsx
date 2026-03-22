@@ -125,9 +125,39 @@ test('renders string names at the open-string position and expands the left marg
   const stringName = screen.getByText('E');
   const neckGroup = svg.querySelector('svg > g');
 
-  expect(svg).toHaveAttribute('viewBox', '0 0 171 64');
-  expect(neckGroup).toHaveAttribute('transform', 'translate(64, 16)');
-  expect(stringName).toHaveAttribute('x', '-29');
+  expect(svg).toHaveAttribute('viewBox', '0 0 135 64');
+  expect(neckGroup).toHaveAttribute('transform', 'translate(28, 16)');
+  expect(stringName).toHaveAttribute('x', '-12');
+  expect(stringName).toHaveAttribute('y', '12');
+});
+
+test('renders higher-fret string names close to the left overhang edge', () => {
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      showStringNames={true}
+      pattern={[]}
+      tuning={['E', 'A']}
+      startFret={4}
+      endFret={4}
+    />,
+  );
+
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: [],
+      tuning: ['E', 'A'],
+      startFret: 4,
+      endFret: 4,
+      showStringNames: true,
+    }),
+  });
+  const stringName = screen.getByText('A');
+  const neckGroup = svg.querySelector('svg > g');
+
+  expect(svg).toHaveAttribute('viewBox', '0 0 156 92');
+  expect(neckGroup).toHaveAttribute('transform', 'translate(28, 16)');
+  expect(stringName).toHaveAttribute('x', '-12');
   expect(stringName).toHaveAttribute('y', '12');
 });
 

@@ -64,6 +64,7 @@ const SPACING_BETWEEN_STRINGS = 28;
 const FRET_LABEL_OFFSET = 12;
 const SPACE_TO_STRINGS = 12;
 const OPEN_STRING_X = FRETBOARD_THEME_NUT_WIDTH / 2 - FRET_SPACING / 2;
+const STRING_NAME_X = -SPACE_TO_STRINGS;
 
 function getRoundedRectPath({
   x,
@@ -177,9 +178,16 @@ export function Fretboard({
 
   const neckClipId = `neck-clip-${useId()}`;
 
+  const stringNameX = showOpenString ? OPEN_STRING_X : STRING_NAME_X;
+  const openStringLeftMargin = showOpenString ? FRET_SPACING : 0;
+  const stringNameLeftMargin = showStringNames
+    ? BOARD_PADDING - stringNameX
+    : 0;
+
   const leftMargin = Math.max(
     BOARD_PADDING,
-    showOpenString || showStringNames ? FRET_SPACING : 0,
+    openStringLeftMargin,
+    stringNameLeftMargin,
   );
   const translateX = leftMargin;
   const translateY = BOARD_PADDING;
@@ -192,7 +200,7 @@ export function Fretboard({
   const renderStringName = (openNote: Note, y: number) => (
     <text
       key={`string-name-${openNote}-${y}`}
-      x={OPEN_STRING_X}
+      x={stringNameX}
       y={y}
       fill={FRETBOARD_THEME_LABEL_COLOR}
       fontFamily={FRETBOARD_THEME_FONT_FAMILY}
