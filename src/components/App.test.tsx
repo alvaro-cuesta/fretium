@@ -58,9 +58,10 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(screen.getByLabelText('Root note')).toHaveValue('C');
   expect(screen.getByLabelText('Start fret')).toHaveValue(0);
   expect(screen.getByLabelText('End fret')).toHaveValue(14);
-  expect(
-    await screen.findByAltText(/major scale pattern/i),
-  ).toBeInTheDocument();
+  expect(screen.getByLabelText('Fret labels')).toBeChecked();
+  expect(screen.getByLabelText('String labels')).toBeChecked();
+  expect(screen.getByLabelText('Drop shadows')).toBeChecked();
+  expect(await screen.findByAltText(/major scale/i)).toBeInTheDocument();
 
   const downloadToggle = await screen.findByRole('button', {
     name: 'Download options',
@@ -80,7 +81,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
     screen.getByRole('menuitem', { name: 'Download SVG' }),
   ).toHaveAttribute(
     'download',
-    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-c]-[labels-note]-[with-string-names].svg',
+    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-names].svg',
   );
 
   fireEvent.pointerDown(screen.getByLabelText('Pattern'));
@@ -118,7 +119,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   ];
 
   expect(image).toBeInstanceOf(HTMLImageElement);
-  expect(image.alt).toMatch(/major scale pattern/i);
+  expect(image.alt).toMatch(/major scale/i);
   expect(outContentType).toBe(PNG_CONTENT_TYPE);
   expect(scale).toBe(2);
 
@@ -129,7 +130,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(clickedDownloads).toEqual([
     {
       download:
-        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-c]-[labels-note]-[with-string-names].png',
+        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-names].png',
       href: 'blob:mock-download',
       rel: 'noopener',
     },

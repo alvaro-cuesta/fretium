@@ -7,7 +7,9 @@ const REQUIRED_PROPS = {
   patternName: 'Major scale',
   instrumentName: 'Guitar',
   tuningName: 'Standard',
+  showFretLabels: true,
   showStringNames: false,
+  showDropShadows: true,
   noteDisplayMode: 'note' as const,
   rootNote: 'C' as const,
 };
@@ -56,7 +58,6 @@ test('keeps the neck local coordinates anchored at the neck edge for open-string
   expect(stringFilter?.querySelector('feDropShadow')).toBeInTheDocument();
   expect(fretFilter).toHaveAttribute('filterUnits', 'userSpaceOnUse');
   expect(stringFilter).toHaveAttribute('filterUnits', 'userSpaceOnUse');
-  expect(stringFilter).toHaveAttribute('x', '-4');
   expect(clipPath?.querySelector('rect')).not.toBeInTheDocument();
   expect(neckGroup).toHaveAttribute('transform', 'translate(64, 16)');
   expect(noteGroup).toHaveAttribute('transform', 'translate(-29, 12)');
@@ -308,7 +309,9 @@ test('describes the rendered fretboard in the aria label', () => {
       tuning={['E', 'A', 'D', 'G', 'B', 'E']}
       startFret={3}
       endFret={7}
+      showFretLabels={true}
       showStringNames={true}
+      showDropShadows={true}
       noteDisplayMode="degree"
       rootNote="D"
     />,
@@ -316,7 +319,7 @@ test('describes the rendered fretboard in the aria label', () => {
 
   expect(screen.getByRole('img')).toHaveAttribute(
     'aria-label',
-    'Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale pattern, frets: 3 through 7, root note: D, note labels: degrees, string names: shown.',
+    'Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale, frets: 3 through 7, root note: D, note labels: degrees, fret labels: shown, string names: shown.',
   );
 });
 
@@ -368,6 +371,66 @@ test('shows the ending fret label for open-string diagrams', () => {
   );
 
   expect(screen.queryByText('1')).toBeInTheDocument();
+});
+
+test('omits fret labels and the extra footer space when fret labels are disabled', () => {
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      showFretLabels={false}
+      pattern={[]}
+      tuning={['E']}
+      startFret={1}
+      endFret={4}
+    />,
+  );
+
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: [],
+      tuning: ['E'],
+      startFret: 1,
+      endFret: 4,
+      showFretLabels: false,
+    }),
+  });
+
+  expect(svg).toHaveAttribute('viewBox', '0 0 315 56');
+  expect(screen.queryByText('1')).not.toBeInTheDocument();
+  expect(screen.queryByText('4')).not.toBeInTheDocument();
+});
+
+test('does not render drop-shadow defs or filter attributes when shadows are disabled', () => {
+  const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
+
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      showDropShadows={false}
+      pattern={definition}
+      tuning={['E']}
+      startFret={1}
+      endFret={1}
+    />,
+  );
+
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: definition,
+      tuning: ['E'],
+      startFret: 1,
+      endFret: 1,
+      showDropShadows: false,
+    }),
+  });
+  const fretLine = svg.querySelector('line[stroke-width="6"]');
+  const stringLine = svg.querySelector('line[stroke-width="3.2"]');
+  const noteCircle = svg.querySelector('circle[fill="#000000"]');
+
+  expect(svg.querySelector('defs > filter')).not.toBeInTheDocument();
+  expect(fretLine).not.toHaveAttribute('filter');
+  expect(stringLine).not.toHaveAttribute('filter');
+  expect(noteCircle).not.toHaveAttribute('filter');
 });
 
 test('supports string and fret DSL selectors', () => {

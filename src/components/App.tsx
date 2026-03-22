@@ -44,6 +44,9 @@ const DEFAULT_PATTERN = 'Major scale' satisfies PatternName;
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
 const DEFAULT_PNG_EXPORT_SCALE = 2 as const;
+const DEFAULT_SHOW_FRET_LABELS = true;
+const DEFAULT_SHOW_STRING_LABELS = true;
+const DEFAULT_SHOW_DROP_SHADOWS = true;
 
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({
@@ -109,6 +112,15 @@ export function App() {
     useState<Note>(DEFAULT_ROOT_NOTE);
   const [selectedNoteDisplayMode, setSelectedNoteDisplayMode] =
     useState<NoteDisplayMode>(DEFAULT_NOTE_DISPLAY_MODE);
+  const [showFretLabels, setShowFretLabels] = useState(
+    DEFAULT_SHOW_FRET_LABELS,
+  );
+  const [showStringLabels, setShowStringLabels] = useState(
+    DEFAULT_SHOW_STRING_LABELS,
+  );
+  const [showDropShadows, setShowDropShadows] = useState(
+    DEFAULT_SHOW_DROP_SHADOWS,
+  );
 
   // Instrument tuning
   const [selectedInstrumentTuning, setSelectedInstrumentTuning] = useState(
@@ -139,6 +151,7 @@ export function App() {
       deriveFretValue(inputValue, currentValue, startFret, MAX_FRET),
     formatValue: (value) => String(value),
   });
+
   return (
     <Layout>
       <section className={styles.controlsSection}>
@@ -264,6 +277,44 @@ export function App() {
             </select>
           </label>
         </div>
+
+        <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
+          <label className={styles.checkboxField}>
+            <input
+              className={styles.checkboxInput}
+              type="checkbox"
+              checked={showFretLabels}
+              onChange={(e) => {
+                setShowFretLabels(e.target.checked);
+              }}
+            />
+            <span className={styles.checkboxLabel}>Fret labels</span>
+          </label>
+
+          <label className={styles.checkboxField}>
+            <input
+              className={styles.checkboxInput}
+              type="checkbox"
+              checked={showStringLabels}
+              onChange={(e) => {
+                setShowStringLabels(e.target.checked);
+              }}
+            />
+            <span className={styles.checkboxLabel}>String labels</span>
+          </label>
+
+          <label className={styles.checkboxField}>
+            <input
+              className={styles.checkboxInput}
+              type="checkbox"
+              checked={showDropShadows}
+              onChange={(e) => {
+                setShowDropShadows(e.target.checked);
+              }}
+            />
+            <span className={styles.checkboxLabel}>Drop shadows</span>
+          </label>
+        </div>
       </section>
 
       <section className={styles.fretboardSection}>
@@ -281,7 +332,9 @@ export function App() {
             tuning={resolvedInstrumentTuning.tuning}
             startFret={startFret}
             endFret={endFret}
-            showStringNames={true}
+            showFretLabels={showFretLabels}
+            showStringNames={showStringLabels}
+            showDropShadows={showDropShadows}
             noteDisplayMode={selectedNoteDisplayMode}
             rootNote={selectedRootNote}
           />

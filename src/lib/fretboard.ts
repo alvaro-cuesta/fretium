@@ -12,6 +12,7 @@ type FretboardMetadataProps = {
   tuning: Tuning<number>;
   startFret: number;
   endFret: number;
+  showFretLabels: boolean;
   showStringNames: boolean;
   noteDisplayMode: NoteDisplayMode;
   rootNote: Note;
@@ -21,25 +22,7 @@ const NOTE_DISPLAY_MODE_LABEL: Record<NoteDisplayMode, string> = {
   note: 'names',
   interval: 'intervals',
   degree: 'degrees',
-  none: 'nonde',
-};
-
-type FretboardDerivedMetadata = {
-  patternNameLabel: string;
-  patternNameSlug: string;
-  instrumentLabel: string;
-  instrumentSlug: string;
-  tuningLabel: string;
-  tuningSlug: string;
-  tuningNotes: Note[];
-  fretRangeLabel: string;
-  fretRangeSlug: string;
-  rootNoteLabel: Note;
-  rootNoteSlug: string;
-  noteDisplayLabel: string;
-  noteDisplaySlug: NoteDisplayMode;
-  stringNamesLabel: string;
-  stringNamesSlug: 'with-string-names' | 'no-string-names';
+  none: 'none',
 };
 
 function formatFretRangeSlug(startFret: number, endFret: number): string {
@@ -73,79 +56,43 @@ function formatFretRangeForDescription(
   return `${startFret} through ${endFret}`;
 }
 
-function noteToSlug(note: Note): string {
-  const baseNote = note.charAt(0).toLowerCase();
-  const accidental = note.slice(1);
-
-  if (accidental === '#') {
-    return `${baseNote}-sharp`;
-  }
-
-  if (accidental === 'b') {
-    return `${baseNote}-flat`;
-  }
-
-  return baseNote;
-}
-
-function getFretboardDerivedMetadata({
-  patternName,
-  instrumentName,
-  tuningName,
-  tuning,
-  startFret,
-  endFret,
-  showStringNames,
-  noteDisplayMode,
-  rootNote,
-}: FretboardMetadataProps): FretboardDerivedMetadata {
-  const slugify = (str: string) =>
-    str
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '');
-
-  return {
-    patternNameLabel: patternName,
-    patternNameSlug: slugify(patternName),
-    instrumentLabel: instrumentName,
-    instrumentSlug: slugify(instrumentName),
-    tuningLabel: tuningName,
-    tuningSlug: slugify(tuningName),
-    tuningNotes: tuning,
-    fretRangeLabel: formatFretRangeForDescription(startFret, endFret),
-    fretRangeSlug: formatFretRangeSlug(startFret, endFret),
-    rootNoteLabel: rootNote,
-    rootNoteSlug: `root-${noteToSlug(rootNote)}`,
-    noteDisplayLabel: NOTE_DISPLAY_MODE_LABEL[noteDisplayMode],
-    noteDisplaySlug: noteDisplayMode,
-    stringNamesLabel: showStringNames ? 'shown' : 'hidden',
-    stringNamesSlug: showStringNames ? 'with-string-names' : 'no-string-names',
-  };
-}
-
 export function getFretboardDescription(props: FretboardMetadataProps): string {
-  const metadata = getFretboardDerivedMetadata(props);
-  const tuningNotes = metadata.tuningNotes.join(' ');
+  const tuningNotes = props.tuning.join(' ');
 
-  return `Fretium diagram for ${metadata.instrumentLabel} ${metadata.tuningLabel} (${tuningNotes}), pattern: ${metadata.patternNameLabel} pattern, frets: ${metadata.fretRangeLabel}, root note: ${metadata.rootNoteLabel}, note labels: ${metadata.noteDisplayLabel}, string names: ${metadata.stringNamesLabel}.`;
+  const segments = [
+    `for ${props.instrumentName} ${props.tuningName} (${tuningNotes})`,
+    `pattern: ${props.patternName}`,
+    `frets: ${formatFretRangeForDescription(props.startFret, props.endFret)}`,
+    `root note: ${props.rootNote}`,
+    `note labels: ${NOTE_DISPLAY_MODE_LABEL[props.noteDisplayMode]}`,
+    `fret labels: ${props.showFretLabels ? 'shown' : 'hidden'}`,
+    `string names: ${props.showStringNames ? 'shown' : 'hidden'}`,
+  ];
+
+  return `Fretium diagram ${segments.join(', ')}.`;
 }
 
 export function getFretboardImageFilenameBase(
   props: FretboardMetadataProps,
 ): string {
-  const metadata = getFretboardDerivedMetadata(props);
-  const tuningNotesSlug = metadata.tuningNotes.join('');
-  const instrumentTuningSlug = `${metadata.instrumentSlug}-${metadata.tuningSlug}-${tuningNotesSlug}`;
+  const tuningNotesSlug = props.tuning.join('');
 
   const segments = [
-    instrumentTuningSlug,
-    metadata.patternNameSlug,
-    metadata.fretRangeSlug,
-    metadata.rootNoteSlug,
-    `labels-${metadata.noteDisplaySlug}`,
-    metadata.stringNamesSlug,
+    `${slugify(props.instrumentName)}-${slugify(props.tuningName)}-${tuningNotesSlug}`,
+    slugify(props.patternName),
+    formatFretRangeSlug(props.startFret, props.endFret),
+    `root-${props.rootNote}`,
+    `labels-${props.noteDisplayMode}`,
+    props.showFretLabels ? 'with-fret-labels' : 'no-fret-labels',
+    props.showStringNames ? 'with-string-names' : 'no-string-names',
   ];
 
   return `fretium-${segments.map((s) => `[${s}]`).join('-')}`;
+}
+
+function slugify(str: string) {
+  return str
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
 }

@@ -36,7 +36,9 @@ export function FretboardImg(props: FretboardImgProps) {
     tuning,
     startFret,
     endFret,
+    showFretLabels,
     showStringNames,
+    showDropShadows,
     noteDisplayMode,
     rootNote,
     className,
@@ -59,6 +61,7 @@ export function FretboardImg(props: FretboardImgProps) {
     tuning,
     startFret,
     endFret,
+    showFretLabels,
     showStringNames,
     noteDisplayMode,
     rootNote,
@@ -71,6 +74,7 @@ export function FretboardImg(props: FretboardImgProps) {
     tuning,
     startFret,
     endFret,
+    showFretLabels,
     showStringNames,
     noteDisplayMode,
     rootNote,
@@ -148,7 +152,9 @@ export function FretboardImg(props: FretboardImgProps) {
           tuning={tuning}
           startFret={startFret}
           endFret={endFret}
+          showFretLabels={showFretLabels}
           showStringNames={showStringNames}
+          showDropShadows={showDropShadows}
           noteDisplayMode={noteDisplayMode}
           rootNote={rootNote}
           ref={mutationObserverRef}

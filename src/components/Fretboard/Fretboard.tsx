@@ -48,7 +48,9 @@ export type FretboardProps = {
   tuning: Tuning<number>;
   startFret: number;
   endFret: number;
+  showFretLabels: boolean;
   showStringNames: boolean;
+  showDropShadows: boolean;
   noteDisplayMode: NoteDisplayMode;
   rootNote: Note;
   ref?: React.Ref<SVGSVGElement> | undefined;
@@ -128,7 +130,9 @@ export function Fretboard({
   tuning,
   startFret,
   endFret,
+  showFretLabels,
   showStringNames,
+  showDropShadows,
   noteDisplayMode,
   rootNote,
   ref,
@@ -141,6 +145,7 @@ export function Fretboard({
     tuning,
     startFret,
     endFret,
+    showFretLabels,
     showStringNames,
     noteDisplayMode,
     rootNote,
@@ -204,7 +209,7 @@ export function Fretboard({
   const translateX = leftMargin;
   const translateY = BOARD_PADDING;
 
-  const contentHeight = FRET_LABEL_OFFSET * 2;
+  const contentHeight = showFretLabels ? FRET_LABEL_OFFSET * 2 : 0;
   const totalWidth = translateX + neckWidth + BOARD_PADDING;
   const totalHeight =
     translateY + neckHeight + Math.max(BOARD_PADDING, contentHeight);
@@ -252,7 +257,7 @@ export function Fretboard({
         color={appliedPatternRulesResult.appliedPatternRule.color}
         label={noteDisplayMode === 'none' ? null : noteLabel}
         opacity={appliedPatternRulesResult.appliedPatternRule.opacity}
-        shadowFilterId={shadowFilterId}
+        shadowFilterId={showDropShadows ? shadowFilterId : undefined}
       />
     );
   };
@@ -265,45 +270,49 @@ export function Fretboard({
       ref={ref}
     >
       <defs>
-        <filter
-          id={fretShadowFilterId}
-          filterUnits="userSpaceOnUse"
-          colorInterpolationFilters="sRGB"
-        >
-          <feDropShadow
-            dx={0}
-            dy={0}
-            floodColor="#000000"
-            floodOpacity={FRETBOARD_THEME_FRET_SHADOW_OPACITY}
-            stdDeviation={FRETBOARD_THEME_FRET_SHADOW_BLUR}
-          />
-        </filter>
-        <filter
-          id={shadowFilterId}
-          filterUnits="userSpaceOnUse"
-          colorInterpolationFilters="sRGB"
-        >
-          <feDropShadow
-            dx={0}
-            dy={0}
-            floodColor="#000000"
-            floodOpacity={FRETBOARD_THEME_NOTE_SHADOW_OPACITY}
-            stdDeviation={FRETBOARD_THEME_NOTE_SHADOW_BLUR}
-          />
-        </filter>
-        <filter
-          id={stringShadowFilterId}
-          filterUnits="userSpaceOnUse"
-          colorInterpolationFilters="sRGB"
-        >
-          <feDropShadow
-            dx={0}
-            dy={0}
-            floodColor="#000000"
-            floodOpacity={FRETBOARD_THEME_STRING_SHADOW_OPACITY}
-            stdDeviation={FRETBOARD_THEME_STRING_SHADOW_BLUR}
-          />
-        </filter>
+        {showDropShadows && (
+          <>
+            <filter
+              id={fretShadowFilterId}
+              filterUnits="userSpaceOnUse"
+              colorInterpolationFilters="sRGB"
+            >
+              <feDropShadow
+                dx={0}
+                dy={0}
+                floodColor="#000000"
+                floodOpacity={FRETBOARD_THEME_FRET_SHADOW_OPACITY}
+                stdDeviation={FRETBOARD_THEME_FRET_SHADOW_BLUR}
+              />
+            </filter>
+            <filter
+              id={shadowFilterId}
+              filterUnits="userSpaceOnUse"
+              colorInterpolationFilters="sRGB"
+            >
+              <feDropShadow
+                dx={0}
+                dy={0}
+                floodColor="#000000"
+                floodOpacity={FRETBOARD_THEME_NOTE_SHADOW_OPACITY}
+                stdDeviation={FRETBOARD_THEME_NOTE_SHADOW_BLUR}
+              />
+            </filter>
+            <filter
+              id={stringShadowFilterId}
+              filterUnits="userSpaceOnUse"
+              colorInterpolationFilters="sRGB"
+            >
+              <feDropShadow
+                dx={0}
+                dy={0}
+                floodColor="#000000"
+                floodOpacity={FRETBOARD_THEME_STRING_SHADOW_OPACITY}
+                stdDeviation={FRETBOARD_THEME_STRING_SHADOW_BLUR}
+              />
+            </filter>
+          </>
+        )}
         <clipPath id={neckClipId}>
           <path d={neckPath} />
         </clipPath>
@@ -330,7 +339,9 @@ export function Fretboard({
                 yTop={0}
                 yBottom={neckHeight}
                 isNut={fret === 1}
-                shadowFilterId={fretShadowFilterId}
+                shadowFilterId={
+                  showDropShadows ? fretShadowFilterId : undefined
+                }
               />
             ),
           )}
@@ -398,7 +409,9 @@ export function Fretboard({
                   xRight={neckWidth + STRING_CLIP_OVERHANG}
                   y={y}
                   gauge={gauge}
-                  shadowFilterId={stringShadowFilterId}
+                  shadowFilterId={
+                    showDropShadows ? stringShadowFilterId : undefined
+                  }
                 />
 
                 {/* Notes */}
@@ -427,20 +440,21 @@ export function Fretboard({
           })}
 
         {/* Fret labels */}
-        {Array.from(rangeInclusiveRight(firstNeckFret, endFret))
-          .filter((fret) => {
-            const isBoundaryFret = fret === firstNeckFret || fret === endFret;
+        {showFretLabels &&
+          Array.from(rangeInclusiveRight(firstNeckFret, endFret))
+            .filter((fret) => {
+              const isBoundaryFret = fret === firstNeckFret || fret === endFret;
 
-            return isBoundaryFret || getFretMarkerType(fret) !== null;
-          })
-          .map((fret) => (
-            <FretboardFretLabel
-              key={fret}
-              x={noteX(fret)}
-              y={neckHeight + FRET_LABEL_OFFSET}
-              fret={fret}
-            />
-          ))}
+              return isBoundaryFret || getFretMarkerType(fret) !== null;
+            })
+            .map((fret) => (
+              <FretboardFretLabel
+                key={fret}
+                x={noteX(fret)}
+                y={neckHeight + FRET_LABEL_OFFSET}
+                fret={fret}
+              />
+            ))}
       </g>
     </svg>
   );

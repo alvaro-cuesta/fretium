@@ -12,7 +12,9 @@ const REQUIRED_PROPS = {
   tuningName: 'Standard',
   startFret: 0,
   endFret: 12,
+  showFretLabels: true,
   showStringNames: false,
+  showDropShadows: true,
   noteDisplayMode: 'note' as const,
   rootNote: 'C' as const,
 };
@@ -97,7 +99,7 @@ test('uses descriptive alt text and a metadata-based svg filename', async () => 
     .mockImplementation((object) => {
       expect(object).toBeInstanceOf(File);
       expect((object as File).name).toBe(
-        'fretium-[guitar-standard-EADGBE]-[major-scale]-[frets-3-7]-[root-d]-[labels-degree]-[with-string-names].svg',
+        'fretium-[guitar-standard-EADGBE]-[major-scale]-[frets-3-7]-[root-D]-[labels-degree]-[with-fret-labels]-[with-string-names].svg',
       );
 
       return 'blob:mock-fretboard';
@@ -112,7 +114,9 @@ test('uses descriptive alt text and a metadata-based svg filename', async () => 
       tuning={['E', 'A', 'D', 'G', 'B', 'E']}
       startFret={3}
       endFret={7}
+      showFretLabels={true}
       showStringNames={true}
+      showDropShadows={true}
       noteDisplayMode="degree"
       rootNote="D"
     />,
@@ -120,7 +124,7 @@ test('uses descriptive alt text and a metadata-based svg filename', async () => 
 
   const img = await waitFor(() =>
     rendered.container.querySelector<HTMLImageElement>(
-      'img[alt="Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale pattern, frets: 3 through 7, root note: D, note labels: degrees, string names: shown."]',
+      'img[alt="Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale, frets: 3 through 7, root note: D, note labels: degrees, fret labels: shown, string names: shown."]',
     ),
   );
 
@@ -167,7 +171,7 @@ test('reports serialized SVG data with the generated image metadata', async () =
 
   expect(lastImgChange.url).toBe('blob:mock-fretboard');
   expect(lastImgChange.filenameBase).toBe(
-    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-c]-[labels-note]-[no-string-names]',
+    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[no-string-names]',
   );
 
   createObjectUrl.mockRestore();
