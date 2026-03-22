@@ -1,3 +1,4 @@
+import { ErrorBoundary } from './ErrorBoundary.tsx';
 import styles from './Layout.module.scss';
 
 type LayoutProps = {
@@ -28,7 +29,9 @@ export function Layout(props: LayoutProps) {
         </h1>
       </header>
 
-      <main className={styles.main}>{props.children}</main>
+      <main className={styles.main}>
+        <ErrorBoundary>{props.children}</ErrorBoundary>
+      </main>
 
       <footer className={styles.footer}>
         <p>

@@ -1,0 +1,54 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.heading {
+  text-align: center;
+}
+
+.instructions {
+  // Make max width smaller than the error summary to encourage users to read the instructions
+  max-width: 60ch;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.copyDetailsButtonSuccess {
+  &:not(:disabled) {
+    color: var(--success);
+    border-color: var(--success-border);
+    background: color-mix(in srgb, var(--bg) 78%, var(--success) 22%);
+    box-shadow: 0 0 0 4px var(--success-bg);
+  }
+}
+
+.copyStatus {
+  margin: 0;
+  font-size: 0.8rem;
+  text-align: center;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.errorSummary {
+  white-space: pre-wrap;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: 0.65rem;
+}
