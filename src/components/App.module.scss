@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: stretch;
   gap: 12px;
-  margin: 0 auto;
+  margin: 0 16px;
   padding: 16px 20px;
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -14,7 +14,6 @@
   );
   box-shadow: var(--shadow);
   width: fit-content;
-  max-width: calc(100% - 32px);
 }
 
 .controlsRow {
@@ -162,8 +161,10 @@
 
 .fretboardSection {
   position: relative;
+  width: fit-content;
   max-width: 100%;
   min-width: 0;
+  margin: 0 auto;
 }
 
 .downloadMenu {
