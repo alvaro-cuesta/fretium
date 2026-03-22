@@ -13,6 +13,7 @@ type FretboardNoteProps = {
   color: FretboardNoteColorName;
   label: string | null;
   opacity?: number | undefined;
+  shadowFilterId?: string | undefined;
 };
 
 export function FretboardNote({
@@ -21,8 +22,11 @@ export function FretboardNote({
   color: colorName,
   label,
   opacity = 1,
+  shadowFilterId,
 }: FretboardNoteProps) {
   const color = FRETBOARD_THEME_NOTE_COLORS[colorName];
+  const usesShadowFilter =
+    color.background !== 'transparent' && shadowFilterId !== undefined;
 
   return (
     <g
@@ -32,6 +36,7 @@ export function FretboardNote({
       <circle
         r={FRETBOARD_THEME_NOTE_RADIUS}
         fill={color.background}
+        filter={usesShadowFilter ? `url(#${shadowFilterId})` : undefined}
       />
       {label !== null && (
         <text

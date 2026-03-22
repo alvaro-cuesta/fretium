@@ -5,6 +5,7 @@ type FreboardStringProps = {
   xRight: number;
   y?: number | undefined;
   gauge: number;
+  shadowFilterId?: string | undefined;
 };
 
 export function FretboardString({
@@ -12,6 +13,7 @@ export function FretboardString({
   xRight,
   y = 0,
   gauge,
+  shadowFilterId,
 }: FreboardStringProps) {
   return (
     <line
@@ -21,6 +23,7 @@ export function FretboardString({
       y2={y}
       stroke={FRETBOARD_THEME_STRING_COLOR}
       strokeWidth={gauge}
+      filter={shadowFilterId ? `url(#${shadowFilterId})` : undefined}
     />
   );
 }

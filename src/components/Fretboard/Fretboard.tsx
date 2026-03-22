@@ -27,11 +27,17 @@ import { FretboardNote } from './FretboardNote';
 import { FretboardString } from './FretboardString';
 import {
   FRETBOARD_THEME_FONT_FAMILY,
+  FRETBOARD_THEME_FRET_SHADOW_BLUR,
+  FRETBOARD_THEME_FRET_SHADOW_OPACITY,
   FRETBOARD_THEME_LABEL_COLOR,
   FRETBOARD_THEME_LABEL_FONT_SIZE,
   FRETBOARD_THEME_LABEL_FONT_WEIGHT,
   FRETBOARD_THEME_NECK_COLOR,
+  FRETBOARD_THEME_NOTE_SHADOW_BLUR,
+  FRETBOARD_THEME_NOTE_SHADOW_OPACITY,
   FRETBOARD_THEME_NUT_WIDTH,
+  FRETBOARD_THEME_STRING_SHADOW_BLUR,
+  FRETBOARD_THEME_STRING_SHADOW_OPACITY,
 } from './theme';
 
 export type FretboardProps = {
@@ -63,6 +69,9 @@ const OVERHANG_SPACING = 24;
 const SPACING_BETWEEN_STRINGS = 28;
 const FRET_LABEL_OFFSET = 12;
 const SPACE_TO_STRINGS = 12;
+// Strings need to extend a bit further so that their drop shadow clips too
+// Without this, you can see a small gap in the shadow near the nut
+const STRING_CLIP_OVERHANG = 4;
 const OPEN_STRING_X = FRETBOARD_THEME_NUT_WIDTH / 2 - FRET_SPACING / 2;
 const STRING_NAME_X = -SPACE_TO_STRINGS;
 
@@ -177,6 +186,9 @@ export function Fretboard({
   });
 
   const neckClipId = `neck-clip-${useId()}`;
+  const fretShadowFilterId = `fret-shadow-${useId()}`;
+  const shadowFilterId = `note-shadow-${useId()}`;
+  const stringShadowFilterId = `string-shadow-${useId()}`;
 
   const stringNameX = showOpenString ? OPEN_STRING_X : STRING_NAME_X;
   const openStringLeftMargin = showOpenString ? FRET_SPACING : 0;
@@ -240,6 +252,7 @@ export function Fretboard({
         color={appliedPatternRulesResult.appliedPatternRule.color}
         label={noteDisplayMode === 'none' ? null : noteLabel}
         opacity={appliedPatternRulesResult.appliedPatternRule.opacity}
+        shadowFilterId={shadowFilterId}
       />
     );
   };
@@ -252,12 +265,53 @@ export function Fretboard({
       ref={ref}
     >
       <defs>
+        <filter
+          id={fretShadowFilterId}
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feDropShadow
+            dx={0}
+            dy={0}
+            floodColor="#000000"
+            floodOpacity={FRETBOARD_THEME_FRET_SHADOW_OPACITY}
+            stdDeviation={FRETBOARD_THEME_FRET_SHADOW_BLUR}
+          />
+        </filter>
+        <filter
+          id={shadowFilterId}
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feDropShadow
+            dx={0}
+            dy={0}
+            floodColor="#000000"
+            floodOpacity={FRETBOARD_THEME_NOTE_SHADOW_OPACITY}
+            stdDeviation={FRETBOARD_THEME_NOTE_SHADOW_BLUR}
+          />
+        </filter>
+        <filter
+          id={stringShadowFilterId}
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feDropShadow
+            dx={0}
+            dy={0}
+            floodColor="#000000"
+            floodOpacity={FRETBOARD_THEME_STRING_SHADOW_OPACITY}
+            stdDeviation={FRETBOARD_THEME_STRING_SHADOW_BLUR}
+          />
+        </filter>
         <clipPath id={neckClipId}>
           <path d={neckPath} />
         </clipPath>
       </defs>
+
       <g transform={`translate(${translateX}, ${translateY})`}>
         <g clipPath={`url(#${neckClipId})`}>
+          {/* Neck background */}
           <rect
             x={0}
             y={0}
@@ -276,6 +330,7 @@ export function Fretboard({
                 yTop={0}
                 yBottom={neckHeight}
                 isNut={fret === 1}
+                shadowFilterId={fretShadowFilterId}
               />
             ),
           )}
@@ -339,10 +394,11 @@ export function Fretboard({
               <g key={`${openNote}-${stringNumber}`}>
                 {/* Strings */}
                 <FretboardString
-                  xLeft={0}
-                  xRight={neckWidth}
+                  xLeft={-STRING_CLIP_OVERHANG}
+                  xRight={neckWidth + STRING_CLIP_OVERHANG}
                   y={y}
                   gauge={gauge}
+                  shadowFilterId={stringShadowFilterId}
                 />
 
                 {/* Notes */}

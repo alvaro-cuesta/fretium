@@ -10,6 +10,7 @@ type FretboardFretLineProps = {
   yTop: number;
   yBottom: number;
   isNut: boolean;
+  shadowFilterId?: string | undefined;
 };
 
 export function FretboardFretLine(props: FretboardFretLineProps) {
@@ -24,6 +25,9 @@ export function FretboardFretLine(props: FretboardFretLineProps) {
       }
       strokeWidth={
         props.isNut ? FRETBOARD_THEME_NUT_WIDTH : FRETBOARD_THEME_FRET_WIDTH
+      }
+      filter={
+        props.shadowFilterId ? `url(#${props.shadowFilterId})` : undefined
       }
     />
   );

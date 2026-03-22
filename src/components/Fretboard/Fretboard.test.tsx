@@ -44,15 +44,27 @@ test('keeps the neck local coordinates anchored at the neck edge for open-string
   const neckGroup = svg.querySelector('svg > g');
   const clipPath = svg.querySelector('clipPath[id^="neck-clip-"]');
   const neckShape = clipPath?.querySelector('path');
+  const fretLine = svg.querySelector('line[stroke-width="6"]');
   const stringLine = svg.querySelector('line[stroke-width="3.2"]');
+  const fretFilter = svg.querySelector('defs > filter[id^="fret-shadow-"]');
+  const stringFilter = svg.querySelector('defs > filter[id^="string-shadow-"]');
 
   expect(noteGroup).toBeInTheDocument();
   expect(neckGroup).toBeInTheDocument();
   expect(clipPath).toBeInTheDocument();
+  expect(fretFilter?.querySelector('feDropShadow')).toBeInTheDocument();
+  expect(stringFilter?.querySelector('feDropShadow')).toBeInTheDocument();
+  expect(fretFilter).toHaveAttribute('filterUnits', 'userSpaceOnUse');
+  expect(stringFilter).toHaveAttribute('filterUnits', 'userSpaceOnUse');
+  expect(stringFilter).toHaveAttribute('x', '-4');
   expect(clipPath?.querySelector('rect')).not.toBeInTheDocument();
   expect(neckGroup).toHaveAttribute('transform', 'translate(64, 16)');
   expect(noteGroup).toHaveAttribute('transform', 'translate(-29, 12)');
-  expect(stringLine).toHaveAttribute('x1', '0');
+  expect(fretLine?.getAttribute('filter')).toMatch(/^url\(#fret-shadow-.+\)$/);
+  expect(stringLine).toHaveAttribute('x1', '-4');
+  expect(stringLine?.getAttribute('filter')).toMatch(
+    /^url\(#string-shadow-.+\)$/,
+  );
   expect(neckShape?.getAttribute('d')?.startsWith('M 0 0')).toBe(true);
 });
 
@@ -184,6 +196,41 @@ test('paints open-string notes on top of string names', () => {
   ).toBeInTheDocument();
 });
 
+test('renders a subtle drop shadow filter behind filled notes', () => {
+  const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
+
+  const screen = render(
+    <Fretboard
+      {...REQUIRED_PROPS}
+      pattern={definition}
+      tuning={['E']}
+      startFret={1}
+      endFret={1}
+    />,
+  );
+
+  const note = screen.getByText('F');
+  const svg = screen.getByRole('img', {
+    name: getDescription({
+      pattern: definition,
+      tuning: ['E'],
+      startFret: 1,
+      endFret: 1,
+    }),
+  });
+  const noteGroup = note.closest('g');
+  const noteCircle = noteGroup?.querySelector('circle[fill="#000000"]');
+  const filter = svg.querySelector('defs > filter[id^="note-shadow-"]');
+  const dropShadow = filter?.querySelector('feDropShadow');
+
+  expect(noteGroup?.querySelectorAll('circle')).toHaveLength(1);
+  expect(filter).toBeInTheDocument();
+  expect(noteCircle?.getAttribute('filter')).toMatch(
+    /^url\(#note-shadow-.+\)$/,
+  );
+  expect(dropShadow).toBeInTheDocument();
+});
+
 test('keeps fret-one diagrams in the neck coordinate system including half the nut width', () => {
   const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
 
@@ -211,7 +258,7 @@ test('keeps fret-one diagrams in the neck coordinate system including half the n
   const nutLine = svg.querySelector('line[stroke-width="6"]');
 
   expect(clipPath?.querySelector('rect')).not.toBeInTheDocument();
-  expect(stringLine).toHaveAttribute('x1', '0');
+  expect(stringLine).toHaveAttribute('x1', '-4');
   expect(nutLine).toHaveAttribute('x1', '3');
   expect(neckShape?.getAttribute('d')?.startsWith('M 0 0')).toBe(true);
 });
@@ -532,7 +579,7 @@ test('merges all matching rules with later rules winning per property', () => {
 
   const note = screen.getByText('A');
   const noteGroup = note.closest('g');
-  const circle = noteGroup?.querySelector('circle');
+  const circle = noteGroup?.querySelector('circle[fill="#ffffff"]');
 
   // Last matching rule wins for color (WHITE = '#ffffff')
   expect(circle).toHaveAttribute('fill', '#ffffff');
