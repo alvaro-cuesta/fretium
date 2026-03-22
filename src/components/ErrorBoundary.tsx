@@ -40,23 +40,39 @@ function summarizeError(error: unknown) {
   return String(error);
 }
 
-const COPY_PAYLOAD_PREFIX = 'Fretium error report';
-const COPY_PAYLOAD_SEPARATOR = '='.repeat(COPY_PAYLOAD_PREFIX.length);
+const ERROR_DETAILS_PREFIX = 'Fretium error report';
+const ERROR_DETAILS_SEPARATOR = '='.repeat(ERROR_DETAILS_PREFIX.length);
 
-function ErrorBoundaryContent({ error }: { error: unknown }) {
+function formatErrorSummary(error: unknown): string {
+  const errorSummary = summarizeError(error);
+  const errorParts = [
+    ERROR_DETAILS_SEPARATOR,
+    ERROR_DETAILS_PREFIX,
+    ERROR_DETAILS_SEPARATOR,
+    `URL: ${window.location.href}`,
+    `Time: ${new Date().toISOString()}`,
+    `Version: ${import.meta.env.GIT_COMMIT_SHORT_SHA}`,
+    `Browser: ${navigator.userAgent}`,
+    ERROR_DETAILS_SEPARATOR,
+    errorSummary,
+    ERROR_DETAILS_SEPARATOR,
+  ];
+  return errorParts.join('\n');
+}
+
+function ErrorBoundaryContent({ error }: ErrorBoundaryState) {
   const [copyState, setCopyState] = useState<CopyState>('idle');
   const resetCopyState = useTimeout();
 
   const issueUrl = import.meta.env.PACKAGE_BUGS;
-  const errorSummary = summarizeError(error);
-  const copyPayload = `${COPY_PAYLOAD_PREFIX}\n${COPY_PAYLOAD_SEPARATOR}\nIssue tracker: ${issueUrl}\n\n${errorSummary}`;
+  const errorDetails = formatErrorSummary(error);
   const copyUnavailable = !('clipboard' in navigator);
   const copyButtonLabel =
     copyState === 'success' ? 'Copied to clipboard!' : 'Copy details';
 
   const copyErrorDetails = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(copyPayload);
+      await navigator.clipboard.writeText(errorDetails);
       setCopyState('success');
       resetCopyState.schedule(() => {
         setCopyState('idle');
@@ -64,7 +80,7 @@ function ErrorBoundaryContent({ error }: { error: unknown }) {
     } catch {
       setCopyState('error');
     }
-  }, [copyPayload, resetCopyState]);
+  }, [errorDetails, resetCopyState]);
 
   return (
     <section
@@ -118,7 +134,7 @@ function ErrorBoundaryContent({ error }: { error: unknown }) {
             'Clipboard access is unavailable in this environment. Please copy manually.'}
         </p>
       </div>
-      <pre className={styles.errorSummary}>{errorSummary}</pre>
+      <pre className={styles.errorDetails}>{errorDetails}</pre>
     </section>
   );
 }
