@@ -353,7 +353,6 @@ export function Fretboard({
               const fretMarkerType = getFretMarkerType(fret);
               const x = noteX(fret);
               const middle = neckHeight * 0.5;
-              const stringAreaHeight = neckHeight - 2 * SPACE_TO_STRINGS;
 
               switch (fretMarkerType) {
                 case 'single': {
@@ -371,11 +370,11 @@ export function Fretboard({
                     <g key={fret}>
                       <FretboardMarkerCircle
                         x={x}
-                        y={SPACE_TO_STRINGS + stringAreaHeight * 0.3}
+                        y={middle - SPACING_BETWEEN_STRINGS}
                       />
                       <FretboardMarkerCircle
                         x={x}
-                        y={SPACE_TO_STRINGS + stringAreaHeight * 0.7}
+                        y={middle + SPACING_BETWEEN_STRINGS}
                       />
                     </g>
                   );
