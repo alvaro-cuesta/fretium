@@ -79,7 +79,12 @@ export function FretboardImg(props: FretboardImgProps) {
       setImgUrl(objectUrl);
 
       return () => {
-        URL.revokeObjectURL(objectUrl);
+        // Defer revocation to ensure the URL is not revoked before the actual DOM has changed
+        // Without this, Firefox shows this error:
+        // "Security Error: Content at http://localhost:5173/ may not load data from blob:http://localhost:5173/c0d6b05f-5b17-4539-ad92-ec2b5d03bf09."
+        setTimeout(() => {
+          URL.revokeObjectURL(objectUrl);
+        }, 0);
       };
     },
     [filename],
