@@ -14,14 +14,11 @@ const REQUIRED_PROPS = {
 
 function getDescription(props: Partial<Omit<FretboardProps, 'ref'>> = {}) {
   return getFretboardDescription({
+    ...REQUIRED_PROPS,
     pattern: [],
-    patternName: 'Major scale',
-    instrumentName: 'Guitar',
-    tuningName: 'Standard',
     tuning: ['E'],
     startFret: 0,
     endFret: 0,
-    ...REQUIRED_PROPS,
     ...props,
   });
 }
