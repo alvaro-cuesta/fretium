@@ -194,7 +194,7 @@ export function App() {
                 setSelectedNoteDisplayMode(e.target.value as NoteDisplayMode);
               }}
             >
-              <option value="note">Note name</option>
+              <option value="note">Note</option>
               <option value="interval">Intervals</option>
               <option value="degree">Degrees</option>
               <option value="none">None</option>
