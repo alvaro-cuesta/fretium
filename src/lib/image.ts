@@ -1,12 +1,13 @@
 export async function rasterizeImage(
-  svgUrl: HTMLImageElement,
+  imageElement: HTMLImageElement,
   outContentType: string,
   scale: number,
 ): Promise<Blob> {
-  // width instead of naturalWidth to account for potential CSS scaling applied to the image element
-  // including retina pixel ratios, etc.
-  const targetWidth = svgUrl.width * scale;
-  const targetHeight = svgUrl.height * scale;
+  // naturalWidth and naturalHeight give the actual size of the image, regardless of how it's currently displayed in the
+  // page or Retina/OS pixel ratio, so this should make exports consistent and predictable across different devices and
+  // screen densities
+  const targetWidth = imageElement.naturalWidth * scale;
+  const targetHeight = imageElement.naturalHeight * scale;
 
   const canvas = new OffscreenCanvas(targetWidth, targetHeight);
   const context = canvas.getContext('2d');
@@ -14,7 +15,7 @@ export async function rasterizeImage(
     throw new Error('Expected a 2D canvas context');
   }
 
-  context.drawImage(svgUrl, 0, 0, targetWidth, targetHeight);
+  context.drawImage(imageElement, 0, 0, targetWidth, targetHeight);
 
   return await canvas.convertToBlob({ type: outContentType });
 }

@@ -43,7 +43,6 @@ const ROOT_NOTES = [
 const DEFAULT_PATTERN = 'Major scale' satisfies PatternName;
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
-const DEFAULT_PNG_EXPORT_SCALE = 2 as const;
 const DEFAULT_SHOW_BACKGROUND_NECK = true;
 const DEFAULT_SHOW_STRINGS = true;
 const DEFAULT_SHOW_FRET_LINES = true;
@@ -51,6 +50,10 @@ const DEFAULT_SHOW_FRET_MARKERS = true;
 const DEFAULT_SHOW_FRET_LABELS = true;
 const DEFAULT_SHOW_STRING_LABELS = true;
 const DEFAULT_SHOW_DROP_SHADOWS = true;
+
+const PNG_EXPORT_SCALE_SD = 2 as const;
+const PNG_EXPORT_SCALE_HD = 4 as const;
+const PNG_EXPORT_SCALE_UHD = 8 as const;
 
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({
@@ -102,12 +105,18 @@ async function copyToClipboard(
   await navigator.clipboard.write([new ClipboardItem({ [contentType]: data })]);
 }
 
-async function rasterizePng(image: HTMLImageElement) {
-  return await rasterizeImage(
-    image,
-    PNG_CONTENT_TYPE,
-    DEFAULT_PNG_EXPORT_SCALE,
-  );
+async function downloadPng(
+  image: HTMLImageElement,
+  filenameBase: string,
+  scale: number,
+) {
+  const pngBlob = await rasterizeImage(image, PNG_CONTENT_TYPE, scale);
+  downloadBlob(pngBlob, `${filenameBase}.png`);
+}
+
+async function copyPngToClipboard(image: HTMLImageElement, scale: number) {
+  const pngBlob = await rasterizeImage(image, PNG_CONTENT_TYPE, scale);
+  await copyToClipboard(PNG_CONTENT_TYPE, pngBlob);
 }
 
 export function App() {
@@ -437,12 +446,14 @@ export function App() {
                     if (!imgRef.current) {
                       return;
                     }
-                    void rasterizePng(imgRef.current).then((pngBlob) => {
-                      downloadBlob(pngBlob, `${fretboardImg.filenameBase}.png`);
-                    });
+                    void downloadPng(
+                      imgRef.current,
+                      `${fretboardImg.filenameBase}-SD`,
+                      PNG_EXPORT_SCALE_SD,
+                    );
                   }}
                 >
-                  Download .PNG
+                  Download .PNG (SD)
                 </button>
 
                 <button
@@ -454,11 +465,87 @@ export function App() {
                     if (!imgRef.current) {
                       return;
                     }
-                    const pngBlobPromise = rasterizePng(imgRef.current);
-                    void copyToClipboard(PNG_CONTENT_TYPE, pngBlobPromise);
+                    void copyPngToClipboard(
+                      imgRef.current,
+                      PNG_EXPORT_SCALE_SD,
+                    );
                   }}
                 >
-                  Copy .PNG to clipboard
+                  Copy .PNG (SD) to clipboard
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    closeMenu();
+                    if (!imgRef.current) {
+                      return;
+                    }
+                    void downloadPng(
+                      imgRef.current,
+                      `${fretboardImg.filenameBase}-HD`,
+                      PNG_EXPORT_SCALE_HD,
+                    );
+                  }}
+                >
+                  Download .PNG (HD)
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    closeMenu();
+                    if (!imgRef.current) {
+                      return;
+                    }
+                    void copyPngToClipboard(
+                      imgRef.current,
+                      PNG_EXPORT_SCALE_HD,
+                    );
+                  }}
+                >
+                  Copy .PNG (HD) to clipboard
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    closeMenu();
+                    if (!imgRef.current) {
+                      return;
+                    }
+                    void downloadPng(
+                      imgRef.current,
+                      `${fretboardImg.filenameBase}-UHD`,
+                      PNG_EXPORT_SCALE_UHD,
+                    );
+                  }}
+                >
+                  Download .PNG (UHD)
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    closeMenu();
+                    if (!imgRef.current) {
+                      return;
+                    }
+                    void copyPngToClipboard(
+                      imgRef.current,
+                      PNG_EXPORT_SCALE_UHD,
+                    );
+                  }}
+                >
+                  Copy .PNG (UHD) to clipboard
                 </button>
 
                 <button
