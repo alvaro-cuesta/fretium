@@ -324,7 +324,7 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
   const neckShape = svg.querySelector('clipPath[id^="neck-clip-"] path');
   const fretLines = Array.from(svg.querySelectorAll('line[stroke-width="2"]'));
   const markers = Array.from(
-    svg.querySelectorAll('circle[r="4.5"][fill="rgba(192, 192, 192, 1)"]'),
+    svg.querySelectorAll('circle[r="4.5"][fill="rgb(192, 192, 192)"]'),
   );
 
   expect(neckShape?.getAttribute('d')?.startsWith('M 14 0')).toBe(true);

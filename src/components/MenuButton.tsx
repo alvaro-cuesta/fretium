@@ -13,15 +13,19 @@ import { useImperativeTimeout } from '../hooks/useImperativeTimeout.ts';
 import globalStyles from '../index.module.scss';
 import styles from './MenuButton.module.scss';
 
-type MenuButtonRenderProps = {
+type MenuButtonRenderChildrenProps = {
+  isOpen: boolean;
+};
+
+type MenuButtonRenderMenuProps = {
   closeMenu: () => void;
   menuItemClassName: string;
 };
 
 type MenuButtonProps = {
   ariaLabel: string;
-  children: ReactNode;
-  renderMenu: (renderProps: MenuButtonRenderProps) => ReactNode;
+  children: (renderProps: MenuButtonRenderChildrenProps) => ReactNode;
+  renderMenu: (renderProps: MenuButtonRenderMenuProps) => ReactNode;
   className?: string;
   buttonClassName?: string;
   transitionMs: number;
@@ -108,7 +112,7 @@ export function MenuButton({
           setIsOpen((isMenuOpen) => !isMenuOpen);
         }}
       >
-        {children}
+        {children({ isOpen })}
       </button>
     </div>
   );

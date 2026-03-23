@@ -96,12 +96,11 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
     expect(downloadToggle).toHaveAttribute('aria-expanded', 'true');
   });
 
-  expect(
-    screen.getByRole('menuitem', { name: 'Download .SVG' }),
-  ).toHaveAttribute('href', 'blob:mock-fretboard');
-  expect(
-    screen.getByRole('menuitem', { name: 'Download .SVG' }),
-  ).toHaveAttribute(
+  expect(screen.getByRole('menuitem', { name: 'Download' })).toHaveAttribute(
+    'href',
+    'blob:mock-fretboard',
+  );
+  expect(screen.getByRole('menuitem', { name: 'Download' })).toHaveAttribute(
     'download',
     'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels].svg',
   );
@@ -130,7 +129,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
     expect(downloadToggle).toHaveAttribute('aria-expanded', 'true');
   });
 
-  fireEvent.click(screen.getByRole('menuitem', { name: 'Download .PNG (SD)' }));
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Download (SD)' }));
 
   await waitFor(() => {
     expect(rasterizeSvgMock).toHaveBeenCalledTimes(1);
@@ -150,7 +149,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
     expect(downloadToggle).toHaveAttribute('aria-expanded', 'true');
   });
 
-  fireEvent.click(screen.getByRole('menuitem', { name: 'Download .PNG (HD)' }));
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Download (HD)' }));
 
   await waitFor(() => {
     expect(rasterizeSvgMock).toHaveBeenCalledTimes(2);
@@ -174,7 +173,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   });
 
   fireEvent.click(
-    screen.getByRole('menuitem', { name: 'Copy .PNG (SD) to clipboard' }),
+    screen.getByRole('menuitem', { name: 'Copy to clipboard (SD)' }),
   );
 
   await waitFor(() => {
@@ -189,7 +188,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   });
 
   fireEvent.click(
-    screen.getByRole('menuitem', { name: 'Copy .PNG (HD) to clipboard' }),
+    screen.getByRole('menuitem', { name: 'Copy to clipboard (HD)' }),
   );
 
   await waitFor(() => {
