@@ -20,6 +20,7 @@ import {
   type Pattern,
 } from '../../lib/pattern-engine';
 import { checkIsNever } from '../../lib/type';
+import { FretboardBackground } from './FretboardBackground';
 import { FretboardFretLabel } from './FretboardFretLabel';
 import { FretboardFretLine } from './FretboardFretLine';
 import { FretboardMarkerCircle } from './FretboardMarkerCircle';
@@ -30,7 +31,6 @@ import {
   FRETBOARD_THEME_CORNER_RADIUS,
   FRETBOARD_THEME_FRET_SHADOW_BLUR,
   FRETBOARD_THEME_FRET_SHADOW_OPACITY,
-  FRETBOARD_THEME_NECK_COLOR,
   FRETBOARD_THEME_NOTE_SHADOW_BLUR,
   FRETBOARD_THEME_NOTE_SHADOW_OPACITY,
   FRETBOARD_THEME_STRING_SHADOW_BLUR,
@@ -298,12 +298,9 @@ export function Fretboard({
         <g clipPath={`url(#${neckClipId})`}>
           {/* Neck background */}
           {showBackgroundNeck && (
-            <rect
-              x={0}
-              y={0}
+            <FretboardBackground
               width={metrics.neck.width}
               height={metrics.neck.height}
-              fill={FRETBOARD_THEME_NECK_COLOR}
             />
           )}
 
