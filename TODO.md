@@ -4,11 +4,13 @@
 
 - Add more instruments and tunings
 - Add more patterns (chords, scales, arpeggios...)
+- Curate patterns: e.g. currently dom7 arpeggio G position is wrong(ish)
+- Refactor pattern generation? E.g. tool to automatically mark duplicate options transparent, or automatically find overlapping chords instead of manually doing it
 
 ## Features
 
-- Trigger print view with special layout
-- Add a way to share diagrams (e.g. via URL with hash, or by exporting an image)
+### Uncategorized
+
 - Root note: auto fit -- it should automatically find the best root note to fit the pattern in the diagram, so that the diagram is as compact as possible (e.g. for a Cmaj7 chord, it should choose E as the root note, so that the diagram only shows 4 frets instead of 5)
 - Max fret: auto fit -- it should automatically find the best max fret to fit the pattern in the diagram, so that the diagram is as compact as possible (e.g. for a Cmaj7 chord, if the root note is E, it should choose max fret 7 instead of 12, so that the diagram only shows 4 frets instead of 5)
 - Allow better pattern DSL
@@ -22,10 +24,24 @@
   - Should also have a special print view
 - Add a way to display fingerings in diagrams
 - Add collections (a way to quickly explore via dropdown related chords and scales)
-- Curate
-- Refactor pattern generation? E.g. tool to automatically mark duplicate options transparent, or automatically find overlapping chords instead of manually doing it
+- Transparent background in SVG only makes sense in the context of the webpage, but not for export, print, etc...
 - Consider changing patterns from flat list to nested subvariations
 - Somehow handle note overlaps -- e.g. dim7 chords have a lot of notes in common and they're currently overridden by each other in the diagram (which is also a feature, because we want to sometimes merge notes together, but in this case we don't want to merge, we want to show all of them -- hard to tell how to do this with these conflicting requirements and still keep UI/UX/pattern DSL simple and intuitive)
+
+### Share
+
+- Add a way to share diagrams (e.g. via URL with hash, or via JSON file export/import, or both!)
+
+### Export
+
+- Make print view have a special layout that is optimized for printing (e.g. remove controls and replace them with a small description)
+  - If printing only one diagram, do not trigger full-page print view, but instead just print the diagram it is being printed (inside the special layout)
+
+### UI
+
+- Make controls section more compact in mobile (currently it takes a lot of space and pushes the diagram down, which is not ideal)
+- Make controls more compact in general (e.g. by using dropdowns, accordions, tabs, or similar to group related options together and save space)
+- Improve diagram sizing calcs (becomes too small on mobile)
 
 ## Bugs
 
