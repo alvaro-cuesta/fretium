@@ -607,7 +607,7 @@ export function App() {
                 aria-hidden="true"
                 className={styles.menuTriggerIcon}
               >
-                {isOpen ? 'X' : '💾'}
+                {isOpen ? '❌' : '💾'}
               </span>
             )}
           </MenuButton>
