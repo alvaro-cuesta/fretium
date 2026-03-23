@@ -1,3 +1,4 @@
+import globalStyles from '../index.module.scss';
 import { ErrorBoundary } from './ErrorBoundary.tsx';
 import styles from './Layout.module.scss';
 
@@ -8,7 +9,7 @@ type LayoutProps = {
 export function Layout(props: LayoutProps) {
   return (
     <div className={styles.root}>
-      <header>
+      <header className={styles.header}>
         <h1>
           <a
             href={import.meta.env.PACKAGE_HOMEPAGE}
@@ -37,6 +38,7 @@ export function Layout(props: LayoutProps) {
         <p>
           Made with ❤️ by{' '}
           <a
+            className={globalStyles.printLink}
             href={import.meta.env.PACKAGE_AUTHOR.url}
             target="_blank"
             rel="noreferrer"
@@ -45,6 +47,7 @@ export function Layout(props: LayoutProps) {
           </a>
           . Source code on{' '}
           <a
+            className={globalStyles.printLink}
             href={import.meta.env.PACKAGE_CONFIG_REPOSITORY_URL}
             target="_blank"
             rel="noreferrer"
@@ -55,6 +58,7 @@ export function Layout(props: LayoutProps) {
         </p>
         <p>
           <a
+            className={globalStyles.printLink}
             href={import.meta.env.PACKAGE_BUGS}
             target="_blank"
             rel="noreferrer"

@@ -1,3 +1,6 @@
+// @todo move this to constants file?
+$page-margin: 16px;
+
 .root {
   min-height: 100svh;
   display: flex;
@@ -10,6 +13,10 @@
 
 .root > header h1 {
   margin: 0;
+}
+
+.header {
+  margin: 0 $page-margin;
 }
 
 .headerLink {
@@ -48,10 +55,12 @@
 }
 
 .footer {
+  margin: 0 $page-margin;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 .version {

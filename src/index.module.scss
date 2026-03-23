@@ -187,3 +187,15 @@ button,
     cursor: not-allowed;
   }
 }
+
+@media print {
+  .printLink {
+    color: inherit;
+    text-decoration: none;
+
+    &:after {
+      text-wrap: nowrap;
+      content: ' (' attr(href) ')';
+    }
+  }
+}

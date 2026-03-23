@@ -1,9 +1,12 @@
+// @todo move this to constants file?
+$page-margin: 16px;
+
 .controlsSection {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 12px;
-  margin: 0 16px;
+  margin: 0 $page-margin;
   padding: 16px 20px;
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -167,10 +170,26 @@
   margin: 0 auto;
 }
 
+@media print {
+  .fretboardSection {
+    max-width: none;
+  }
+
+  .fretboardImg {
+    width: 100%;
+    height: auto;
+    max-width: none;
+  }
+}
+
 .downloadMenu {
   position: absolute;
   right: clamp(12px, 2vw, 20px);
   bottom: clamp(12px, 2vw, 20px);
+
+  @media print {
+    display: none !important;
+  }
 }
 
 @media (max-width: 700px) {

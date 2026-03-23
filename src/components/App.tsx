@@ -95,14 +95,19 @@ function deriveFretValue(
   return clamp(parsedValue, min, max);
 }
 
-async function downloadPng(filename: string, image: HTMLImageElement) {
-  const pngBlob = await rasterizeImage(
+async function copyToClipboard(
+  contentType: string,
+  data: string | Blob | PromiseLike<string | Blob>,
+) {
+  await navigator.clipboard.write([new ClipboardItem({ [contentType]: data })]);
+}
+
+async function rasterizePng(image: HTMLImageElement) {
+  return await rasterizeImage(
     image,
     PNG_CONTENT_TYPE,
     DEFAULT_PNG_EXPORT_SCALE,
   );
-
-  downloadBlob(pngBlob, `${filename}.png`);
 }
 
 export function App() {
@@ -415,29 +420,60 @@ export function App() {
                   role="menuitem"
                   href={fretboardImg.url}
                   download={`${fretboardImg.filenameBase}.svg`}
-                  aria-label="Download SVG"
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={closeMenu}
                 >
-                  .SVG
+                  Download .SVG
                 </a>
+
+                {/* `navigator.clipboard.write` fails with SVG content type, so no SVG copy */}
 
                 <button
                   type="button"
                   role="menuitem"
-                  aria-label="Download PNG"
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-
                     if (!imgRef.current) {
                       return;
                     }
-
-                    void downloadPng(fretboardImg.filenameBase, imgRef.current);
+                    void rasterizePng(imgRef.current).then((pngBlob) => {
+                      downloadBlob(pngBlob, `${fretboardImg.filenameBase}.png`);
+                    });
                   }}
                 >
-                  .PNG
+                  Download .PNG
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    closeMenu();
+                    if (!imgRef.current) {
+                      return;
+                    }
+                    const pngBlobPromise = rasterizePng(imgRef.current);
+                    void copyToClipboard(PNG_CONTENT_TYPE, pngBlobPromise);
+                  }}
+                >
+                  Copy .PNG to clipboard
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    closeMenu();
+                    if (!imgRef.current) {
+                      return;
+                    }
+                    window.print();
+                  }}
+                >
+                  Print
                 </button>
               </>
             )}
