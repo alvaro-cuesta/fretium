@@ -430,6 +430,16 @@ export function App() {
                 <a
                   role="menuitem"
                   href={fretboardImg.url}
+                  target="_blank"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={closeMenu}
+                >
+                  Open .SVG in new tab
+                </a>
+
+                <a
+                  role="menuitem"
+                  href={fretboardImg.url}
                   download={`${fretboardImg.filenameBase}.svg`}
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={closeMenu}
