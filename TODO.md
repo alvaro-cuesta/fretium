@@ -12,7 +12,8 @@
 ### Uncategorized
 
 - Root note: auto fit -- it should automatically find the best root note to fit the pattern in the diagram, so that the diagram is as compact as possible (e.g. for a Cmaj7 chord, it should choose E as the root note, so that the diagram only shows 4 frets instead of 5)
-- Max fret: auto fit -- it should automatically find the best max fret to fit the pattern in the diagram, so that the diagram is as compact as possible (e.g. for a Cmaj7 chord, if the root note is E, it should choose max fret 7 instead of 12, so that the diagram only shows 4 frets instead of 5)
+- Min/max fret: auto fit -- it should automatically find the best max fret to fit the pattern in the diagram, so that the diagram is as compact as possible (e.g. for a Cmaj7 chord, if the root note is E, it should choose max fret 7 instead of 12, so that the diagram only shows 4 frets instead of 5) -- it should also have an option to avoid using open strings
+- Allow forcing frets to full-neck for auto frets (to use in scales)
 - Allow better pattern DSL
 - Add support for custom pattern
   - Needs editing capabilities in the fretboard
@@ -27,6 +28,7 @@
 - Transparent background in SVG only makes sense in the context of the webpage, but not for export, print, etc...
 - Consider changing patterns from flat list to nested subvariations
 - Somehow handle note overlaps -- e.g. dim7 chords have a lot of notes in common and they're currently overridden by each other in the diagram (which is also a feature, because we want to sometimes merge notes together, but in this case we don't want to merge, we want to show all of them -- hard to tell how to do this with these conflicting requirements and still keep UI/UX/pattern DSL simple and intuitive)
+- Toggle to view as text?
 
 ### Share
 
@@ -34,6 +36,7 @@
 
 ### Export
 
+- Download/copy to clipboard as text
 - Make print view have a special layout that is optimized for printing (e.g. remove controls and replace them with a small description)
   - If printing only one diagram, do not trigger full-page print view, but instead just print the diagram it is being printed (inside the special layout)
 
