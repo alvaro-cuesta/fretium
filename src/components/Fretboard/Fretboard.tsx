@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useCallback, useId } from 'react';
 import {
   getFretboardDescription,
   type NoteDisplayMode,
@@ -25,19 +25,20 @@ import { FretboardFretLine } from './FretboardFretLine';
 import { FretboardMarkerCircle } from './FretboardMarkerCircle';
 import { FretboardNote } from './FretboardNote';
 import { FretboardString } from './FretboardString';
+import { FretboardStringLabel } from './FretboardStringLabel';
 import {
-  FRETBOARD_THEME_FONT_FAMILY,
   FRETBOARD_THEME_FRET_SHADOW_BLUR,
   FRETBOARD_THEME_FRET_SHADOW_OPACITY,
-  FRETBOARD_THEME_LABEL_COLOR,
-  FRETBOARD_THEME_LABEL_FONT_SIZE,
-  FRETBOARD_THEME_LABEL_FONT_WEIGHT,
   FRETBOARD_THEME_NECK_COLOR,
   FRETBOARD_THEME_NOTE_SHADOW_BLUR,
   FRETBOARD_THEME_NOTE_SHADOW_OPACITY,
   FRETBOARD_THEME_NUT_WIDTH,
+  FRETBOARD_THEME_STRING_GAUGE_MAX,
+  FRETBOARD_THEME_STRING_GAUGE_MIN,
+  FRETBOARD_THEME_STRING_GAUGE_STEP,
   FRETBOARD_THEME_STRING_SHADOW_BLUR,
   FRETBOARD_THEME_STRING_SHADOW_OPACITY,
+  type FretboardNoteColorName,
 } from './theme';
 
 export type FretboardProps = {
@@ -78,8 +79,7 @@ const SPACE_TO_STRINGS = 12;
 // Strings need to extend a bit further so that their drop shadow clips too
 // Without this, you can see a small gap in the shadow near the nut
 const STRING_CLIP_OVERHANG = 4;
-const OPEN_STRING_X = FRETBOARD_THEME_NUT_WIDTH / 2 - FRET_SPACING / 2;
-const STRING_NAME_X = -SPACE_TO_STRINGS;
+const STRING_NAME_NO_OPEN_STRINGS_X = SPACE_TO_STRINGS;
 
 function getRoundedRectPath({
   x,
@@ -126,6 +126,114 @@ function getRoundedRectPath({
   ].join(' ');
 }
 
+function getSizes(input: {
+  startFret: number;
+  endFret: number;
+  tuning: Tuning<number>;
+  showStringNames: boolean;
+  showFretLabels: boolean;
+}) {
+  const showOpenStrings = input.startFret === 0;
+  const hasNut = input.startFret <= 1;
+  const hasLeftOverhang = input.startFret > 1;
+  const stringCount = input.tuning.length;
+
+  const [stringNameX, stringNameWidth] = showOpenStrings
+    ? [getNoteX(0), FRET_SPACING]
+    : [-STRING_NAME_NO_OPEN_STRINGS_X, STRING_NAME_NO_OPEN_STRINGS_X * 2];
+
+  const firstNeckFret = Math.max(1, input.startFret);
+
+  const fretLabelsHeight = input.showFretLabels ? FRET_LABEL_OFFSET * 2 : 0;
+
+  const padding = {
+    top: BOARD_PADDING,
+    right: BOARD_PADDING,
+    bottom: Math.max(BOARD_PADDING, fretLabelsHeight),
+    left: Math.max(
+      BOARD_PADDING,
+      showOpenStrings ? FRET_SPACING : 0,
+      input.showStringNames ? stringNameWidth : 0,
+    ),
+  };
+
+  const neck = {
+    width: getFretLineX(input.endFret + 1) + OVERHANG_SPACING,
+    height:
+      SPACE_TO_STRINGS +
+      Math.max(0, (stringCount - 1) * SPACING_BETWEEN_STRINGS) +
+      SPACE_TO_STRINGS,
+  };
+
+  const total = {
+    width: padding.left + neck.width + padding.right,
+    height: padding.top + neck.height + padding.bottom,
+  };
+
+  function getFretLineX(fret: number) {
+    return hasNut
+      ? FRETBOARD_THEME_NUT_WIDTH / 2 + (fret - 1) * FRET_SPACING
+      : OVERHANG_SPACING + (fret - firstNeckFret) * FRET_SPACING;
+  }
+
+  function getNoteX(fret: number) {
+    return fret === 0
+      ? getFretLineX(1) - FRET_SPACING / 2
+      : getFretLineX(fret) + FRET_SPACING / 2;
+  }
+
+  const middle = neck.height * 0.5;
+  function getFretboardMarkerX(fret: number) {
+    return getNoteX(fret);
+  }
+  const fretboardMarkerSingleY = middle;
+  const fretboardMarkerDoubleTopY = middle - SPACING_BETWEEN_STRINGS;
+  const fretboardMarkerDoubleBottomY = middle + SPACING_BETWEEN_STRINGS;
+
+  const stringXLeft = -STRING_CLIP_OVERHANG;
+  const stringXRight = neck.width + STRING_CLIP_OVERHANG;
+  function getStringY(stringIndex: number) {
+    return SPACE_TO_STRINGS + stringIndex * SPACING_BETWEEN_STRINGS;
+  }
+  function getStringGauge(stringIndex: number) {
+    const stringNumber = stringIndex + 1;
+    return Math.max(
+      FRETBOARD_THEME_STRING_GAUGE_MIN,
+      FRETBOARD_THEME_STRING_GAUGE_MAX -
+        (stringCount - stringNumber) * FRETBOARD_THEME_STRING_GAUGE_STEP,
+    );
+  }
+
+  const fretLabelY = neck.height + FRET_LABEL_OFFSET;
+
+  return {
+    firstNeckFret,
+    showOpenStrings,
+    hasLeftOverhang,
+    padding,
+    total,
+    neck,
+    getFretLineX,
+    getNoteX,
+    getFretboardMarkerX,
+    fretboardMarkerSingleY,
+    fretboardMarkerDoubleTopY,
+    fretboardMarkerDoubleBottomY,
+    stringNameX,
+    stringXLeft,
+    stringXRight,
+    getStringY,
+    getStringGauge,
+    fretLabelY,
+  };
+}
+
+type GetNoteInfoResult = {
+  label: string | null;
+  color: FretboardNoteColorName;
+  opacity: number | undefined;
+};
+
 export function Fretboard({
   pattern,
   patternName,
@@ -159,42 +267,21 @@ export function Fretboard({
     rootNote,
   });
 
-  const showOpenString = startFret === 0;
-  const hasNut = startFret <= 1;
-  const hasLeftOverhang = startFret > 1;
-  const firstNeckFret = Math.max(1, startFret);
-  const stringCount = tuning.length;
-
-  const neckHeight =
-    SPACE_TO_STRINGS +
-    Math.max(0, (stringCount - 1) * SPACING_BETWEEN_STRINGS) +
-    SPACE_TO_STRINGS;
-
-  const fretLineX = (fret: number) => {
-    if (hasNut) {
-      return FRETBOARD_THEME_NUT_WIDTH / 2 + (fret - 1) * FRET_SPACING;
-    }
-
-    return OVERHANG_SPACING + (fret - firstNeckFret) * FRET_SPACING;
-  };
-
-  const noteX = (fret: number) => {
-    if (fret === 0) {
-      return fretLineX(1) - FRET_SPACING / 2;
-    }
-
-    return fretLineX(fret) + FRET_SPACING / 2;
-  };
-
-  const neckWidth = fretLineX(endFret + 1) + OVERHANG_SPACING;
+  const sizes = getSizes({
+    startFret,
+    endFret,
+    tuning,
+    showStringNames,
+    showFretLabels,
+  });
 
   const neckPath = getRoundedRectPath({
     x: 0,
     y: 0,
-    width: neckWidth,
-    height: neckHeight,
+    width: sizes.neck.width,
+    height: sizes.neck.height,
     radius: FRETBOARD_CORNER_RADIUS,
-    roundLeft: hasLeftOverhang,
+    roundLeft: sizes.hasLeftOverhang,
     roundRight: true,
   });
 
@@ -203,78 +290,39 @@ export function Fretboard({
   const shadowFilterId = `note-shadow-${useId()}`;
   const stringShadowFilterId = `string-shadow-${useId()}`;
 
-  const stringNameX = showOpenString ? OPEN_STRING_X : STRING_NAME_X;
-  const openStringLeftMargin = showOpenString ? FRET_SPACING : 0;
-  const stringNameLeftMargin = showStringNames
-    ? BOARD_PADDING - stringNameX
-    : 0;
+  const getNoteInfo = useCallback(
+    (stringIndex: number, fret: number): GetNoteInfoResult | null => {
+      const appliedPatternRulesResult = getAppliedPatternRules(
+        tuning,
+        stringIndex + 1,
+        fret,
+        rootNote,
+        pattern,
+      );
+      if (!appliedPatternRulesResult) {
+        return null;
+      }
 
-  const leftMargin = Math.max(
-    BOARD_PADDING,
-    openStringLeftMargin,
-    stringNameLeftMargin,
+      const label = getNoteLabel(
+        noteDisplayMode,
+        rootNote,
+        appliedPatternRulesResult,
+      );
+
+      return {
+        label,
+        color: appliedPatternRulesResult.appliedPatternRule.color,
+        opacity: appliedPatternRulesResult.appliedPatternRule.opacity,
+      };
+    },
+    [tuning, noteDisplayMode, rootNote, pattern],
   );
-  const translateX = leftMargin;
-  const translateY = BOARD_PADDING;
-
-  const contentHeight = showFretLabels ? FRET_LABEL_OFFSET * 2 : 0;
-  const totalWidth = translateX + neckWidth + BOARD_PADDING;
-  const totalHeight =
-    translateY + neckHeight + Math.max(BOARD_PADDING, contentHeight);
-
-  const renderStringName = (openNote: Note, y: number) => (
-    <text
-      key={`string-name-${openNote}-${y}`}
-      x={stringNameX}
-      y={y}
-      fill={FRETBOARD_THEME_LABEL_COLOR}
-      fontFamily={FRETBOARD_THEME_FONT_FAMILY}
-      fontSize={FRETBOARD_THEME_LABEL_FONT_SIZE}
-      fontWeight={FRETBOARD_THEME_LABEL_FONT_WEIGHT}
-      textAnchor="middle"
-      dominantBaseline="central"
-      alignmentBaseline="central"
-    >
-      {openNote}
-    </text>
-  );
-
-  const renderNote = (stringNumber: number, fret: number, y: number) => {
-    const appliedPatternRulesResult = getAppliedPatternRules(
-      tuning,
-      stringNumber,
-      fret,
-      rootNote,
-      pattern,
-    );
-    if (!appliedPatternRulesResult) {
-      return null;
-    }
-
-    const noteLabel = getNoteLabel(
-      noteDisplayMode,
-      rootNote,
-      appliedPatternRulesResult,
-    );
-
-    return (
-      <FretboardNote
-        key={`${stringNumber}-${fret}`}
-        x={fret === 0 ? OPEN_STRING_X : noteX(fret)}
-        y={y}
-        color={appliedPatternRulesResult.appliedPatternRule.color}
-        label={noteDisplayMode === 'none' ? null : noteLabel}
-        opacity={appliedPatternRulesResult.appliedPatternRule.opacity}
-        shadowFilterId={showDropShadows ? shadowFilterId : undefined}
-      />
-    );
-  };
 
   return (
     <svg
       role="img"
       aria-label={description}
-      viewBox={`0 0 ${totalWidth} ${totalHeight}`}
+      viewBox={`0 0 ${sizes.total.width} ${sizes.total.height}`}
       ref={ref}
     >
       <defs>
@@ -326,15 +374,49 @@ export function Fretboard({
         </clipPath>
       </defs>
 
-      <g transform={`translate(${translateX}, ${translateY})`}>
+      <g transform={`translate(${sizes.padding.left}, ${sizes.padding.top})`}>
+        {/* String names */}
+        {showStringNames &&
+          tuning.toReversed().map((openNote, stringIndex) => (
+            <FretboardStringLabel
+              // eslint-disable-next-line react-x/no-array-index-key -- nothing else to use
+              key={stringIndex}
+              x={sizes.stringNameX}
+              y={sizes.getStringY(stringIndex)}
+              label={openNote}
+            />
+          ))}
+
+        {/* Open string notes */}
+        {sizes.showOpenStrings &&
+          tuning.toReversed().map((_, stringIndex) => {
+            const noteInfo = getNoteInfo(stringIndex, 0);
+            if (!noteInfo) {
+              return null;
+            }
+
+            return (
+              <FretboardNote
+                // eslint-disable-next-line react-x/no-array-index-key -- nothing else to use
+                key={stringIndex}
+                x={sizes.getNoteX(0)}
+                y={sizes.getStringY(stringIndex)}
+                label={noteInfo.label}
+                color={noteInfo.color}
+                opacity={noteInfo.opacity}
+                shadowFilterId={showDropShadows ? shadowFilterId : undefined}
+              />
+            );
+          })}
+
         <g clipPath={`url(#${neckClipId})`}>
           {/* Neck background */}
           {showBackgroundNeck && (
             <rect
               x={0}
               y={0}
-              width={neckWidth}
-              height={neckHeight}
+              width={sizes.neck.width}
+              height={sizes.neck.height}
               fill={FRETBOARD_THEME_NECK_COLOR}
             />
           )}
@@ -342,13 +424,13 @@ export function Fretboard({
           {/* Fret lines */}
           {showFretLines &&
             Array.from(
-              rangeInclusiveRight(firstNeckFret, endFret + 1),
+              rangeInclusiveRight(sizes.firstNeckFret, endFret + 1),
               (fret) => (
                 <FretboardFretLine
                   key={fret}
-                  x={fretLineX(fret)}
+                  x={sizes.getFretLineX(fret)}
                   yTop={0}
-                  yBottom={neckHeight}
+                  yBottom={sizes.neck.height}
                   isNut={fret === 1}
                   shadowFilterId={
                     showDropShadows ? fretShadowFilterId : undefined
@@ -360,11 +442,13 @@ export function Fretboard({
           {/* Fret markers */}
           {showFretMarkers &&
             Array.from(
-              rangeInclusiveRight(Math.max(1, firstNeckFret - 1), endFret + 1),
+              rangeInclusiveRight(
+                Math.max(1, sizes.firstNeckFret - 1),
+                endFret + 1,
+              ),
               (fret) => {
                 const fretMarkerType = getFretMarkerType(fret);
-                const x = noteX(fret);
-                const middle = neckHeight * 0.5;
+                const x = sizes.getFretboardMarkerX(fret);
 
                 switch (fretMarkerType) {
                   case 'single': {
@@ -372,7 +456,7 @@ export function Fretboard({
                       <FretboardMarkerCircle
                         key={fret}
                         x={x}
-                        y={middle}
+                        y={sizes.fretboardMarkerSingleY}
                       />
                     );
                   }
@@ -382,11 +466,11 @@ export function Fretboard({
                       <g key={fret}>
                         <FretboardMarkerCircle
                           x={x}
-                          y={middle - SPACING_BETWEEN_STRINGS}
+                          y={sizes.fretboardMarkerDoubleTopY}
                         />
                         <FretboardMarkerCircle
                           x={x}
-                          y={middle + SPACING_BETWEEN_STRINGS}
+                          y={sizes.fretboardMarkerDoubleBottomY}
                         />
                       </g>
                     );
@@ -404,23 +488,19 @@ export function Fretboard({
             )}
 
           {/* Strings and notes (inside neck) */}
-          {tuning.toReversed().map((openNote, i) => {
-            const stringNumber = i + 1;
-            const y = SPACE_TO_STRINGS + i * SPACING_BETWEEN_STRINGS;
-            const gauge = Math.max(
-              1.2,
-              3.2 - (stringCount - stringNumber) * 0.35,
-            );
+          {tuning.toReversed().map((_, stringIndex) => {
+            const stringY = sizes.getStringY(stringIndex);
 
             return (
-              <g key={`${openNote}-${stringNumber}`}>
+              // eslint-disable-next-line react-x/no-array-index-key -- nothing else to use
+              <g key={stringIndex}>
                 {/* Strings */}
                 {showStrings && (
                   <FretboardString
-                    xLeft={-STRING_CLIP_OVERHANG}
-                    xRight={neckWidth + STRING_CLIP_OVERHANG}
-                    y={y}
-                    gauge={gauge}
+                    xLeft={sizes.stringXLeft}
+                    xRight={sizes.stringXRight}
+                    y={stringY}
+                    gauge={sizes.getStringGauge(stringIndex)}
                     shadowFilterId={
                       showDropShadows ? stringShadowFilterId : undefined
                     }
@@ -429,42 +509,46 @@ export function Fretboard({
 
                 {/* Notes */}
                 {Array.from(
-                  rangeInclusiveRight(firstNeckFret, endFret),
-                  (fret) => renderNote(stringNumber, fret, y),
+                  rangeInclusiveRight(sizes.firstNeckFret, endFret),
+                  (fret) => {
+                    const noteInfo = getNoteInfo(stringIndex, fret);
+                    if (!noteInfo) {
+                      return null;
+                    }
+
+                    return (
+                      <FretboardNote
+                        key={fret}
+                        x={sizes.getNoteX(fret)}
+                        y={sizes.getStringY(stringIndex)}
+                        label={noteInfo.label}
+                        color={noteInfo.color}
+                        opacity={noteInfo.opacity}
+                        shadowFilterId={
+                          showDropShadows ? shadowFilterId : undefined
+                        }
+                      />
+                    );
+                  },
                 )}
               </g>
             );
           })}
         </g>
 
-        {/* String names */}
-        {showStringNames &&
-          tuning.toReversed().map((openNote, i) => {
-            const y = SPACE_TO_STRINGS + i * SPACING_BETWEEN_STRINGS;
-            return renderStringName(openNote, y);
-          })}
-
-        {/* Open string notes */}
-        {showOpenString &&
-          tuning.toReversed().map((_, i) => {
-            const stringNumber = i + 1;
-            const y = SPACE_TO_STRINGS + i * SPACING_BETWEEN_STRINGS;
-            return renderNote(stringNumber, 0, y);
-          })}
-
         {/* Fret labels */}
         {showFretLabels &&
-          Array.from(rangeInclusiveRight(firstNeckFret, endFret))
+          Array.from(rangeInclusiveRight(sizes.firstNeckFret, endFret))
             .filter((fret) => {
-              const isBoundaryFret = fret === firstNeckFret || fret === endFret;
-
+              const isBoundaryFret =
+                fret === sizes.firstNeckFret || fret === endFret;
               return isBoundaryFret || getFretMarkerType(fret) !== null;
             })
             .map((fret) => (
               <FretboardFretLabel
                 key={fret}
-                x={noteX(fret)}
-                y={neckHeight + FRET_LABEL_OFFSET}
+                x={sizes.getNoteX(fret)}
+                y={sizes.fretLabelY}
                 fret={fret}
               />
             ))}
