@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { objectEntries, objectKeys } from '../../lib/object.ts';
 import { INSTRUMENTS } from '../config/instruments.ts';
 import {
@@ -106,22 +106,20 @@ async function copyToClipboard(
 }
 
 async function downloadPng(
-  image: HTMLImageElement,
+  svgUrl: string,
   filenameBase: string,
   scale: number,
 ) {
-  const pngBlob = await rasterizeImage(image, PNG_CONTENT_TYPE, scale);
+  const pngBlob = await rasterizeImage(svgUrl, PNG_CONTENT_TYPE, scale);
   downloadBlob(pngBlob, `${filenameBase}.png`);
 }
 
-async function copyPngToClipboard(image: HTMLImageElement, scale: number) {
-  const pngBlob = await rasterizeImage(image, PNG_CONTENT_TYPE, scale);
+async function copyPngToClipboard(svgUrl: string, scale: number) {
+  const pngBlob = await rasterizeImage(svgUrl, PNG_CONTENT_TYPE, scale);
   await copyToClipboard(PNG_CONTENT_TYPE, pngBlob);
 }
 
 export function App() {
-  const imgRef = useRef<HTMLImageElement | null>(null);
-
   const [fretboardImg, setFretboardImg] = useState<ImgChangeEvent | null>(null);
   const [selectedPattern, setSelectedPattern] =
     useState<PatternName>(DEFAULT_PATTERN);
@@ -394,7 +392,6 @@ export function App() {
       <section className={styles.fretboardSection}>
         <Scrollable>
           <FretboardImg
-            imgRef={imgRef}
             className={styles.fretboardImg}
             onImgChange={(nextFretboardImg) => {
               setFretboardImg(nextFretboardImg);
@@ -443,11 +440,8 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    if (!imgRef.current) {
-                      return;
-                    }
                     void downloadPng(
-                      imgRef.current,
+                      fretboardImg.url,
                       `${fretboardImg.filenameBase}-SD`,
                       PNG_EXPORT_SCALE_SD,
                     );
@@ -462,11 +456,8 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    if (!imgRef.current) {
-                      return;
-                    }
                     void copyPngToClipboard(
-                      imgRef.current,
+                      fretboardImg.url,
                       PNG_EXPORT_SCALE_SD,
                     );
                   }}
@@ -480,11 +471,8 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    if (!imgRef.current) {
-                      return;
-                    }
                     void downloadPng(
-                      imgRef.current,
+                      fretboardImg.url,
                       `${fretboardImg.filenameBase}-HD`,
                       PNG_EXPORT_SCALE_HD,
                     );
@@ -499,11 +487,8 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    if (!imgRef.current) {
-                      return;
-                    }
                     void copyPngToClipboard(
-                      imgRef.current,
+                      fretboardImg.url,
                       PNG_EXPORT_SCALE_HD,
                     );
                   }}
@@ -517,11 +502,8 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    if (!imgRef.current) {
-                      return;
-                    }
                     void downloadPng(
-                      imgRef.current,
+                      fretboardImg.url,
                       `${fretboardImg.filenameBase}-UHD`,
                       PNG_EXPORT_SCALE_UHD,
                     );
@@ -536,11 +518,8 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    if (!imgRef.current) {
-                      return;
-                    }
                     void copyPngToClipboard(
-                      imgRef.current,
+                      fretboardImg.url,
                       PNG_EXPORT_SCALE_UHD,
                     );
                   }}
@@ -554,9 +533,6 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    if (!imgRef.current) {
-                      return;
-                    }
                     window.print();
                   }}
                 >

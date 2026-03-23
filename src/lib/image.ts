@@ -1,8 +1,14 @@
 export async function rasterizeImage(
-  imageElement: HTMLImageElement,
+  svgUrl: string,
   outContentType: string,
   scale: number,
 ): Promise<Blob> {
+  const imageElement = new Image();
+  imageElement.decoding = 'async';
+  imageElement.src = svgUrl;
+
+  await imageElement.decode();
+
   // naturalWidth and naturalHeight give the actual size of the image, regardless of how it's currently displayed in the
   // page or Retina/OS pixel ratio, so this should make exports consistent and predictable across different devices and
   // screen densities
