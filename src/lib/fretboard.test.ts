@@ -12,7 +12,7 @@ const PROPS_BASE = {
   tuningName: 'Standard',
   tuning: ['E', 'A', 'D', 'G', 'B', 'E'] as Note[],
   showFretLabels: true,
-  showStringNames: false,
+  showStringLabels: false,
   showDropShadows: true,
   noteDisplayMode: 'note' as const,
   rootNote: 'C' as const,
@@ -125,22 +125,22 @@ describe('getFretboardDescription', () => {
     expect(descriptionNone).toContain('note labels: none');
   });
 
-  test('includes string names label', () => {
-    const withStringNames = getFretboardDescription({
+  test('includes string labels label', () => {
+    const withStringLabels = getFretboardDescription({
       ...PROPS_BASE,
       startFret: 0,
       endFret: 0,
-      showStringNames: true,
+      showStringLabels: true,
     });
-    expect(withStringNames).toContain('string names: shown');
+    expect(withStringLabels).toContain('string labels: shown');
 
-    const withoutStringNames = getFretboardDescription({
+    const withoutStringLabels = getFretboardDescription({
       ...PROPS_BASE,
       startFret: 0,
       endFret: 0,
-      showStringNames: false,
+      showStringLabels: false,
     });
-    expect(withoutStringNames).toContain('string names: hidden');
+    expect(withoutStringLabels).toContain('string labels: hidden');
   });
 
   test('includes fret labels label', () => {
@@ -199,7 +199,7 @@ describe('getFretboardImageFilename', () => {
       ...PROPS_BASE,
       startFret: 0,
       endFret: 12,
-      showStringNames: true,
+      showStringLabels: true,
       noteDisplayMode: 'degree',
       rootNote: 'D',
     });
@@ -213,7 +213,7 @@ describe('getFretboardImageFilename', () => {
     expect(filename).toContain('[root-D]');
     expect(filename).toContain('[labels-degree]');
     expect(filename).toContain('[with-fret-labels]');
-    expect(filename).toContain('[with-string-names]');
+    expect(filename).toContain('[with-string-labels]');
   });
 
   test('ends with .svg', () => {

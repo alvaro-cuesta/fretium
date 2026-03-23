@@ -41,7 +41,7 @@ export function FretboardImg(props: FretboardImgProps) {
     showFretLines,
     showFretMarkers,
     showFretLabels,
-    showStringNames,
+    showStringLabels,
     showDropShadows,
     noteDisplayMode,
     rootNote,
@@ -66,7 +66,7 @@ export function FretboardImg(props: FretboardImgProps) {
     startFret,
     endFret,
     showFretLabels,
-    showStringNames,
+    showStringLabels,
     noteDisplayMode,
     rootNote,
   });
@@ -79,7 +79,7 @@ export function FretboardImg(props: FretboardImgProps) {
     startFret,
     endFret,
     showFretLabels,
-    showStringNames,
+    showStringLabels,
     noteDisplayMode,
     rootNote,
   });
@@ -161,7 +161,7 @@ export function FretboardImg(props: FretboardImgProps) {
           showFretLines={showFretLines}
           showFretMarkers={showFretMarkers}
           showFretLabels={showFretLabels}
-          showStringNames={showStringNames}
+          showStringLabels={showStringLabels}
           showDropShadows={showDropShadows}
           noteDisplayMode={noteDisplayMode}
           rootNote={rootNote}

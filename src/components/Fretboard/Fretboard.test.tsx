@@ -12,7 +12,7 @@ const REQUIRED_PROPS = {
   showFretLines: true,
   showFretMarkers: true,
   showFretLabels: true,
-  showStringNames: false,
+  showStringLabels: false,
   showDropShadows: true,
   noteDisplayMode: 'note' as const,
   rootNote: 'C' as const,
@@ -118,11 +118,11 @@ test('adds enough left svg padding to fit a full open-string fret', () => {
   expect(svg).toHaveAttribute('viewBox', '0 0 107 64');
 });
 
-test('renders string names at the open-string position and expands the left margin', () => {
+test('renders string labels at the open-string position and expands the left margin', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      showStringNames={true}
+      showStringLabels={true}
       pattern={[]}
       tuning={['E']}
       startFret={1}
@@ -136,23 +136,23 @@ test('renders string names at the open-string position and expands the left marg
       tuning: ['E'],
       startFret: 1,
       endFret: 1,
-      showStringNames: true,
+      showStringLabels: true,
     }),
   });
   const stringName = screen.getByText('E');
   const neckGroup = svg.querySelector('svg > g');
 
-  expect(svg).toHaveAttribute('viewBox', '0 0 135 64');
-  expect(neckGroup).toHaveAttribute('transform', 'translate(28, 16)');
+  expect(svg).toHaveAttribute('viewBox', '0 0 131 64');
+  expect(neckGroup).toHaveAttribute('transform', 'translate(24, 16)');
   expect(stringName).toHaveAttribute('x', '-12');
   expect(stringName).toHaveAttribute('y', '12');
 });
 
-test('renders higher-fret string names close to the left overhang edge', () => {
+test('renders higher-fret string labels close to the left overhang edge', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      showStringNames={true}
+      showStringLabels={true}
       pattern={[]}
       tuning={['E', 'A']}
       startFret={4}
@@ -166,25 +166,25 @@ test('renders higher-fret string names close to the left overhang edge', () => {
       tuning: ['E', 'A'],
       startFret: 4,
       endFret: 4,
-      showStringNames: true,
+      showStringLabels: true,
     }),
   });
   const stringName = screen.getByText('A');
   const neckGroup = svg.querySelector('svg > g');
 
-  expect(svg).toHaveAttribute('viewBox', '0 0 156 92');
-  expect(neckGroup).toHaveAttribute('transform', 'translate(28, 16)');
+  expect(svg).toHaveAttribute('viewBox', '0 0 152 92');
+  expect(neckGroup).toHaveAttribute('transform', 'translate(24, 16)');
   expect(stringName).toHaveAttribute('x', '-12');
   expect(stringName).toHaveAttribute('y', '12');
 });
 
-test('paints open-string notes on top of string names', () => {
+test('paints open-string notes on top of string labels', () => {
   const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
 
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      showStringNames={true}
+      showStringLabels={true}
       pattern={definition}
       tuning={['E']}
       startFret={0}
@@ -352,7 +352,7 @@ test('describes the rendered fretboard in the aria label', () => {
       showFretLines={false}
       showFretMarkers={false}
       showFretLabels={true}
-      showStringNames={true}
+      showStringLabels={true}
       showDropShadows={true}
       noteDisplayMode="degree"
       rootNote="D"
@@ -361,7 +361,7 @@ test('describes the rendered fretboard in the aria label', () => {
 
   expect(screen.getByRole('img')).toHaveAttribute(
     'aria-label',
-    'Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale, frets: 3 through 7, root note: D, note labels: degrees, fret labels: shown, string names: shown.',
+    'Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale, frets: 3 through 7, root note: D, note labels: degrees, fret labels: shown, string labels: shown.',
   );
 });
 

@@ -1,3 +1,5 @@
+import type { Tuning } from '../../lib/instrument';
+
 export const FRETBOARD_THEME_FONT_FAMILY =
   'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
 
@@ -99,3 +101,131 @@ export const FRETBOARD_THEME_NECK_COLOR = 'rgba(120, 78, 43, 0.13)';
 export const FRETBOARD_THEME_STRING_GAUGE_MIN = 1.2;
 export const FRETBOARD_THEME_STRING_GAUGE_MAX = 3.2;
 export const FRETBOARD_THEME_STRING_GAUGE_STEP = 0.35;
+
+// @todo Theme-ify these spacing values as well
+export const FRETBOARD_THEME_CORNER_RADIUS = 14;
+export const FRETBOARD_THEME_BOARD_PADDING = 16;
+export const FRETBOARD_THEME_FRET_SPACING = 64;
+export const FRETBOARD_THEME_OVERHANG_SPACING = 24;
+export const FRETBOARD_THEME_SPACING_BETWEEN_STRINGS = 28;
+export const FRETBOARD_THEME_FRET_LABEL_OFFSET = 12;
+export const FRETBOARD_THEME_SPACE_TO_STRINGS = 12;
+// Strings need to extend a bit further so that their drop shadow clips too
+// Without this, you can see a small gap in the shadow near the nut
+export const FRETBOARD_THEME_STRING_CLIP_OVERHANG = 4;
+export const FRETBOARD_THEME_STRING_NAME_NO_OPEN_STRINGS_X =
+  FRETBOARD_THEME_SPACE_TO_STRINGS;
+
+export function getFretboardMetrics(input: {
+  startFret: number;
+  endFret: number;
+  tuning: Tuning<number>;
+  showStringLabels: boolean;
+  showFretLabels: boolean;
+}) {
+  const showOpenStrings = input.startFret === 0;
+  const hasNut = input.startFret <= 1;
+  const hasLeftOverhang = input.startFret > 1;
+  const stringCount = input.tuning.length;
+
+  const [stringLabelX, stringLabelWidth] = showOpenStrings
+    ? [getNoteX(0), FRETBOARD_THEME_FRET_SPACING]
+    : [
+        -FRETBOARD_THEME_STRING_NAME_NO_OPEN_STRINGS_X,
+        FRETBOARD_THEME_STRING_NAME_NO_OPEN_STRINGS_X * 2,
+      ];
+
+  const firstNeckFret = Math.max(1, input.startFret);
+
+  const fretLabelsHeight = input.showFretLabels
+    ? FRETBOARD_THEME_FRET_LABEL_OFFSET * 2
+    : 0;
+
+  const padding = {
+    top: FRETBOARD_THEME_BOARD_PADDING,
+    right: FRETBOARD_THEME_BOARD_PADDING,
+    bottom: Math.max(FRETBOARD_THEME_BOARD_PADDING, fretLabelsHeight),
+    left: Math.max(
+      FRETBOARD_THEME_BOARD_PADDING,
+      showOpenStrings ? FRETBOARD_THEME_FRET_SPACING : 0,
+      input.showStringLabels ? stringLabelWidth : 0,
+    ),
+  };
+
+  const neck = {
+    width: getFretLineX(input.endFret + 1) + FRETBOARD_THEME_OVERHANG_SPACING,
+    height:
+      FRETBOARD_THEME_SPACE_TO_STRINGS +
+      Math.max(0, (stringCount - 1) * FRETBOARD_THEME_SPACING_BETWEEN_STRINGS) +
+      FRETBOARD_THEME_SPACE_TO_STRINGS,
+  };
+
+  const total = {
+    width: padding.left + neck.width + padding.right,
+    height: padding.top + neck.height + padding.bottom,
+  };
+
+  function getFretLineX(fret: number) {
+    return hasNut
+      ? FRETBOARD_THEME_NUT_WIDTH / 2 +
+          (fret - 1) * FRETBOARD_THEME_FRET_SPACING
+      : FRETBOARD_THEME_OVERHANG_SPACING +
+          (fret - firstNeckFret) * FRETBOARD_THEME_FRET_SPACING;
+  }
+
+  function getNoteX(fret: number) {
+    return fret === 0
+      ? getFretLineX(1) - FRETBOARD_THEME_FRET_SPACING / 2
+      : getFretLineX(fret) + FRETBOARD_THEME_FRET_SPACING / 2;
+  }
+
+  const middle = neck.height * 0.5;
+  function getFretboardMarkerX(fret: number) {
+    return getNoteX(fret);
+  }
+  const fretboardMarkerSingleY = middle;
+  const fretboardMarkerDoubleTopY =
+    middle - FRETBOARD_THEME_SPACING_BETWEEN_STRINGS;
+  const fretboardMarkerDoubleBottomY =
+    middle + FRETBOARD_THEME_SPACING_BETWEEN_STRINGS;
+
+  const stringXLeft = -FRETBOARD_THEME_STRING_CLIP_OVERHANG;
+  const stringXRight = neck.width + FRETBOARD_THEME_STRING_CLIP_OVERHANG;
+  function getStringY(stringIndex: number) {
+    return (
+      FRETBOARD_THEME_SPACE_TO_STRINGS +
+      stringIndex * FRETBOARD_THEME_SPACING_BETWEEN_STRINGS
+    );
+  }
+  function getStringGauge(stringIndex: number) {
+    const stringNumber = stringIndex + 1;
+    return Math.max(
+      FRETBOARD_THEME_STRING_GAUGE_MIN,
+      FRETBOARD_THEME_STRING_GAUGE_MAX -
+        (stringCount - stringNumber) * FRETBOARD_THEME_STRING_GAUGE_STEP,
+    );
+  }
+
+  const fretLabelY = neck.height + FRETBOARD_THEME_FRET_LABEL_OFFSET;
+
+  return {
+    firstNeckFret,
+    showOpenStrings,
+    hasLeftOverhang,
+    padding,
+    total,
+    neck,
+    getFretLineX,
+    getNoteX,
+    getFretboardMarkerX,
+    fretboardMarkerSingleY,
+    fretboardMarkerDoubleTopY,
+    fretboardMarkerDoubleBottomY,
+    stringNameX: stringLabelX,
+    stringXLeft,
+    stringXRight,
+    getStringY,
+    getStringGauge,
+    fretLabelY,
+  };
+}

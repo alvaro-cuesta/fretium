@@ -13,7 +13,7 @@ type FretboardMetadataProps = {
   startFret: number;
   endFret: number;
   showFretLabels: boolean;
-  showStringNames: boolean;
+  showStringLabels: boolean;
   noteDisplayMode: NoteDisplayMode;
   rootNote: Note;
 };
@@ -66,7 +66,7 @@ export function getFretboardDescription(props: FretboardMetadataProps): string {
     `root note: ${props.rootNote}`,
     `note labels: ${NOTE_DISPLAY_MODE_LABEL[props.noteDisplayMode]}`,
     `fret labels: ${props.showFretLabels ? 'shown' : 'hidden'}`,
-    `string names: ${props.showStringNames ? 'shown' : 'hidden'}`,
+    `string labels: ${props.showStringLabels ? 'shown' : 'hidden'}`,
   ];
 
   return `Fretium diagram ${segments.join(', ')}.`;
@@ -84,7 +84,7 @@ export function getFretboardImageFilenameBase(
     `root-${props.rootNote}`,
     `labels-${props.noteDisplayMode}`,
     props.showFretLabels ? 'with-fret-labels' : 'no-fret-labels',
-    props.showStringNames ? 'with-string-names' : 'no-string-names',
+    props.showStringLabels ? 'with-string-labels' : 'no-string-labels',
   ];
 
   return `fretium-${segments.map((s) => `[${s}]`).join('-')}`;

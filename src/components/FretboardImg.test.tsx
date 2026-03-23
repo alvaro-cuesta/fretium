@@ -17,7 +17,7 @@ const REQUIRED_PROPS = {
   showFretLines: true,
   showFretMarkers: true,
   showFretLabels: true,
-  showStringNames: false,
+  showStringLabels: false,
   showDropShadows: true,
   noteDisplayMode: 'note' as const,
   rootNote: 'C' as const,
@@ -103,7 +103,7 @@ test('uses descriptive alt text and a metadata-based svg filename', async () => 
     .mockImplementation((object) => {
       expect(object).toBeInstanceOf(File);
       expect((object as File).name).toBe(
-        'fretium-[guitar-standard-EADGBE]-[major-scale]-[frets-3-7]-[root-D]-[labels-degree]-[with-fret-labels]-[with-string-names].svg',
+        'fretium-[guitar-standard-EADGBE]-[major-scale]-[frets-3-7]-[root-D]-[labels-degree]-[with-fret-labels]-[with-string-labels].svg',
       );
 
       return 'blob:mock-fretboard';
@@ -119,7 +119,7 @@ test('uses descriptive alt text and a metadata-based svg filename', async () => 
       startFret={3}
       endFret={7}
       showFretLabels={true}
-      showStringNames={true}
+      showStringLabels={true}
       showDropShadows={true}
       noteDisplayMode="degree"
       rootNote="D"
@@ -128,7 +128,7 @@ test('uses descriptive alt text and a metadata-based svg filename', async () => 
 
   const img = await waitFor(() =>
     rendered.container.querySelector<HTMLImageElement>(
-      'img[alt="Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale, frets: 3 through 7, root note: D, note labels: degrees, fret labels: shown, string names: shown."]',
+      'img[alt="Fretium diagram for Guitar Standard (E A D G B E), pattern: Major scale, frets: 3 through 7, root note: D, note labels: degrees, fret labels: shown, string labels: shown."]',
     ),
   );
 
@@ -175,7 +175,7 @@ test('reports serialized SVG data with the generated image metadata', async () =
 
   expect(lastImgChange.url).toBe('blob:mock-fretboard');
   expect(lastImgChange.filenameBase).toBe(
-    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[no-string-names]',
+    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[no-string-labels]',
   );
 
   createObjectUrl.mockRestore();

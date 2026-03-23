@@ -3,8 +3,8 @@ import { App } from './App';
 
 const PNG_CONTENT_TYPE = 'image/png';
 
-const { rasterizeImageMock } = vi.hoisted(() => ({
-  rasterizeImageMock: vi.fn(),
+const { rasterizeSvgMock } = vi.hoisted(() => ({
+  rasterizeSvgMock: vi.fn(),
 }));
 
 vi.mock('../lib/image.ts', async (importOriginal) => {
@@ -12,16 +12,34 @@ vi.mock('../lib/image.ts', async (importOriginal) => {
 
   return {
     ...actual,
-    rasterizeImage: rasterizeImageMock,
+    rasterizeSvg: rasterizeSvgMock,
   };
 });
 
 // Basic test to ensure the app renders without crashing
 test('renders core controls with defaults and exposes SVG and PNG downloads in the menu', async () => {
-  rasterizeImageMock.mockReset();
-  rasterizeImageMock.mockResolvedValue(
-    new Blob(['png'], { type: PNG_CONTENT_TYPE }),
-  );
+  rasterizeSvgMock.mockReset();
+  const rasterizedPngBlob = new Blob(['png'], { type: PNG_CONTENT_TYPE });
+  rasterizeSvgMock.mockResolvedValue(rasterizedPngBlob);
+
+  class MockClipboardItem {
+    readonly items: Record<string, string | Blob | PromiseLike<string | Blob>>;
+
+    constructor(
+      items: Record<string, string | Blob | PromiseLike<string | Blob>>,
+    ) {
+      this.items = items;
+    }
+  }
+
+  vi.stubGlobal('ClipboardItem', MockClipboardItem);
+  const clipboardWrite = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, 'clipboard', {
+    configurable: true,
+    value: {
+      write: clipboardWrite,
+    },
+  });
 
   const createObjectUrl = vi
     .spyOn(URL, 'createObjectURL')
@@ -79,13 +97,13 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   });
 
   expect(
-    screen.getByRole('menuitem', { name: 'Download SVG' }),
+    screen.getByRole('menuitem', { name: 'Download .SVG' }),
   ).toHaveAttribute('href', 'blob:mock-fretboard');
   expect(
-    screen.getByRole('menuitem', { name: 'Download SVG' }),
+    screen.getByRole('menuitem', { name: 'Download .SVG' }),
   ).toHaveAttribute(
     'download',
-    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-names].svg',
+    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels].svg',
   );
 
   fireEvent.pointerDown(screen.getByLabelText('Pattern'));
@@ -112,29 +130,124 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
     expect(downloadToggle).toHaveAttribute('aria-expanded', 'true');
   });
 
-  fireEvent.click(screen.getByRole('menuitem', { name: 'Download PNG' }));
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Download .PNG (SD)' }));
 
   await waitFor(() => {
-    expect(rasterizeImageMock).toHaveBeenCalledTimes(1);
+    expect(rasterizeSvgMock).toHaveBeenCalledTimes(1);
   });
 
-  const [[image, outContentType, scale]] = rasterizeImageMock.mock.calls as [
-    [HTMLImageElement, string, number],
-  ];
+  const [[sdSvgUrl, sdOutContentType, sdWidth, sdHeight]] = rasterizeSvgMock
+    .mock.calls as [[string, string, number, number]];
 
-  expect(image).toBeInstanceOf(HTMLImageElement);
-  expect(image.alt).toMatch(/major scale/i);
-  expect(outContentType).toBe(PNG_CONTENT_TYPE);
-  expect(scale).toBe(2);
+  expect(sdSvgUrl).toBe('blob:mock-fretboard');
+  expect(sdOutContentType).toBe(PNG_CONTENT_TYPE);
+  expect(sdWidth).toBeGreaterThan(0);
+  expect(sdHeight).toBeGreaterThan(0);
+
+  fireEvent.click(downloadToggle);
 
   await waitFor(() => {
-    expect(anchorClick).toHaveBeenCalledTimes(1);
+    expect(downloadToggle).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Download .PNG (HD)' }));
+
+  await waitFor(() => {
+    expect(rasterizeSvgMock).toHaveBeenCalledTimes(2);
+  });
+
+  const [, [hdSvgUrl, hdOutContentType, hdWidth, hdHeight]] = rasterizeSvgMock
+    .mock.calls as [
+    [string, string, number, number],
+    [string, string, number, number],
+  ];
+
+  expect(hdSvgUrl).toBe('blob:mock-fretboard');
+  expect(hdOutContentType).toBe(PNG_CONTENT_TYPE);
+  expect(hdWidth).toBe(sdWidth * 2);
+  expect(hdHeight).toBe(sdHeight * 2);
+
+  fireEvent.click(downloadToggle);
+
+  await waitFor(() => {
+    expect(downloadToggle).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  fireEvent.click(
+    screen.getByRole('menuitem', { name: 'Copy .PNG (SD) to clipboard' }),
+  );
+
+  await waitFor(() => {
+    expect(rasterizeSvgMock).toHaveBeenCalledTimes(3);
+    expect(clipboardWrite).toHaveBeenCalledTimes(1);
+  });
+
+  fireEvent.click(downloadToggle);
+
+  await waitFor(() => {
+    expect(downloadToggle).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  fireEvent.click(
+    screen.getByRole('menuitem', { name: 'Copy .PNG (HD) to clipboard' }),
+  );
+
+  await waitFor(() => {
+    expect(rasterizeSvgMock).toHaveBeenCalledTimes(4);
+    expect(clipboardWrite).toHaveBeenCalledTimes(2);
+  });
+
+  const [
+    ,
+    ,
+    [copySdSvgUrl, copySdOutContentType, copySdWidth, copySdHeight],
+    [copyHdSvgUrl, copyHdOutContentType, copyHdWidth, copyHdHeight],
+  ] = rasterizeSvgMock.mock.calls as [
+    [string, string, number, number],
+    [string, string, number, number],
+    [string, string, number, number],
+    [string, string, number, number],
+  ];
+
+  expect(copySdSvgUrl).toBe('blob:mock-fretboard');
+  expect(copySdOutContentType).toBe(PNG_CONTENT_TYPE);
+  expect(copySdWidth).toBe(sdWidth);
+  expect(copySdHeight).toBe(sdHeight);
+
+  expect(copyHdSvgUrl).toBe('blob:mock-fretboard');
+  expect(copyHdOutContentType).toBe(PNG_CONTENT_TYPE);
+  expect(copyHdWidth).toBe(hdWidth);
+  expect(copyHdHeight).toBe(hdHeight);
+
+  const clipboardWriteCalls = clipboardWrite.mock.calls as [
+    [unknown[]],
+    [unknown[]],
+  ];
+  expect(clipboardWriteCalls[0]).toHaveLength(1);
+  expect(clipboardWriteCalls[1]).toHaveLength(1);
+
+  const [copySdItem] = clipboardWriteCalls[0][0] as [MockClipboardItem];
+  const [copyHdItem] = clipboardWriteCalls[1][0] as [MockClipboardItem];
+
+  expect(copySdItem).toBeInstanceOf(MockClipboardItem);
+  expect(copyHdItem).toBeInstanceOf(MockClipboardItem);
+  expect(copySdItem.items[PNG_CONTENT_TYPE]).toBe(rasterizedPngBlob);
+  expect(copyHdItem.items[PNG_CONTENT_TYPE]).toBe(rasterizedPngBlob);
+
+  await waitFor(() => {
+    expect(anchorClick).toHaveBeenCalledTimes(2);
   });
 
   expect(clickedDownloads).toEqual([
     {
       download:
-        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-names].png',
+        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-SD.png',
+      href: 'blob:mock-download',
+      rel: 'noopener',
+    },
+    {
+      download:
+        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-HD.png',
       href: 'blob:mock-download',
       rel: 'noopener',
     },
@@ -143,4 +256,5 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   anchorClick.mockRestore();
   createObjectUrl.mockRestore();
   revokeObjectUrl.mockRestore();
+  vi.unstubAllGlobals();
 });

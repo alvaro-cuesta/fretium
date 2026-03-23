@@ -11,10 +11,11 @@ import { useLenientInput } from '../hooks/useLenientInput.ts';
 import globalStyles from '../index.module.scss';
 import { downloadBlob, PNG_CONTENT_TYPE } from '../lib/file.ts';
 import { type NoteDisplayMode } from '../lib/fretboard.ts';
-import { rasterizeImage } from '../lib/image.ts';
+import { rasterizeSvg } from '../lib/image.ts';
 import { clamp } from '../lib/math.ts';
 import type { Note } from '../lib/music.ts';
 import styles from './App.module.scss';
+import { getFretboardMetrics } from './Fretboard/theme.ts';
 import { FretboardImg, type ImgChangeEvent } from './FretboardImg.tsx';
 import { Layout } from './Layout.tsx';
 import { MenuButton } from './MenuButton.tsx';
@@ -53,7 +54,6 @@ const DEFAULT_SHOW_DROP_SHADOWS = true;
 
 const PNG_EXPORT_SCALE_SD = 2 as const;
 const PNG_EXPORT_SCALE_HD = 4 as const;
-const PNG_EXPORT_SCALE_UHD = 8 as const;
 
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({
@@ -105,17 +105,22 @@ async function copyToClipboard(
   await navigator.clipboard.write([new ClipboardItem({ [contentType]: data })]);
 }
 
-async function downloadPng(
+async function downloadSvgAsPng(
   svgUrl: string,
   filenameBase: string,
-  scale: number,
+  width: number,
+  height: number,
 ) {
-  const pngBlob = await rasterizeImage(svgUrl, PNG_CONTENT_TYPE, scale);
+  const pngBlob = await rasterizeSvg(svgUrl, PNG_CONTENT_TYPE, width, height);
   downloadBlob(pngBlob, `${filenameBase}.png`);
 }
 
-async function copyPngToClipboard(svgUrl: string, scale: number) {
-  const pngBlob = await rasterizeImage(svgUrl, PNG_CONTENT_TYPE, scale);
+async function copySvgToClipboardPng(
+  svgUrl: string,
+  width: number,
+  height: number,
+) {
+  const pngBlob = await rasterizeSvg(svgUrl, PNG_CONTENT_TYPE, width, height);
   await copyToClipboard(PNG_CONTENT_TYPE, pngBlob);
 }
 
@@ -408,7 +413,7 @@ export function App() {
             showFretLines={showFretLines}
             showFretMarkers={showFretMarkers}
             showFretLabels={showFretLabels}
-            showStringNames={showStringLabels}
+            showStringLabels={showStringLabels}
             showDropShadows={showDropShadows}
             noteDisplayMode={selectedNoteDisplayMode}
             rootNote={selectedRootNote}
@@ -440,10 +445,20 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    void downloadPng(
+
+                    const metrics = getFretboardMetrics({
+                      startFret,
+                      endFret,
+                      tuning: resolvedInstrumentTuning.tuning,
+                      showStringLabels,
+                      showFretLabels,
+                    });
+
+                    void downloadSvgAsPng(
                       fretboardImg.url,
                       `${fretboardImg.filenameBase}-SD`,
-                      PNG_EXPORT_SCALE_SD,
+                      metrics.total.width * PNG_EXPORT_SCALE_SD,
+                      metrics.total.height * PNG_EXPORT_SCALE_SD,
                     );
                   }}
                 >
@@ -456,9 +471,19 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    void copyPngToClipboard(
+
+                    const metrics = getFretboardMetrics({
+                      startFret,
+                      endFret,
+                      tuning: resolvedInstrumentTuning.tuning,
+                      showStringLabels,
+                      showFretLabels,
+                    });
+
+                    void copySvgToClipboardPng(
                       fretboardImg.url,
-                      PNG_EXPORT_SCALE_SD,
+                      metrics.total.width * PNG_EXPORT_SCALE_SD,
+                      metrics.total.height * PNG_EXPORT_SCALE_SD,
                     );
                   }}
                 >
@@ -471,10 +496,20 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    void downloadPng(
+
+                    const metrics = getFretboardMetrics({
+                      startFret,
+                      endFret,
+                      tuning: resolvedInstrumentTuning.tuning,
+                      showStringLabels,
+                      showFretLabels,
+                    });
+
+                    void downloadSvgAsPng(
                       fretboardImg.url,
                       `${fretboardImg.filenameBase}-HD`,
-                      PNG_EXPORT_SCALE_HD,
+                      metrics.total.width * PNG_EXPORT_SCALE_HD,
+                      metrics.total.height * PNG_EXPORT_SCALE_HD,
                     );
                   }}
                 >
@@ -487,44 +522,23 @@ export function App() {
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
                     closeMenu();
-                    void copyPngToClipboard(
+
+                    const metrics = getFretboardMetrics({
+                      startFret,
+                      endFret,
+                      tuning: resolvedInstrumentTuning.tuning,
+                      showStringLabels,
+                      showFretLabels,
+                    });
+
+                    void copySvgToClipboardPng(
                       fretboardImg.url,
-                      PNG_EXPORT_SCALE_HD,
+                      metrics.total.width * PNG_EXPORT_SCALE_HD,
+                      metrics.total.height * PNG_EXPORT_SCALE_HD,
                     );
                   }}
                 >
                   Copy .PNG (HD) to clipboard
-                </button>
-
-                <button
-                  type="button"
-                  role="menuitem"
-                  className={cx(globalStyles.linkButton, menuItemClassName)}
-                  onClick={() => {
-                    closeMenu();
-                    void downloadPng(
-                      fretboardImg.url,
-                      `${fretboardImg.filenameBase}-UHD`,
-                      PNG_EXPORT_SCALE_UHD,
-                    );
-                  }}
-                >
-                  Download .PNG (UHD)
-                </button>
-
-                <button
-                  type="button"
-                  role="menuitem"
-                  className={cx(globalStyles.linkButton, menuItemClassName)}
-                  onClick={() => {
-                    closeMenu();
-                    void copyPngToClipboard(
-                      fretboardImg.url,
-                      PNG_EXPORT_SCALE_UHD,
-                    );
-                  }}
-                >
-                  Copy .PNG (UHD) to clipboard
                 </button>
 
                 <button
