@@ -517,23 +517,23 @@ function make7Chord_4321_3rdInversion(
 type ArpeggioPatternSuffix =
   | ' Arpeggio'
   | ' Arpeggio (G position)'
-  | ' Arpeggio (G position) + 6-4-3-2 (root position)'
-  | ' Arpeggio (G position) + 6-5-4-3 (root position)'
+  | ' Arpeggio (G position) + 6-4-3-2 (root)'
+  | ' Arpeggio (G position) + 6-5-4-3 (root)'
   | ' Arpeggio (G position) + 4-3-2-1 (3rd inversion)'
   | ' Arpeggio (E position)'
-  | ' Arpeggio (E position) + Left 6-4-3-2 (root position)'
+  | ' Arpeggio (E position) + Left 6-4-3-2 (root)'
   | ' Arpeggio (E position) + Left 4-3-2-1 (3rd inversion)'
-  | ' Arpeggio (E position) + 6-5-4-3 (root position)'
+  | ' Arpeggio (E position) + 6-5-4-3 (root)'
   | ' Arpeggio (E position) + 5-4-3-2 (2nd inversion)'
   | ' Arpeggio (E position) + 5-3-2-1 (2nd inversion)'
   | ' Arpeggio (E position) + Right 6-4-3-2 (1st inversion)'
-  | ' Arpeggio (E position) + Right 4-3-2-1 (root position)'
+  | ' Arpeggio (E position) + Right 4-3-2-1 (root)'
   | ' Arpeggio (D position)'
   | ' Arpeggio (D position) + 6-4-3-2 (1st inversion)'
   | ' Arpeggio (D position) + 6-5-4-3 (1st inversion)'
   | ' Arpeggio (D position) + 5-4-3-2 (3rd inversion)'
   | ' Arpeggio (D position) + 5-3-2-1 (3rd inversion)'
-  | ' Arpeggio (D position) + 4-3-2-1 (root position)'
+  | ' Arpeggio (D position) + 4-3-2-1 (root)'
   | ' Arpeggio (C position)'
   | ' Arpeggio (C position) + 6-4-3-2 (2nd inversion)'
   | ' Arpeggio (C position) + 6-5-4-3 (2nd inversion)'
@@ -543,8 +543,8 @@ type ArpeggioPatternSuffix =
   | ' Arpeggio (A position)'
   | ' Arpeggio (A position) + 6-4-3-2 (3rd inversion)'
   | ' Arpeggio (A position) + 6-5-4-3 (3rd inversion)'
-  | ' Arpeggio (A position) + 5-4-3-2 (root position)'
-  | ' Arpeggio (A position) + 5-3-2-1 (root position)'
+  | ' Arpeggio (A position) + 5-4-3-2 (root)'
+  | ' Arpeggio (A position) + 5-3-2-1 (root)'
   | ' Arpeggio (A position) + 4-3-2-1 (2nd inversion)'
   | ' Arpeggio (A-G position)'
   | ' Arpeggio (A-G position) + Left 6-4-3-2 (3rd inversion)'
@@ -552,7 +552,7 @@ type ArpeggioPatternSuffix =
   | ' Arpeggio (A-G position) + 6-5-4-3 (3rd inversion)'
   | ' Arpeggio (A-G position) + 5-4-3-2 (1st inversion)'
   | ' Arpeggio (A-G position) + 5-3-2-1 (1st inversion)'
-  | ' Arpeggio (A-G position) + Right 6-4-3-2 (root position)'
+  | ' Arpeggio (A-G position) + Right 6-4-3-2 (root)'
   | ' Arpeggio (A-G position) + Right 4-3-2-1 (3rd inversion)';
 
 type ArpeggioPatternName<TGroupName extends string> =
@@ -594,7 +594,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (G position) + 6-4-3-2 (root position)`]: {
+      [`${groupName} Arpeggio (G position) + 6-4-3-2 (root)`]: {
         rules: [
           ...make7Arpeggio_GPosition(
             thirdInterval,
@@ -612,7 +612,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (G position) + 6-5-4-3 (root position)`]: {
+      [`${groupName} Arpeggio (G position) + 6-5-4-3 (root)`]: {
         rules: [
           ...make7Arpeggio_GPosition(
             thirdInterval,
@@ -659,7 +659,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (E position) + Left 6-4-3-2 (root position)`]: {
+      [`${groupName} Arpeggio (E position) + Left 6-4-3-2 (root)`]: {
         rules: [
           ...make7Arpeggio_EPosition(
             thirdInterval,
@@ -695,7 +695,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (E position) + 6-5-4-3 (root position)`]: {
+      [`${groupName} Arpeggio (E position) + 6-5-4-3 (root)`]: {
         rules: [
           ...make7Arpeggio_EPosition(
             thirdInterval,
@@ -767,7 +767,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (E position) + Right 4-3-2-1 (root position)`]: {
+      [`${groupName} Arpeggio (E position) + Right 4-3-2-1 (root)`]: {
         rules: [
           ...make7Arpeggio_EPosition(
             thirdInterval,
@@ -868,7 +868,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (D position) + 4-3-2-1 (root position)`]: {
+      [`${groupName} Arpeggio (D position) + 4-3-2-1 (root)`]: {
         rules: [
           ...make7Arpeggio_DPosition(
             thirdInterval,
@@ -1016,7 +1016,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (C-A position) + 5-4-3-2 (root position)`]: {
+      [`${groupName} Arpeggio (C-A position) + 5-4-3-2 (root)`]: {
         rules: [
           ...make7Arpeggio_CAPosition(
             thirdInterval,
@@ -1034,7 +1034,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (C-A position) + 5-3-2-1 (root position)`]: {
+      [`${groupName} Arpeggio (C-A position) + 5-3-2-1 (root)`]: {
         rules: [
           ...make7Arpeggio_CAPosition(
             thirdInterval,
@@ -1117,7 +1117,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (A position) + 5-4-3-2 (root position)`]: {
+      [`${groupName} Arpeggio (A position) + 5-4-3-2 (root)`]: {
         rules: [
           ...make7Arpeggio_APosition(
             thirdInterval,
@@ -1135,7 +1135,7 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (A position) + 5-3-2-1 (root position)`]: {
+      [`${groupName} Arpeggio (A position) + 5-3-2-1 (root)`]: {
         rules: [
           ...make7Arpeggio_APosition(
             thirdInterval,
@@ -1272,25 +1272,24 @@ function make7ArpeggioGroup<const TGroupName extends string>(
           ),
         ],
       },
-      [`${groupName} Arpeggio (A-G position) + Right 6-4-3-2 (root position)`]:
-        {
-          rules: [
-            ...make7Arpeggio_AGPosition(
-              thirdInterval,
-              fifthInterval,
-              seventhInterval,
-              SCALE_ROOT_COLOR,
-              SCALE_TONE_COLOR,
-            ),
-            ...make7Chord_6432_RootPosition(
-              thirdInterval,
-              fifthInterval,
-              seventhInterval,
-              CHORD_ROOT_COLOR,
-              CHORD_TONE_COLOR,
-            ),
-          ],
-        },
+      [`${groupName} Arpeggio (A-G position) + Right 6-4-3-2 (root)`]: {
+        rules: [
+          ...make7Arpeggio_AGPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6432_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
       [`${groupName} Arpeggio (A-G position) + Right 4-3-2-1 (3rd inversion)`]:
         {
           rules: [
@@ -1314,6 +1313,98 @@ function make7ArpeggioGroup<const TGroupName extends string>(
   } as const as unknown as ArpeggioGroup<TGroupName>;
 }
 
+type Make7ChordPositionFn = (
+  thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
+  seventhInterval: SeventhInterval,
+  rootColor: FretboardNoteColorName,
+  toneColor: FretboardNoteColorName,
+) => PatternRule[];
+
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+function make7ChordSubgroup<const TGroupName extends string>(
+  groupName: TGroupName,
+  thirdInterval: ThirdInterval,
+  fifthInterval: FifthInterval,
+  seventhInterval: SeventhInterval,
+  makeRootPosition: Make7ChordPositionFn,
+  make1stInversion: Make7ChordPositionFn,
+  make2ndInversion: Make7ChordPositionFn,
+  make3rdInversion: Make7ChordPositionFn,
+) {
+  return {
+    [`${groupName} (All)` as const]: {
+      rules: [
+        ...makeRootPosition(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          '1-STRONG',
+          '1-LIGHT',
+        ),
+        ...make1stInversion(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          '2-STRONG',
+          '2-LIGHT',
+        ),
+        ...make2ndInversion(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          '3-STRONG',
+          '3-LIGHT',
+        ),
+        ...make3rdInversion(
+          thirdInterval,
+          fifthInterval,
+          seventhInterval,
+          '4-STRONG',
+          '4-LIGHT',
+        ),
+      ],
+      isFullOctave: true,
+    },
+    [`${groupName} (Root)` as const]: {
+      rules: makeRootPosition(
+        thirdInterval,
+        fifthInterval,
+        seventhInterval,
+        '1-STRONG',
+        '1-LIGHT',
+      ),
+    },
+    [`${groupName} (1st inversion)` as const]: {
+      rules: make1stInversion(
+        thirdInterval,
+        fifthInterval,
+        seventhInterval,
+        '1-STRONG',
+        '1-LIGHT',
+      ),
+    },
+    [`${groupName} (2nd inversion)` as const]: {
+      rules: make2ndInversion(
+        thirdInterval,
+        fifthInterval,
+        seventhInterval,
+        '1-STRONG',
+        '1-LIGHT',
+      ),
+    },
+    [`${groupName} (3rd inversion)` as const]: {
+      rules: make3rdInversion(
+        thirdInterval,
+        fifthInterval,
+        seventhInterval,
+        '1-STRONG',
+        '1-LIGHT',
+      ),
+    },
+  } as const;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 function make7ChordGroup<const TGroupName extends string>(
   groupName: TGroupName,
@@ -1323,171 +1414,57 @@ function make7ChordGroup<const TGroupName extends string>(
 ) {
   return {
     [`Chords - ${groupName}` as const]: {
-      [`${groupName} Chord Drop 3 (Bass 6th) | 6-4-3-2` as const]: {
-        rules: [
-          ...make7Chord_6432_RootPosition(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '1-STRONG',
-            '1-LIGHT',
-          ),
-          ...make7Chord_6432_1stInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '2-STRONG',
-            '2-LIGHT',
-          ),
-          ...make7Chord_6432_2ndInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '3-STRONG',
-            '3-LIGHT',
-          ),
-          ...make7Chord_6432_3rdInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '4-STRONG',
-            '4-LIGHT',
-          ),
-        ],
-        isFullOctave: true,
-      },
-      [`${groupName} Chord Drop 3 (Bass 5th) | 5-3-2-1` as const]: {
-        rules: [
-          ...make7Chord_5321_RootPosition(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '1-STRONG',
-            '1-LIGHT',
-          ),
-          ...make7Chord_5321_1stInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '2-STRONG',
-            '2-LIGHT',
-          ),
-          ...make7Chord_5321_2ndInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '3-STRONG',
-            '3-LIGHT',
-          ),
-          ...make7Chord_5321_3rdInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '4-STRONG',
-            '4-LIGHT',
-          ),
-        ],
-        isFullOctave: true,
-      },
-      [`${groupName} Chord Drop 2 (Bass 6th) | 6-5-4-3` as const]: {
-        rules: [
-          ...make7Chord_6543_RootPosition(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '1-STRONG',
-            '1-LIGHT',
-          ),
-          ...make7Chord_6543_1stInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '2-STRONG',
-            '2-LIGHT',
-          ),
-          ...make7Chord_6543_2ndInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '3-STRONG',
-            '3-LIGHT',
-          ),
-          ...make7Chord_6543_3rdInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '4-STRONG',
-            '4-LIGHT',
-          ),
-        ],
-        isFullOctave: true,
-      },
-      [`${groupName} Chord Drop 2 (Bass 5th) | 5-4-3-2` as const]: {
-        rules: [
-          ...make7Chord_5432_RootPosition(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '1-STRONG',
-            '1-LIGHT',
-          ),
-          ...make7Chord_5432_1stInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '2-STRONG',
-            '2-LIGHT',
-          ),
-          ...make7Chord_5432_2ndInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '3-STRONG',
-            '3-LIGHT',
-          ),
-          ...make7Chord_5432_3rdInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '4-STRONG',
-            '4-LIGHT',
-          ),
-        ],
-        isFullOctave: true,
-      },
-      [`${groupName} Chord Drop 2 (Bass 4th) | 4-3-2-1` as const]: {
-        rules: [
-          ...make7Chord_4321_RootPosition(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '1-STRONG',
-            '1-LIGHT',
-          ),
-          ...make7Chord_4321_1stInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '2-STRONG',
-            '2-LIGHT',
-          ),
-          ...make7Chord_4321_2ndInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '3-STRONG',
-            '3-LIGHT',
-          ),
-          ...make7Chord_4321_3rdInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '4-STRONG',
-            '4-LIGHT',
-          ),
-        ],
-        isFullOctave: true,
-      },
+      ...make7ChordSubgroup(
+        `${groupName} Chord Drop 3 (Bass 6th) | 6-4-3-2`,
+        thirdInterval,
+        fifthInterval,
+        seventhInterval,
+        make7Chord_6432_RootPosition,
+        make7Chord_6432_1stInversion,
+        make7Chord_6432_2ndInversion,
+        make7Chord_6432_3rdInversion,
+      ),
+      ...make7ChordSubgroup(
+        `${groupName} Chord Drop 3 (Bass 5th) | 5-3-2-1`,
+        thirdInterval,
+        fifthInterval,
+        seventhInterval,
+        make7Chord_5321_RootPosition,
+        make7Chord_5321_1stInversion,
+        make7Chord_5321_2ndInversion,
+        make7Chord_5321_3rdInversion,
+      ),
+      ...make7ChordSubgroup(
+        `${groupName} Chord Drop 2 (Bass 6th) | 6-5-4-3`,
+        thirdInterval,
+        fifthInterval,
+        seventhInterval,
+        make7Chord_6543_RootPosition,
+        make7Chord_6543_1stInversion,
+        make7Chord_6543_2ndInversion,
+        make7Chord_6543_3rdInversion,
+      ),
+      ...make7ChordSubgroup(
+        `${groupName} Chord Drop 2 (Bass 5th) | 5-4-3-2`,
+        thirdInterval,
+        fifthInterval,
+        seventhInterval,
+        make7Chord_5432_RootPosition,
+        make7Chord_5432_1stInversion,
+        make7Chord_5432_2ndInversion,
+        make7Chord_5432_3rdInversion,
+      ),
+
+      ...make7ChordSubgroup(
+        `${groupName} Chord Drop 2 (Bass 4th) | 4-3-2-1`,
+        thirdInterval,
+        fifthInterval,
+        seventhInterval,
+        make7Chord_4321_RootPosition,
+        make7Chord_4321_1stInversion,
+        make7Chord_4321_2ndInversion,
+        make7Chord_4321_3rdInversion,
+      ),
     },
   } as const;
 }
