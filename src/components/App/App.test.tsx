@@ -7,8 +7,8 @@ const { rasterizeSvgMock } = vi.hoisted(() => ({
   rasterizeSvgMock: vi.fn(),
 }));
 
-vi.mock('../lib/image.ts', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../lib/image')>();
+vi.mock('../../lib/image.ts', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../lib/image')>();
 
   return {
     ...actual,
@@ -74,8 +74,8 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(screen.getByLabelText('Instrument')).toHaveValue('Guitar::Standard');
   expect(screen.getByLabelText('Pattern')).toHaveValue('Major scale');
   expect(screen.getByLabelText('Root note')).toHaveValue('C');
-  expect(screen.getByLabelText('Start fret')).toHaveValue(0);
-  expect(screen.getByLabelText('End fret')).toHaveValue(14);
+  expect(screen.getByLabelText('Start fret')).toHaveValue('AUTO');
+  expect(screen.getByLabelText('End fret')).toHaveValue('AUTO');
   expect(screen.getByLabelText('Background')).toBeChecked();
   expect(screen.getByLabelText('Strings')).toBeChecked();
   expect(screen.getByLabelText('Fret lines')).toBeChecked();
@@ -102,7 +102,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   );
   expect(screen.getByRole('menuitem', { name: 'Download' })).toHaveAttribute(
     'download',
-    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels].svg',
+    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels].svg',
   );
 
   fireEvent.pointerDown(screen.getByLabelText('Pattern'));
@@ -240,13 +240,13 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(clickedDownloads).toEqual([
     {
       download:
-        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-SD.png',
+        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-SD.png',
       href: 'blob:mock-download',
       rel: 'noopener',
     },
     {
       download:
-        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-14]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-HD.png',
+        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-HD.png',
       href: 'blob:mock-download',
       rel: 'noopener',
     },

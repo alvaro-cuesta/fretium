@@ -3,6 +3,12 @@ import { getFretboardDescription } from '../../lib/fretboard';
 import type { Pattern } from '../../lib/pattern-engine';
 import { Fretboard, type FretboardProps } from './Fretboard';
 
+const EMPTY_PATTERN: Pattern = { rules: [] };
+
+function createPattern(rules: Pattern['rules']): Pattern {
+  return { rules };
+}
+
 const REQUIRED_PROPS = {
   patternName: 'Major scale',
   instrumentName: 'Guitar',
@@ -21,7 +27,7 @@ const REQUIRED_PROPS = {
 function getDescription(props: Partial<Omit<FretboardProps, 'ref'>> = {}) {
   return getFretboardDescription({
     ...REQUIRED_PROPS,
-    pattern: [],
+    pattern: EMPTY_PATTERN,
     tuning: ['E'],
     startFret: 0,
     endFret: 0,
@@ -30,7 +36,9 @@ function getDescription(props: Partial<Omit<FretboardProps, 'ref'>> = {}) {
 }
 
 test('keeps the neck local coordinates anchored at the neck edge for open-string diagrams', () => {
-  const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'E' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -74,7 +82,9 @@ test('keeps the neck local coordinates anchored at the neck edge for open-string
 });
 
 test('sizes the viewBox from the translated neck bounds and label area', () => {
-  const definition: Pattern = [{ condition: { note: 'G' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'G' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -99,7 +109,9 @@ test('sizes the viewBox from the translated neck bounds and label area', () => {
 });
 
 test('adds enough left svg padding to fit a full open-string fret', () => {
-  const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'E' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -123,7 +135,7 @@ test('renders string labels at the open-string position and expands the left mar
     <Fretboard
       {...REQUIRED_PROPS}
       showStringLabels={true}
-      pattern={[]}
+      pattern={EMPTY_PATTERN}
       tuning={['E']}
       startFret={1}
       endFret={1}
@@ -132,7 +144,7 @@ test('renders string labels at the open-string position and expands the left mar
 
   const svg = screen.getByRole('img', {
     name: getDescription({
-      pattern: [],
+      pattern: EMPTY_PATTERN,
       tuning: ['E'],
       startFret: 1,
       endFret: 1,
@@ -153,7 +165,7 @@ test('renders higher-fret string labels close to the left overhang edge', () => 
     <Fretboard
       {...REQUIRED_PROPS}
       showStringLabels={true}
-      pattern={[]}
+      pattern={EMPTY_PATTERN}
       tuning={['E', 'A']}
       startFret={4}
       endFret={4}
@@ -162,7 +174,7 @@ test('renders higher-fret string labels close to the left overhang edge', () => 
 
   const svg = screen.getByRole('img', {
     name: getDescription({
-      pattern: [],
+      pattern: EMPTY_PATTERN,
       tuning: ['E', 'A'],
       startFret: 4,
       endFret: 4,
@@ -179,7 +191,9 @@ test('renders higher-fret string labels close to the left overhang edge', () => 
 });
 
 test('paints open-string notes on top of string labels', () => {
-  const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'E' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -202,7 +216,9 @@ test('paints open-string notes on top of string labels', () => {
 });
 
 test('renders a subtle drop shadow filter behind filled notes', () => {
-  const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'F' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -237,7 +253,9 @@ test('renders a subtle drop shadow filter behind filled notes', () => {
 });
 
 test('omits disabled neck layers while keeping notes rendered', () => {
-  const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'F' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -271,7 +289,9 @@ test('omits disabled neck layers while keeping notes rendered', () => {
 });
 
 test('keeps fret-one diagrams in the neck coordinate system including half the nut width', () => {
-  const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'F' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -306,7 +326,7 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      pattern={[]}
+      pattern={EMPTY_PATTERN}
       tuning={['E', 'A']}
       startFret={4}
       endFret={4}
@@ -315,7 +335,7 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
 
   const svg = screen.getByRole('img', {
     name: getDescription({
-      pattern: [],
+      pattern: EMPTY_PATTERN,
       tuning: ['E', 'A'],
       startFret: 4,
       endFret: 4,
@@ -340,7 +360,7 @@ test('measures higher-fret diagrams from the left overhang edge', () => {
 test('describes the rendered fretboard in the aria label', () => {
   const screen = render(
     <Fretboard
-      pattern={[]}
+      pattern={EMPTY_PATTERN}
       patternName="Major scale"
       instrumentName="Guitar"
       tuningName="Standard"
@@ -369,7 +389,7 @@ test('omits fret markers when disabled', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      pattern={[]}
+      pattern={EMPTY_PATTERN}
       tuning={['E', 'A']}
       startFret={2}
       endFret={4}
@@ -379,7 +399,7 @@ test('omits fret markers when disabled', () => {
 
   const svg = screen.getByRole('img', {
     name: getDescription({
-      pattern: [],
+      pattern: EMPTY_PATTERN,
       tuning: ['E', 'A'],
       startFret: 2,
       endFret: 4,
@@ -392,7 +412,9 @@ test('omits fret markers when disabled', () => {
 });
 
 test('explicitly centers note text on the note circle', () => {
-  const definition: Pattern = [{ condition: { note: 'E' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'E' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -416,7 +438,7 @@ test('always shows fret labels for the visible start and end frets', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      pattern={[]}
+      pattern={EMPTY_PATTERN}
       tuning={['E']}
       startFret={1}
       endFret={4}
@@ -431,7 +453,7 @@ test('shows the ending fret label for open-string diagrams', () => {
   const screen = render(
     <Fretboard
       {...REQUIRED_PROPS}
-      pattern={[]}
+      pattern={EMPTY_PATTERN}
       tuning={['E']}
       startFret={0}
       endFret={1}
@@ -446,7 +468,7 @@ test('omits fret labels and the extra footer space when fret labels are disabled
     <Fretboard
       {...REQUIRED_PROPS}
       showFretLabels={false}
-      pattern={[]}
+      pattern={EMPTY_PATTERN}
       tuning={['E']}
       startFret={1}
       endFret={4}
@@ -455,7 +477,7 @@ test('omits fret labels and the extra footer space when fret labels are disabled
 
   const svg = screen.getByRole('img', {
     name: getDescription({
-      pattern: [],
+      pattern: EMPTY_PATTERN,
       tuning: ['E'],
       startFret: 1,
       endFret: 4,
@@ -469,7 +491,9 @@ test('omits fret labels and the extra footer space when fret labels are disabled
 });
 
 test('does not render drop-shadow defs or filter attributes when shadows are disabled', () => {
-  const definition: Pattern = [{ condition: { note: 'F' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'F' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -502,9 +526,9 @@ test('does not render drop-shadow defs or filter attributes when shadows are dis
 });
 
 test('supports string and fret DSL selectors', () => {
-  const definition: Pattern = [
+  const definition: Pattern = createPattern([
     { condition: { string: 1, fret: 3 }, color: 'BLACK' },
-  ];
+  ]);
 
   const screen = render(
     <Fretboard
@@ -520,12 +544,12 @@ test('supports string and fret DSL selectors', () => {
 });
 
 test('supports array and range DSL selectors', () => {
-  const definition: Pattern = [
+  const definition: Pattern = createPattern([
     {
       condition: { string: [1, 2], fret: { gte: 3, lte: 4 } },
       color: 'BLACK',
     },
-  ];
+  ]);
 
   const screen = render(
     <Fretboard
@@ -544,9 +568,9 @@ test('supports array and range DSL selectors', () => {
 });
 
 test('supports interval DSL selectors', () => {
-  const definition: Pattern = [
+  const definition: Pattern = createPattern([
     { condition: { interval: 'b3' }, color: 'BLACK' },
-  ];
+  ]);
 
   const screen = render(
     <Fretboard
@@ -562,9 +586,9 @@ test('supports interval DSL selectors', () => {
 });
 
 test('resolves interval DSL selectors against the provided root note', () => {
-  const definition: Pattern = [
+  const definition: Pattern = createPattern([
     { condition: { interval: 'b3' }, color: 'BLACK' },
-  ];
+  ]);
 
   const screen = render(
     <Fretboard
@@ -581,9 +605,9 @@ test('resolves interval DSL selectors against the provided root note', () => {
 });
 
 test('supports natural interval selectors against the provided root note', () => {
-  const definition: Pattern = [
+  const definition: Pattern = createPattern([
     { condition: { interval: '1' }, color: 'BLACK' },
-  ];
+  ]);
 
   const screen = render(
     <Fretboard
@@ -600,9 +624,9 @@ test('supports natural interval selectors against the provided root note', () =>
 });
 
 test('shows interval labels when interval display mode is selected', () => {
-  const definition: Pattern = [
+  const definition: Pattern = createPattern([
     { condition: { note: ['A', 'B'] }, color: 'BLACK' },
-  ];
+  ]);
 
   const screen = render(
     <Fretboard
@@ -626,9 +650,9 @@ test('shows interval labels when interval display mode is selected', () => {
 });
 
 test('shows degree labels when degree display mode is selected', () => {
-  const definition: Pattern = [
+  const definition: Pattern = createPattern([
     { condition: { note: ['A', 'B', 'C'] }, color: 'BLACK' },
-  ];
+  ]);
 
   const screen = render(
     <Fretboard
@@ -653,7 +677,9 @@ test('shows degree labels when degree display mode is selected', () => {
 });
 
 test('shows note names by default', () => {
-  const definition: Pattern = [{ condition: { note: 'A' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'A' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -670,7 +696,9 @@ test('shows note names by default', () => {
 });
 
 test('hides note labels when none display mode is selected', () => {
-  const definition: Pattern = [{ condition: { note: 'A' }, color: 'BLACK' }];
+  const definition: Pattern = createPattern([
+    { condition: { note: 'A' }, color: 'BLACK' },
+  ]);
 
   const screen = render(
     <Fretboard
@@ -692,10 +720,10 @@ test('hides note labels when none display mode is selected', () => {
 });
 
 test('merges all matching rules with later rules winning per property', () => {
-  const definition: Pattern = [
+  const definition: Pattern = createPattern([
     { condition: { note: 'A' }, color: 'BLACK', opacity: 0.5 },
     { condition: { interval: '1' }, color: 'WHITE' },
-  ];
+  ]);
 
   const screen = render(
     <Fretboard

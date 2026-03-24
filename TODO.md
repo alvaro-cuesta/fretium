@@ -11,9 +11,7 @@
 
 ### Uncategorized
 
-- Root note: auto fit -- it should automatically find the best root note to fit the pattern in the diagram, so that the diagram is as compact as possible (e.g. for a Cmaj7 chord, it should choose E as the root note, so that the diagram only shows 4 frets instead of 5)
-- Min/max fret: auto fit -- it should automatically find the best max fret to fit the pattern in the diagram, so that the diagram is as compact as possible (e.g. for a Cmaj7 chord, if the root note is E, it should choose max fret 7 instead of 12, so that the diagram only shows 4 frets instead of 5) -- it should also have an option to avoid using open strings
-- Allow forcing frets to full-neck for auto frets (to use in scales)
+- Root note: auto fit -- it should automatically find the best root note to fit the pattern in the diagram, so that the diagram is as compact as possible (e.g. for a Cmaj7 chord, it should choose E as the root note, so that the diagram only shows 4 frets instead of 5) -- it should also have an option to avoid using open strings -- consider thoroughly how this interacts with min/max fret auto options
 - Allow better pattern DSL
 - Add support for custom pattern
   - Needs editing capabilities in the fretboard

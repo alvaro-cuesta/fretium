@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ver0/deep-equal':
+        specifier: ^2.0.1
+        version: 2.0.1
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
@@ -1189,6 +1192,10 @@ packages:
   '@typescript-eslint/visitor-keys@8.57.1':
     resolution: {integrity: sha512-YWnmJkXbofiz9KbnbbwuA2rpGkFPLbAIetcCNO6mJ8gdhdZ/v7WDXsoGFAJuM6ikUFKTlSQnjWnVO4ux+UzS6A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@ver0/deep-equal@2.0.1':
+    resolution: {integrity: sha512-JVSbDwzKASqorJum+ATnnZNIkni4K4G3aeJDsTgEhHcm0CiCwAVaLbhFByeNAir1HExEWjHxhIXVR+d8ZzeJGw==}
+    engines: {node: '>=20'}
 
   '@vite-pwa/assets-generator@1.0.2':
     resolution: {integrity: sha512-MCbrb508JZHqe7bUibmZj/lyojdhLRnfkmyXnkrCM2zVrjTgL89U8UEfInpKTvPeTnxsw2hmyZxnhsdNR6yhwg==}
@@ -4013,6 +4020,8 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.57.1
       eslint-visitor-keys: 5.0.1
+
+  '@ver0/deep-equal@2.0.1': {}
 
   '@vite-pwa/assets-generator@1.0.2':
     dependencies:

@@ -3,6 +3,7 @@ import { NOTE_TO_NOTE_CLASS } from './music';
 import {
   getMatchingPatternRules,
   matchesPatternCondition,
+  renderPattern,
 } from './pattern-engine';
 
 describe('getMatchingPatternRules', () => {
@@ -12,7 +13,7 @@ describe('getMatchingPatternRules', () => {
       1,
       0,
       'C',
-      [{ condition: { interval: 'bb7' }, color: 'BLACK' }],
+      { rules: [{ condition: { interval: 'bb7' }, color: 'BLACK' }] },
     );
 
     expect(matchingPatternRulesResult).not.toBeNull();
@@ -27,7 +28,7 @@ describe('getMatchingPatternRules', () => {
       1,
       0,
       'C',
-      [{ condition: { interval: ['b3', '5'] }, color: 'BLACK' }],
+      { rules: [{ condition: { interval: ['b3', '5'] }, color: 'BLACK' }] },
     );
 
     expect(matchingPatternRulesResult).not.toBeNull();
@@ -46,5 +47,20 @@ describe('matchesPatternCondition', () => {
         { rootNote: 'C' },
       ),
     ).toBe(true);
+  });
+
+  test('preserves full-octave metadata in rendered pattern results', () => {
+    const result = renderPattern(
+      ['C'],
+      {
+        rules: [{ condition: { note: 'C#' }, color: 'BLACK' }],
+        isFullOctave: true,
+      },
+      'C',
+    );
+
+    expect(result.isFullOctave).toBe(true);
+    expect(result.minFret).toBe(0);
+    expect(result.maxFret).toBe(12);
   });
 });

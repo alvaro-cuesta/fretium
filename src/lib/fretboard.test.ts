@@ -5,8 +5,10 @@ import {
 import type { Note } from './music';
 import type { Pattern } from './pattern-engine';
 
+const EMPTY_PATTERN: Pattern = { rules: [] };
+
 const PROPS_BASE = {
-  pattern: [] as Pattern,
+  pattern: EMPTY_PATTERN,
   patternName: 'Major scale',
   instrumentName: 'Guitar',
   tuningName: 'Standard',

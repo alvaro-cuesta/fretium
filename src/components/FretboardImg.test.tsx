@@ -5,8 +5,10 @@ import type { Pattern } from '../lib/pattern-engine';
 import { FretboardImg, type ImgChangeEvent } from './FretboardImg';
 import styles from './FretboardImg.module.scss';
 
+const EMPTY_PATTERN: Pattern = { rules: [] };
+
 const REQUIRED_PROPS = {
-  pattern: [] as Pattern,
+  pattern: EMPTY_PATTERN,
   patternName: 'Major scale',
   instrumentName: 'Guitar',
   tuningName: 'Standard',

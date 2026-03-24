@@ -1,25 +1,30 @@
 import cx from 'classnames';
-import { useId, useState } from 'react';
-import { objectEntries, objectKeys } from '../../lib/object.ts';
-import { INSTRUMENTS } from '../config/instruments.ts';
+import { useId, useMemo, useState } from 'react';
+import { objectEntries, objectKeys } from '../../../lib/object.ts';
+import { INSTRUMENTS } from '../../config/instruments.ts';
 import {
   PATTERNS,
   PATTERNS_GROUPED,
   type PatternName,
-} from '../config/patterns.ts';
-import { useLenientInput } from '../hooks/useLenientInput.ts';
-import globalStyles from '../index.module.scss';
-import { downloadBlob, PNG_CONTENT_TYPE } from '../lib/file.ts';
-import { type NoteDisplayMode } from '../lib/fretboard.ts';
-import { rasterizeSvg } from '../lib/image.ts';
-import { clamp } from '../lib/math.ts';
-import type { Note } from '../lib/music.ts';
+} from '../../config/patterns.ts';
+import globalStyles from '../../index.module.scss';
+import { downloadBlob, PNG_CONTENT_TYPE } from '../../lib/file.ts';
+import { calculateFretRange } from '../../lib/fret-range.ts';
+import { type NoteDisplayMode } from '../../lib/fretboard.ts';
+import { rasterizeSvg } from '../../lib/image.ts';
+import type { Note } from '../../lib/music.ts';
+import { renderPattern } from '../../lib/pattern-engine.ts';
+import { getFretboardMetrics } from '../Fretboard/theme.ts';
+import { FretboardImg, type ImgChangeEvent } from '../FretboardImg.tsx';
+import { Layout } from '../Layout.tsx';
+import { MenuButton } from '../MenuButton.tsx';
+import { Scrollable } from '../Scrollable.tsx';
 import styles from './App.module.scss';
-import { getFretboardMetrics } from './Fretboard/theme.ts';
-import { FretboardImg, type ImgChangeEvent } from './FretboardImg.tsx';
-import { Layout } from './Layout.tsx';
-import { MenuButton } from './MenuButton.tsx';
-import { Scrollable } from './Scrollable.tsx';
+import {
+  END_FRET_OPTIONS,
+  START_FRET_OPTIONS,
+  useFretRangeState,
+} from './fret-range.ts';
 
 const ROOT_NOTES = [
   'C',
@@ -69,34 +74,10 @@ const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   }),
 );
 
-const MIN_FRET = 0;
-const MAX_FRET = 48;
-const INTEGER_INPUT_PATTERN = /^\d+$/;
-
-const DEFAULT_START_FRET = 0;
-const DEFAULT_END_FRET = 14;
-
 const DEFAULT_INSTRUMENT = 'Guitar' satisfies keyof typeof INSTRUMENTS;
 const DEFAULT_INSTRUMENT_TUNING =
   'Standard' satisfies keyof (typeof INSTRUMENTS)[typeof DEFAULT_INSTRUMENT]['tunings'];
 const DEFAULT_INSTRUMENT_TUNING_VALUE = `${DEFAULT_INSTRUMENT}::${DEFAULT_INSTRUMENT_TUNING}`;
-
-function deriveFretValue(
-  inputValue: string,
-  currentValue: number,
-  min: number,
-  max: number,
-) {
-  const trimmedValue = inputValue.trim();
-  if (trimmedValue === '') return currentValue;
-
-  if (!INTEGER_INPUT_PATTERN.test(trimmedValue)) return currentValue;
-
-  const parsedValue = Number(trimmedValue);
-  if (Number.isNaN(parsedValue)) return currentValue;
-
-  return clamp(parsedValue, min, max);
-}
 
 async function copyToClipboard(
   contentType: string,
@@ -166,23 +147,15 @@ export function App() {
     throw new Error('Expected at least one instrument tuning to be available.');
   }
 
+  const renderPatternResult = useMemo(
+    () =>
+      renderPattern(resolvedInstrumentTuning.tuning, pattern, selectedRootNote),
+    [resolvedInstrumentTuning.tuning, pattern, selectedRootNote],
+  );
+
   // Start/end fret
-  const [startFret, setStartFret] = useState(DEFAULT_START_FRET);
-  const [endFret, setEndFret] = useState(DEFAULT_END_FRET);
-  const startFretInputProps = useLenientInput<number>({
-    value: startFret,
-    setValue: setStartFret,
-    deriveValue: (inputValue, currentValue) =>
-      deriveFretValue(inputValue, currentValue, MIN_FRET, endFret),
-    formatValue: (value) => String(value),
-  });
-  const endFretInputProps = useLenientInput<number>({
-    value: endFret,
-    setValue: setEndFret,
-    deriveValue: (inputValue, currentValue) =>
-      deriveFretValue(inputValue, currentValue, startFret, MAX_FRET),
-    formatValue: (value) => String(value),
-  });
+  const fretRangeState = useFretRangeState();
+  const fretRange = calculateFretRange(fretRangeState, renderPatternResult);
 
   return (
     <Layout>
@@ -224,23 +197,41 @@ export function App() {
           <div className={styles.rangeFields}>
             <label className={styles.fieldGroup}>
               <span className={styles.fieldLabel}>Start fret</span>
-              <input
-                className={styles.fretRangeInput}
-                type="number"
-                min={MIN_FRET}
-                max={endFret}
-                {...startFretInputProps}
-              />
+              <select
+                className={styles.selectorInput}
+                value={fretRangeState.start}
+                onChange={(e) => {
+                  fretRangeState.setStart(e.target.value);
+                }}
+              >
+                {START_FRET_OPTIONS.map(({ label, value }) => (
+                  <option
+                    key={value}
+                    value={value}
+                  >
+                    {label}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className={styles.fieldGroup}>
               <span className={styles.fieldLabel}>End fret</span>
-              <input
-                className={styles.fretRangeInput}
-                type="number"
-                min={startFret}
-                max={MAX_FRET}
-                {...endFretInputProps}
-              />
+              <select
+                className={styles.selectorInput}
+                value={fretRangeState.end}
+                onChange={(e) => {
+                  fretRangeState.setEnd(e.target.value);
+                }}
+              >
+                {END_FRET_OPTIONS.map(({ label, value }) => (
+                  <option
+                    key={value}
+                    value={value}
+                  >
+                    {label}
+                  </option>
+                ))}
+              </select>
             </label>
           </div>
 
@@ -409,8 +400,8 @@ export function App() {
             instrumentName={resolvedInstrumentTuning.instrumentName}
             tuningName={resolvedInstrumentTuning.tuningName}
             tuning={resolvedInstrumentTuning.tuning}
-            startFret={startFret}
-            endFret={endFret}
+            startFret={fretRange.start}
+            endFret={fretRange.end}
             showBackgroundNeck={showBackgroundNeck}
             showStrings={showStrings}
             showFretLines={showFretLines}
@@ -497,8 +488,8 @@ export function App() {
                       closeMenu();
 
                       const metrics = getFretboardMetrics({
-                        startFret,
-                        endFret,
+                        startFret: fretRange.start,
+                        endFret: fretRange.end,
                         tuning: resolvedInstrumentTuning.tuning,
                         showStringLabels,
                         showFretLabels,
@@ -525,8 +516,8 @@ export function App() {
                       closeMenu();
 
                       const metrics = getFretboardMetrics({
-                        startFret,
-                        endFret,
+                        startFret: fretRange.start,
+                        endFret: fretRange.end,
                         tuning: resolvedInstrumentTuning.tuning,
                         showStringLabels,
                         showFretLabels,
@@ -553,8 +544,8 @@ export function App() {
                       closeMenu();
 
                       const metrics = getFretboardMetrics({
-                        startFret,
-                        endFret,
+                        startFret: fretRange.start,
+                        endFret: fretRange.end,
                         tuning: resolvedInstrumentTuning.tuning,
                         showStringLabels,
                         showFretLabels,
@@ -580,8 +571,8 @@ export function App() {
                       closeMenu();
 
                       const metrics = getFretboardMetrics({
-                        startFret,
-                        endFret,
+                        startFret: fretRange.start,
+                        endFret: fretRange.end,
                         tuning: resolvedInstrumentTuning.tuning,
                         showStringLabels,
                         showFretLabels,

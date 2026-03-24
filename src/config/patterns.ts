@@ -560,7 +560,7 @@ type ArpeggioPatternName<TGroupName extends string> =
 
 type ArpeggioGroup<TGroupName extends string> = Record<
   `Arpeggios - ${TGroupName}`,
-  Record<ArpeggioPatternName<TGroupName>, readonly PatternRule[]>
+  Record<ArpeggioPatternName<TGroupName>, Pattern>
 >;
 
 function make7ArpeggioGroup<const TGroupName extends string>(
@@ -571,625 +571,32 @@ function make7ArpeggioGroup<const TGroupName extends string>(
 ): ArpeggioGroup<TGroupName> {
   return {
     [`Arpeggios - ${groupName}`]: {
-      [`${groupName} Arpeggio`]: [
-        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-        {
-          condition: {
-            interval: [thirdInterval, fifthInterval, seventhInterval],
+      [`${groupName} Arpeggio`]: {
+        rules: [
+          { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+          {
+            condition: {
+              interval: [thirdInterval, fifthInterval, seventhInterval],
+            },
+            color: SCALE_TONE_COLOR,
           },
-          color: SCALE_TONE_COLOR,
-        },
-      ] as PatternRule[],
-      [`${groupName} Arpeggio (G position)`]: [
-        ...make7Arpeggio_GPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (G position) + 6-4-3-2 (root position)`]: [
-        ...make7Arpeggio_GPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6432_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (G position) + 6-5-4-3 (root position)`]: [
-        ...make7Arpeggio_GPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6543_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (G position) + 4-3-2-1 (3rd inversion)`]: [
-        ...make7Arpeggio_GPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_4321_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (E position)`]: [
-        ...make7Arpeggio_EPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (E position) + Left 6-4-3-2 (root position)`]: [
-        ...make7Arpeggio_EPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6432_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (E position) + Left 4-3-2-1 (3rd inversion)`]: [
-        ...make7Arpeggio_EPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_4321_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (E position) + 6-5-4-3 (root position)`]: [
-        ...make7Arpeggio_EPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6543_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (E position) + 5-4-3-2 (2nd inversion)`]: [
-        ...make7Arpeggio_EPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5432_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (E position) + 5-3-2-1 (2nd inversion)`]: [
-        ...make7Arpeggio_EPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5321_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (E position) + Right 6-4-3-2 (1st inversion)`]: [
-        ...make7Arpeggio_EPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6432_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (E position) + Right 4-3-2-1 (root position)`]: [
-        ...make7Arpeggio_EPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_4321_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (D position)`]: [
-        ...make7Arpeggio_DPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (D position) + 6-4-3-2 (1st inversion)`]: [
-        ...make7Arpeggio_DPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6432_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (D position) + 6-5-4-3 (1st inversion)`]: [
-        ...make7Arpeggio_DPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6543_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (D position) + 5-4-3-2 (3rd inversion)`]: [
-        ...make7Arpeggio_DPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5432_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (D position) + 5-3-2-1 (3rd inversion)`]: [
-        ...make7Arpeggio_DPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5321_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (D position) + 4-3-2-1 (root position)`]: [
-        ...make7Arpeggio_DPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_4321_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C position)`]: [
-        ...make7Arpeggio_CPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C position) + 6-4-3-2 (2nd inversion)`]: [
-        ...make7Arpeggio_CPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6432_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C position) + 6-5-4-3 (2nd inversion)`]: [
-        ...make7Arpeggio_CPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6543_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C position) + 5-4-3-2 (3rd inversion)`]: [
-        ...make7Arpeggio_CPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5432_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C position) + 5-3-2-1 (3rd inversion)`]: [
-        ...make7Arpeggio_CPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5321_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C position) + 4-3-2-1 (1st inversion)`]: [
-        ...make7Arpeggio_CPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_4321_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C-A position)`]: [
-        ...make7Arpeggio_CAPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C-A position) + 6-5-4-3 (2nd inversion)`]: [
-        ...make7Arpeggio_CAPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6543_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C-A position) + 5-4-3-2 (root position)`]: [
-        ...make7Arpeggio_CAPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5432_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C-A position) + 5-3-2-1 (root position)`]: [
-        ...make7Arpeggio_CAPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5321_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (C-A position) + 4-3-2-1 (2nd inversion)`]: [
-        ...make7Arpeggio_CAPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_4321_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A position)`]: [
-        ...make7Arpeggio_APosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A position) + 6-4-3-2 (3rd inversion)`]: [
-        ...make7Arpeggio_APosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6432_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A position) + 6-5-4-3 (3rd inversion)`]: [
-        ...make7Arpeggio_APosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6543_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A position) + 5-4-3-2 (root position)`]: [
-        ...make7Arpeggio_APosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5432_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A position) + 5-3-2-1 (root position)`]: [
-        ...make7Arpeggio_APosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5321_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A position) + 4-3-2-1 (2nd inversion)`]: [
-        ...make7Arpeggio_APosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_4321_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A-G position)`]: [
-        ...make7Arpeggio_AGPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A-G position) + Left 6-4-3-2 (3rd inversion)`]: [
-        ...make7Arpeggio_AGPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6432_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A-G position) + Left 4-3-2-1 (2nd inversion)`]: [
-        ...make7Arpeggio_AGPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_4321_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A-G position) + 6-5-4-3 (3rd inversion)`]: [
-        ...make7Arpeggio_AGPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_6543_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A-G position) + 5-4-3-2 (1st inversion)`]: [
-        ...make7Arpeggio_AGPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5432_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A-G position) + 5-3-2-1 (1st inversion)`]: [
-        ...make7Arpeggio_AGPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          SCALE_ROOT_COLOR,
-          SCALE_TONE_COLOR,
-        ),
-        ...make7Chord_5321_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          CHORD_ROOT_COLOR,
-          CHORD_TONE_COLOR,
-        ),
-      ],
-      [`${groupName} Arpeggio (A-G position) + Right 6-4-3-2 (root position)`]:
-        [
-          ...make7Arpeggio_AGPosition(
+        ],
+        isFullOctave: true,
+      },
+      [`${groupName} Arpeggio (G position)`]: {
+        rules: [
+          ...make7Arpeggio_GPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (G position) + 6-4-3-2 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_GPosition(
             thirdInterval,
             fifthInterval,
             seventhInterval,
@@ -1204,9 +611,28 @@ function make7ArpeggioGroup<const TGroupName extends string>(
             CHORD_TONE_COLOR,
           ),
         ],
-      [`${groupName} Arpeggio (A-G position) + Right 4-3-2-1 (3rd inversion)`]:
-        [
-          ...make7Arpeggio_AGPosition(
+      },
+      [`${groupName} Arpeggio (G position) + 6-5-4-3 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_GPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6543_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (G position) + 4-3-2-1 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_GPosition(
             thirdInterval,
             fifthInterval,
             seventhInterval,
@@ -1221,8 +647,671 @@ function make7ArpeggioGroup<const TGroupName extends string>(
             CHORD_TONE_COLOR,
           ),
         ],
+      },
+      [`${groupName} Arpeggio (E position)`]: {
+        rules: [
+          ...make7Arpeggio_EPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (E position) + Left 6-4-3-2 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_EPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6432_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (E position) + Left 4-3-2-1 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_EPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_4321_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (E position) + 6-5-4-3 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_EPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6543_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (E position) + 5-4-3-2 (2nd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_EPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5432_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (E position) + 5-3-2-1 (2nd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_EPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5321_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (E position) + Right 6-4-3-2 (1st inversion)`]: {
+        rules: [
+          ...make7Arpeggio_EPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6432_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (E position) + Right 4-3-2-1 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_EPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_4321_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (D position)`]: {
+        rules: [
+          ...make7Arpeggio_DPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (D position) + 6-4-3-2 (1st inversion)`]: {
+        rules: [
+          ...make7Arpeggio_DPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6432_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (D position) + 6-5-4-3 (1st inversion)`]: {
+        rules: [
+          ...make7Arpeggio_DPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6543_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (D position) + 5-4-3-2 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_DPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5432_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (D position) + 5-3-2-1 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_DPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5321_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (D position) + 4-3-2-1 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_DPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_4321_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C position)`]: {
+        rules: [
+          ...make7Arpeggio_CPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C position) + 6-4-3-2 (2nd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_CPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6432_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C position) + 6-5-4-3 (2nd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_CPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6543_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C position) + 5-4-3-2 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_CPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5432_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C position) + 5-3-2-1 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_CPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5321_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C position) + 4-3-2-1 (1st inversion)`]: {
+        rules: [
+          ...make7Arpeggio_CPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_4321_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C-A position)`]: {
+        rules: [
+          ...make7Arpeggio_CAPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C-A position) + 6-5-4-3 (2nd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_CAPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6543_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C-A position) + 5-4-3-2 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_CAPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5432_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C-A position) + 5-3-2-1 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_CAPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5321_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (C-A position) + 4-3-2-1 (2nd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_CAPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_4321_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A position)`]: {
+        rules: [
+          ...make7Arpeggio_APosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A position) + 6-4-3-2 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_APosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6432_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A position) + 6-5-4-3 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_APosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6543_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A position) + 5-4-3-2 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_APosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5432_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A position) + 5-3-2-1 (root position)`]: {
+        rules: [
+          ...make7Arpeggio_APosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5321_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A position) + 4-3-2-1 (2nd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_APosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_4321_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A-G position)`]: {
+        rules: [
+          ...make7Arpeggio_AGPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A-G position) + Left 6-4-3-2 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_AGPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6432_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A-G position) + Left 4-3-2-1 (2nd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_AGPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_4321_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A-G position) + 6-5-4-3 (3rd inversion)`]: {
+        rules: [
+          ...make7Arpeggio_AGPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_6543_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A-G position) + 5-4-3-2 (1st inversion)`]: {
+        rules: [
+          ...make7Arpeggio_AGPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5432_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A-G position) + 5-3-2-1 (1st inversion)`]: {
+        rules: [
+          ...make7Arpeggio_AGPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            SCALE_ROOT_COLOR,
+            SCALE_TONE_COLOR,
+          ),
+          ...make7Chord_5321_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            CHORD_ROOT_COLOR,
+            CHORD_TONE_COLOR,
+          ),
+        ],
+      },
+      [`${groupName} Arpeggio (A-G position) + Right 6-4-3-2 (root position)`]:
+        {
+          rules: [
+            ...make7Arpeggio_AGPosition(
+              thirdInterval,
+              fifthInterval,
+              seventhInterval,
+              SCALE_ROOT_COLOR,
+              SCALE_TONE_COLOR,
+            ),
+            ...make7Chord_6432_RootPosition(
+              thirdInterval,
+              fifthInterval,
+              seventhInterval,
+              CHORD_ROOT_COLOR,
+              CHORD_TONE_COLOR,
+            ),
+          ],
+        },
+      [`${groupName} Arpeggio (A-G position) + Right 4-3-2-1 (3rd inversion)`]:
+        {
+          rules: [
+            ...make7Arpeggio_AGPosition(
+              thirdInterval,
+              fifthInterval,
+              seventhInterval,
+              SCALE_ROOT_COLOR,
+              SCALE_TONE_COLOR,
+            ),
+            ...make7Chord_4321_3rdInversion(
+              thirdInterval,
+              fifthInterval,
+              seventhInterval,
+              CHORD_ROOT_COLOR,
+              CHORD_TONE_COLOR,
+            ),
+          ],
+        },
     },
-  } as const as ArpeggioGroup<TGroupName>;
+  } as const as unknown as ArpeggioGroup<TGroupName>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
@@ -1234,227 +1323,269 @@ function make7ChordGroup<const TGroupName extends string>(
 ) {
   return {
     [`Chords - ${groupName}` as const]: {
-      [`${groupName} Chord Drop 3 (Bass 6th) | 6-4-3-2` as const]: [
-        ...make7Chord_6432_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '1-STRONG',
-          '1-LIGHT',
-        ),
-        ...make7Chord_6432_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '2-STRONG',
-          '2-LIGHT',
-        ),
-        ...make7Chord_6432_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '3-STRONG',
-          '3-LIGHT',
-        ),
-        ...make7Chord_6432_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '4-STRONG',
-          '4-LIGHT',
-        ),
-      ],
-      [`${groupName} Chord Drop 3 (Bass 5th) | 5-3-2-1` as const]: [
-        ...make7Chord_5321_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '1-STRONG',
-          '1-LIGHT',
-        ),
-        ...make7Chord_5321_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '2-STRONG',
-          '2-LIGHT',
-        ),
-        ...make7Chord_5321_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '3-STRONG',
-          '3-LIGHT',
-        ),
-        ...make7Chord_5321_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '4-STRONG',
-          '4-LIGHT',
-        ),
-      ],
-      [`${groupName} Chord Drop 2 (Bass 6th) | 6-5-4-3` as const]: [
-        ...make7Chord_6543_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '1-STRONG',
-          '1-LIGHT',
-        ),
-        ...make7Chord_6543_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '2-STRONG',
-          '2-LIGHT',
-        ),
-        ...make7Chord_6543_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '3-STRONG',
-          '3-LIGHT',
-        ),
-        ...make7Chord_6543_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '4-STRONG',
-          '4-LIGHT',
-        ),
-      ],
-      [`${groupName} Chord Drop 2 (Bass 5th) | 5-4-3-2` as const]: [
-        ...make7Chord_5432_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '1-STRONG',
-          '1-LIGHT',
-        ),
-        ...make7Chord_5432_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '2-STRONG',
-          '2-LIGHT',
-        ),
-        ...make7Chord_5432_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '3-STRONG',
-          '3-LIGHT',
-        ),
-        ...make7Chord_5432_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '4-STRONG',
-          '4-LIGHT',
-        ),
-      ],
-      [`${groupName} Chord Drop 2 (Bass 4th) | 4-3-2-1` as const]: [
-        ...make7Chord_4321_RootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '1-STRONG',
-          '1-LIGHT',
-        ),
-        ...make7Chord_4321_1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '2-STRONG',
-          '2-LIGHT',
-        ),
-        ...make7Chord_4321_2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '3-STRONG',
-          '3-LIGHT',
-        ),
-        ...make7Chord_4321_3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '4-STRONG',
-          '4-LIGHT',
-        ),
-      ],
+      [`${groupName} Chord Drop 3 (Bass 6th) | 6-4-3-2` as const]: {
+        rules: [
+          ...make7Chord_6432_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '1-STRONG',
+            '1-LIGHT',
+          ),
+          ...make7Chord_6432_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '2-STRONG',
+            '2-LIGHT',
+          ),
+          ...make7Chord_6432_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '3-STRONG',
+            '3-LIGHT',
+          ),
+          ...make7Chord_6432_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '4-STRONG',
+            '4-LIGHT',
+          ),
+        ],
+        isFullOctave: true,
+      },
+      [`${groupName} Chord Drop 3 (Bass 5th) | 5-3-2-1` as const]: {
+        rules: [
+          ...make7Chord_5321_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '1-STRONG',
+            '1-LIGHT',
+          ),
+          ...make7Chord_5321_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '2-STRONG',
+            '2-LIGHT',
+          ),
+          ...make7Chord_5321_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '3-STRONG',
+            '3-LIGHT',
+          ),
+          ...make7Chord_5321_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '4-STRONG',
+            '4-LIGHT',
+          ),
+        ],
+        isFullOctave: true,
+      },
+      [`${groupName} Chord Drop 2 (Bass 6th) | 6-5-4-3` as const]: {
+        rules: [
+          ...make7Chord_6543_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '1-STRONG',
+            '1-LIGHT',
+          ),
+          ...make7Chord_6543_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '2-STRONG',
+            '2-LIGHT',
+          ),
+          ...make7Chord_6543_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '3-STRONG',
+            '3-LIGHT',
+          ),
+          ...make7Chord_6543_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '4-STRONG',
+            '4-LIGHT',
+          ),
+        ],
+        isFullOctave: true,
+      },
+      [`${groupName} Chord Drop 2 (Bass 5th) | 5-4-3-2` as const]: {
+        rules: [
+          ...make7Chord_5432_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '1-STRONG',
+            '1-LIGHT',
+          ),
+          ...make7Chord_5432_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '2-STRONG',
+            '2-LIGHT',
+          ),
+          ...make7Chord_5432_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '3-STRONG',
+            '3-LIGHT',
+          ),
+          ...make7Chord_5432_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '4-STRONG',
+            '4-LIGHT',
+          ),
+        ],
+        isFullOctave: true,
+      },
+      [`${groupName} Chord Drop 2 (Bass 4th) | 4-3-2-1` as const]: {
+        rules: [
+          ...make7Chord_4321_RootPosition(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '1-STRONG',
+            '1-LIGHT',
+          ),
+          ...make7Chord_4321_1stInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '2-STRONG',
+            '2-LIGHT',
+          ),
+          ...make7Chord_4321_2ndInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '3-STRONG',
+            '3-LIGHT',
+          ),
+          ...make7Chord_4321_3rdInversion(
+            thirdInterval,
+            fifthInterval,
+            seventhInterval,
+            '4-STRONG',
+            '4-LIGHT',
+          ),
+        ],
+        isFullOctave: true,
+      },
     },
   } as const;
 }
 
 export const PATTERNS_GROUPED = {
   Scales: {
-    'Major scale': [
-      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-      {
-        condition: { interval: ['2', '3', '4', '5', '6', '7'] },
-        color: SCALE_TONE_COLOR,
-      },
-    ],
-    'Minor scale': [
-      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-      {
-        condition: { interval: ['2', 'b3', '4', '5', 'b6', 'b7'] },
-        color: SCALE_TONE_COLOR,
-      },
-    ],
+    'Major scale': {
+      rules: [
+        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+        {
+          condition: { interval: ['2', '3', '4', '5', '6', '7'] },
+          color: SCALE_TONE_COLOR,
+        },
+      ],
+      isFullOctave: true,
+    },
+    'Minor scale': {
+      rules: [
+        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+        {
+          condition: { interval: ['2', 'b3', '4', '5', 'b6', 'b7'] },
+          color: SCALE_TONE_COLOR,
+        },
+      ],
+      isFullOctave: true,
+    },
   },
   'Scales - Modes': {
-    Lydian: [
-      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-      {
-        condition: { interval: ['2', '3', '#4', '5', '6', '7'] },
-        color: SCALE_TONE_COLOR,
-      },
-    ],
-    Ionian: [
-      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-      {
-        condition: { interval: ['2', '3', '4', '5', '6', '7'] },
-        color: SCALE_TONE_COLOR,
-      },
-    ],
-    Mixolydian: [
-      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-      {
-        condition: { interval: ['2', '3', '4', '5', '6', 'b7'] },
-        color: SCALE_TONE_COLOR,
-      },
-    ],
-    Dorian: [
-      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-      {
-        condition: { interval: ['2', 'b3', '4', '5', '6', 'b7'] },
-        color: SCALE_TONE_COLOR,
-      },
-    ],
-    Aeolian: [
-      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-      {
-        condition: { interval: ['2', 'b3', '4', '5', 'b6', 'b7'] },
-        color: SCALE_TONE_COLOR,
-      },
-    ],
-    Phrygian: [
-      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-      {
-        condition: { interval: ['b2', 'b3', '4', '5', 'b6', 'b7'] },
-        color: SCALE_TONE_COLOR,
-      },
-    ],
-    Locrian: [
-      { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
-      {
-        condition: { interval: ['b2', 'b3', '4', 'b5', 'b6', 'b7'] },
-        color: SCALE_TONE_COLOR,
-      },
-    ],
+    Lydian: {
+      rules: [
+        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+        {
+          condition: { interval: ['2', '3', '#4', '5', '6', '7'] },
+          color: SCALE_TONE_COLOR,
+        },
+      ],
+      isFullOctave: true,
+    },
+    Ionian: {
+      rules: [
+        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+        {
+          condition: { interval: ['2', '3', '4', '5', '6', '7'] },
+          color: SCALE_TONE_COLOR,
+        },
+      ],
+      isFullOctave: true,
+    },
+    Mixolydian: {
+      rules: [
+        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+        {
+          condition: { interval: ['2', '3', '4', '5', '6', 'b7'] },
+          color: SCALE_TONE_COLOR,
+        },
+      ],
+      isFullOctave: true,
+    },
+    Dorian: {
+      rules: [
+        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+        {
+          condition: { interval: ['2', 'b3', '4', '5', '6', 'b7'] },
+          color: SCALE_TONE_COLOR,
+        },
+      ],
+      isFullOctave: true,
+    },
+    Aeolian: {
+      rules: [
+        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+        {
+          condition: { interval: ['2', 'b3', '4', '5', 'b6', 'b7'] },
+          color: SCALE_TONE_COLOR,
+        },
+      ],
+      isFullOctave: true,
+    },
+    Phrygian: {
+      rules: [
+        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+        {
+          condition: { interval: ['b2', 'b3', '4', '5', 'b6', 'b7'] },
+          color: SCALE_TONE_COLOR,
+        },
+      ],
+      isFullOctave: true,
+    },
+    Locrian: {
+      rules: [
+        { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
+        {
+          condition: { interval: ['b2', 'b3', '4', 'b5', 'b6', 'b7'] },
+          color: SCALE_TONE_COLOR,
+        },
+      ],
+      isFullOctave: true,
+    },
   },
   ...make7ArpeggioGroup('Maj7', '3', '5', '7'),
   ...make7ArpeggioGroup('7', '3', '5', 'b7'),

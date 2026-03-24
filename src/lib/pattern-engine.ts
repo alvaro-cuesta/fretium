@@ -1,3 +1,6 @@
+import { isEqual } from '@ver0/deep-equal';
+import type { TupleOf } from 'type-fest';
+import { chunks, findIndex, findLastIndex } from '../../lib/array';
 import type { FretboardNoteColorName } from '../components/Fretboard/theme';
 import type { Tuning } from './instrument';
 import {
@@ -31,7 +34,10 @@ export type PatternRule = {
   opacity?: number;
 };
 
-export type Pattern = readonly PatternRule[];
+export type Pattern = {
+  rules: readonly PatternRule[];
+  isFullOctave?: boolean | undefined;
+};
 
 type PatternContext = {
   string: number;
@@ -140,7 +146,7 @@ export function getMatchingPatternRules(
 
   const noteClass = semitonesToNoteClass(openNoteClass + fret);
 
-  const matchingPatternRules = pattern.filter((patternRule) =>
+  const matchingPatternRules = pattern.rules.filter((patternRule) =>
     matchesPatternCondition(
       patternRule.condition,
       {
@@ -199,5 +205,81 @@ export function getAppliedPatternRules(
     noteClass,
     matchingPatternRules,
     appliedPatternRule,
+  };
+}
+
+export const MIN_FRET = 0 as const;
+export const OCTAVE_FRET = 12 as const;
+export const MAX_FRET = 24 as const;
+export const TOTAL_FRETS =
+  // +1 to include open strings
+  // (MAX_FRET + 1) as const;
+  25 as const;
+
+type RenderedPattern<TNumString extends number> = TupleOf<
+  typeof TOTAL_FRETS,
+  TupleOf<TNumString, GetAppliedPatternRulesResult | null>
+>;
+
+export type RenderPatternResult<TNumString extends number> = {
+  renderedPattern: RenderedPattern<TNumString>;
+  minFret: number;
+  maxFret: number;
+  isCyclic: boolean;
+  isFullOctave: boolean;
+};
+
+export function renderPattern<TNumString extends number>(
+  tuning: Tuning<TNumString>,
+  pattern: Pattern,
+  rootNote: Note,
+): RenderPatternResult<TNumString> {
+  const renderedPattern = Array.from({ length: TOTAL_FRETS }, (_, fret) =>
+    Array.from({ length: tuning.length }, (_, stringIndex) => {
+      const stringNumber = stringIndex + 1;
+      return getAppliedPatternRules(
+        tuning,
+        stringNumber,
+        fret,
+        rootNote,
+        pattern,
+      );
+    }),
+  ) as RenderedPattern<TNumString>;
+
+  const octaves = chunks(renderedPattern, OCTAVE_FRET);
+  const isCyclic =
+    // A pattern is cyclic if all octaves are identical to each other
+    // Takes into account partial octaves too
+    octaves.every((octave) =>
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- first octave always exists
+      isEqual(octave, octaves[0]!.slice(0, octave.length)),
+    );
+
+  const isFullOctave = pattern.isFullOctave === true;
+
+  const minimalRenderedPattern = isCyclic
+    ? renderedPattern.slice(0, OCTAVE_FRET)
+    : renderedPattern;
+
+  const minFret =
+    isCyclic && isFullOctave
+      ? MIN_FRET
+      : (findIndex(minimalRenderedPattern, (fret) =>
+          fret.some((note) => note !== null),
+        ) ?? MIN_FRET);
+  const maxFret =
+    isCyclic && isFullOctave
+      ? OCTAVE_FRET
+      : (findLastIndex(minimalRenderedPattern, (fret) =>
+          fret.some((note) => note !== null),
+        ) ?? MIN_FRET);
+
+  return {
+    renderedPattern,
+    minFret,
+    maxFret,
+    isCyclic,
+    isFullOctave,
   };
 }

@@ -118,6 +118,7 @@ type GetNoteInfoResult = {
   opacity: number | undefined;
 };
 
+// @todo This could take a renderPatternResult to avoid having to re-run the pattern engine logic
 export function Fretboard({
   pattern,
   patternName,
