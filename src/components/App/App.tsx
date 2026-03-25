@@ -1,11 +1,7 @@
 import { useMemo, useState } from 'react';
 import { objectEntries, objectKeys } from '../../../lib/object.ts';
 import { INSTRUMENTS } from '../../config/instruments.ts';
-import {
-  PATTERNS,
-  PATTERNS_GROUPED,
-  type PatternName,
-} from '../../config/patterns.ts';
+import { PATTERNS_GROUPED, type PatternName } from '../../config/patterns.ts';
 import { useHistoryState } from '../../hooks/useHistoryState.ts';
 import { calculateFretRange } from '../../lib/fret-range.ts';
 import { type NoteDisplayMode } from '../../lib/fretboard.ts';
@@ -23,6 +19,7 @@ import {
   useFretRangeState,
 } from './fret-range.ts';
 import { HISTORY_STATE_KEYS } from './history.ts';
+import { usePattern } from './pattern.ts';
 
 const ROOT_NOTES = [
   'C',
@@ -44,7 +41,6 @@ const ROOT_NOTES = [
   'B',
 ] as const satisfies readonly Note[];
 
-const DEFAULT_PATTERN = 'Major scale' satisfies PatternName;
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
 const DEFAULT_SHOW_BACKGROUND_NECK = true;
@@ -64,10 +60,6 @@ const NOTE_DISPLAY_MODE_VALUES: readonly NoteDisplayMode[] = [
 
 function isBoolean(value: unknown): value is boolean {
   return typeof value === 'boolean';
-}
-
-function isPatternName(value: unknown): value is PatternName {
-  return typeof value === 'string' && Object.hasOwn(PATTERNS, value);
 }
 
 function isRootNote(value: unknown): value is Note {
@@ -116,23 +108,51 @@ const DEFAULT_INSTRUMENT_TUNING_VALUE = `${DEFAULT_INSTRUMENT}::${DEFAULT_INSTRU
 
 export function App() {
   const [fretboardImg, setFretboardImg] = useState<ImgChangeEvent | null>(null);
-  const [selectedPattern, setSelectedPattern] = useHistoryState<PatternName>(
-    HISTORY_STATE_KEYS.selectedPattern,
-    DEFAULT_PATTERN,
-    { isValid: isPatternName },
-  );
-  const pattern = PATTERNS[selectedPattern];
-  const [selectedRootNote, setSelectedRootNote] = useHistoryState<Note>(
+
+  // Fretboard state
+  const { patternName, setPatternName, pattern } = usePattern();
+  const [selectedRootNote, setSelectedRootNote] = useHistoryState(
     HISTORY_STATE_KEYS.selectedRootNote,
     DEFAULT_ROOT_NOTE,
     { isValid: isRootNote },
   );
-  const [selectedNoteDisplayMode, setSelectedNoteDisplayMode] =
-    useHistoryState<NoteDisplayMode>(
-      HISTORY_STATE_KEYS.selectedNoteDisplayMode,
-      DEFAULT_NOTE_DISPLAY_MODE,
-      { isValid: isNoteDisplayMode },
+  const [selectedNoteDisplayMode, setSelectedNoteDisplayMode] = useHistoryState(
+    HISTORY_STATE_KEYS.selectedNoteDisplayMode,
+    DEFAULT_NOTE_DISPLAY_MODE,
+    { isValid: isNoteDisplayMode },
+  );
+
+  // Instrument tuning
+  const [selectedInstrumentTuning, setSelectedInstrumentTuning] =
+    useHistoryState(
+      HISTORY_STATE_KEYS.selectedInstrumentTuning,
+      DEFAULT_INSTRUMENT_TUNING_VALUE,
+      {
+        isValid: isInstrumentTuningValue,
+      },
     );
+  const resolvedInstrumentTuning = instrumentTuningByValue.get(
+    selectedInstrumentTuning,
+  );
+
+  if (!resolvedInstrumentTuning) {
+    throw new Error('Expected at least one instrument tuning to be available.');
+  }
+
+  const renderPatternResult = useMemo(
+    () =>
+      renderPattern(resolvedInstrumentTuning.tuning, pattern, selectedRootNote),
+    [resolvedInstrumentTuning.tuning, pattern, selectedRootNote],
+  );
+
+  // Fret range
+  const fretRangeState = useFretRangeState();
+  const fretRange = useMemo(
+    () => calculateFretRange(fretRangeState, renderPatternResult),
+    [fretRangeState, renderPatternResult],
+  );
+
+  // Visual options
   const [showBackgroundNeck, setShowBackgroundNeck] = useHistoryState(
     HISTORY_STATE_KEYS.showBackgroundNeck,
     DEFAULT_SHOW_BACKGROUND_NECK,
@@ -169,35 +189,7 @@ export function App() {
     { isValid: isBoolean },
   );
 
-  // Instrument tuning
-  const [selectedInstrumentTuning, setSelectedInstrumentTuning] =
-    useHistoryState(
-      HISTORY_STATE_KEYS.selectedInstrumentTuning,
-      DEFAULT_INSTRUMENT_TUNING_VALUE,
-      {
-        isValid: isInstrumentTuningValue,
-      },
-    );
-  const resolvedInstrumentTuning = instrumentTuningByValue.get(
-    selectedInstrumentTuning,
-  );
-
-  if (!resolvedInstrumentTuning) {
-    throw new Error('Expected at least one instrument tuning to be available.');
-  }
-
-  const renderPatternResult = useMemo(
-    () =>
-      renderPattern(resolvedInstrumentTuning.tuning, pattern, selectedRootNote),
-    [resolvedInstrumentTuning.tuning, pattern, selectedRootNote],
-  );
-
-  // Start/end fret
-  const fretRangeState = useFretRangeState();
-  const fretRange = useMemo(
-    () => calculateFretRange(fretRangeState, renderPatternResult),
-    [fretRangeState, renderPatternResult],
-  );
+  //////
 
   const fretboardMetrics = useMemo(
     () =>
@@ -328,9 +320,9 @@ export function App() {
               <span className={styles.fieldLabel}>Pattern</span>
               <select
                 className={styles.selectorInput}
-                value={selectedPattern}
+                value={patternName}
                 onChange={(e) => {
-                  setSelectedPattern(e.target.value as PatternName);
+                  setPatternName(e.target.value as PatternName);
                 }}
                 autoComplete="off"
               >
@@ -479,7 +471,7 @@ export function App() {
               setFretboardImg(nextFretboardImg);
             }}
             pattern={pattern}
-            patternName={selectedPattern}
+            patternName={patternName}
             instrumentName={resolvedInstrumentTuning.instrumentName}
             tuningName={resolvedInstrumentTuning.tuningName}
             tuning={resolvedInstrumentTuning.tuning}
