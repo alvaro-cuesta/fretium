@@ -186,6 +186,8 @@ $page-margin: 16px;
   .controlsSection {
     grid-template-columns: minmax(0, 1fr);
     width: calc(100% - (2 * $page-margin));
+    padding: 12px 14px;
+    border-radius: 14px;
   }
 
   .controlsForm {
@@ -196,6 +198,7 @@ $page-margin: 16px;
       'fretRange fretRange noteLabels noteLabels'
       'pattern pattern pattern pattern'
       'checkboxes checkboxes checkboxes checkboxes';
+    gap: 10px 12px;
   }
 
   .rootNoteField {
@@ -207,6 +210,7 @@ $page-margin: 16px;
   }
 
   .fieldGroup {
+    gap: 4px;
     width: 100%;
   }
 
@@ -214,33 +218,52 @@ $page-margin: 16px;
     min-height: 0;
     padding: 0;
     min-width: 0;
+    gap: 8px;
   }
 
   .checkboxRow {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
-    gap: 10px;
+    gap: 8px 12px;
   }
 
   .rangeFields {
     width: 100%;
+    gap: 12px;
     grid-template-columns: minmax(0, 1fr);
   }
 
   .patternFieldset {
+    gap: 4px;
     width: 100%;
   }
 
   .patternSelectsRow {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
+  }
+
+  .checkboxInput {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+  }
+
+  .checkboxLabel {
+    font-size: 0.9rem;
+  }
+
+  .fieldLabel {
+    font-size: 0.72rem;
   }
 
   .selectorInput,
   .fretRangeInput {
     width: 100%;
     min-width: 0;
+    padding: 9px 12px;
   }
 }
 

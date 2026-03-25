@@ -10,3 +10,13 @@
     calc(360px * var(--fretboard-string-scale))
   );
 }
+
+@media (max-width: 700px) {
+  .fretboardImg {
+    height: clamp(
+      calc(220px * var(--fretboard-string-scale)),
+      calc(50svw * var(--fretboard-string-scale)),
+      calc(420px * var(--fretboard-string-scale))
+    );
+  }
+}
