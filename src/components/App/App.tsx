@@ -160,232 +160,255 @@ export function App() {
   return (
     <Layout>
       <section className={styles.controlsSection}>
-        <div className={styles.controlsRow}>
-          <label className={styles.fieldGroup}>
-            <span className={styles.fieldLabel}>Instrument</span>
-            <select
-              className={styles.selectorInput}
-              value={resolvedInstrumentTuning.value}
-              onChange={(e) => {
-                setSelectedInstrumentTuning(e.target.value);
-              }}
-            >
-              {objectEntries(INSTRUMENTS).map(
-                ([instrumentName, instrument]) => (
-                  <optgroup
-                    key={instrumentName}
-                    label={instrumentName}
-                  >
-                    {objectKeys(instrument.tunings).map((tuningName) => {
-                      const value = `${instrumentName}::${tuningName}`;
-                      const label = `${instrumentName} ${tuningName}`;
-                      return (
-                        <option
-                          key={value}
-                          value={value}
-                        >
-                          {label}
-                        </option>
-                      );
-                    })}
-                  </optgroup>
-                ),
-              )}
-            </select>
-          </label>
-
-          <div className={styles.rangeFields}>
+        <form
+        // Elements here have autoComplete="off" to prevent Firefox from changing DOM values on
+        // history navigation/restoring closed tab/duplicating tab, which causes React internal
+        // state to desync from DOM
+        // For some reason it didn't work here in <form> and I had to add it to each individual
+        // input/select element
+        >
+          <div className={styles.controlsRow}>
             <label className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>Start fret</span>
+              <span className={styles.fieldLabel}>Instrument</span>
               <select
                 className={styles.selectorInput}
-                value={fretRangeState.start}
+                value={resolvedInstrumentTuning.value}
                 onChange={(e) => {
-                  fretRangeState.setStart(e.target.value);
+                  setSelectedInstrumentTuning(e.target.value);
                 }}
+                autoComplete="off"
               >
-                {START_FRET_OPTIONS.map(({ label, value }) => (
-                  <option
-                    key={value}
-                    value={value}
-                  >
-                    {label}
-                  </option>
-                ))}
+                {objectEntries(INSTRUMENTS).map(
+                  ([instrumentName, instrument]) => (
+                    <optgroup
+                      key={instrumentName}
+                      label={instrumentName}
+                    >
+                      {objectKeys(instrument.tunings).map((tuningName) => {
+                        const value = `${instrumentName}::${tuningName}`;
+                        const label = `${instrumentName} ${tuningName}`;
+                        return (
+                          <option
+                            key={value}
+                            value={value}
+                          >
+                            {label}
+                          </option>
+                        );
+                      })}
+                    </optgroup>
+                  ),
+                )}
               </select>
             </label>
-            <label className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>End fret</span>
+
+            <div className={styles.rangeFields}>
+              <label className={styles.fieldGroup}>
+                <span className={styles.fieldLabel}>Start fret</span>
+                <select
+                  className={styles.selectorInput}
+                  value={fretRangeState.start}
+                  onChange={(e) => {
+                    fretRangeState.setStart(e.target.value);
+                  }}
+                  autoComplete="off"
+                >
+                  {START_FRET_OPTIONS.map(({ label, value }) => (
+                    <option
+                      key={value}
+                      value={value}
+                    >
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className={styles.fieldGroup}>
+                <span className={styles.fieldLabel}>End fret</span>
+                <select
+                  className={styles.selectorInput}
+                  value={fretRangeState.end}
+                  onChange={(e) => {
+                    fretRangeState.setEnd(e.target.value);
+                  }}
+                  autoComplete="off"
+                >
+                  {END_FRET_OPTIONS.map(({ label, value }) => (
+                    <option
+                      key={value}
+                      value={value}
+                    >
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <label className={`${styles.fieldGroup} ${styles.noteLabelsField}`}>
+              <span className={styles.fieldLabel}>Note labels</span>
               <select
                 className={styles.selectorInput}
-                value={fretRangeState.end}
+                value={selectedNoteDisplayMode}
                 onChange={(e) => {
-                  fretRangeState.setEnd(e.target.value);
+                  setSelectedNoteDisplayMode(e.target.value as NoteDisplayMode);
                 }}
+                autoComplete="off"
               >
-                {END_FRET_OPTIONS.map(({ label, value }) => (
+                <option value="note">Note</option>
+                <option value="interval">Intervals</option>
+                <option value="degree">Degrees</option>
+                <option value="none">None</option>
+              </select>
+            </label>
+          </div>
+
+          <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>Pattern</span>
+              <select
+                className={styles.selectorInput}
+                value={selectedPattern}
+                onChange={(e) => {
+                  setSelectedPattern(e.target.value as PatternName);
+                }}
+                autoComplete="off"
+              >
+                {objectEntries(PATTERNS_GROUPED).map(
+                  ([groupName, patterns]) => (
+                    <optgroup
+                      key={groupName}
+                      label={groupName}
+                    >
+                      {objectKeys(patterns).map((patternName) => (
+                        <option
+                          key={patternName}
+                          value={patternName}
+                        >
+                          {patternName}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ),
+                )}
+              </select>
+            </label>
+
+            <label className={`${styles.fieldGroup} ${styles.rootNoteField}`}>
+              <span className={styles.fieldLabel}>Root note</span>
+              <select
+                className={styles.selectorInput}
+                value={selectedRootNote}
+                onChange={(e) => {
+                  setSelectedRootNote(e.target.value as Note);
+                }}
+                autoComplete="off"
+              >
+                {ROOT_NOTES.map((rootNote) => (
                   <option
-                    key={value}
-                    value={value}
+                    key={rootNote}
+                    value={rootNote}
                   >
-                    {label}
+                    {rootNote}
                   </option>
                 ))}
               </select>
             </label>
           </div>
 
-          <label className={`${styles.fieldGroup} ${styles.noteLabelsField}`}>
-            <span className={styles.fieldLabel}>Note labels</span>
-            <select
-              className={styles.selectorInput}
-              value={selectedNoteDisplayMode}
-              onChange={(e) => {
-                setSelectedNoteDisplayMode(e.target.value as NoteDisplayMode);
-              }}
-            >
-              <option value="note">Note</option>
-              <option value="interval">Intervals</option>
-              <option value="degree">Degrees</option>
-              <option value="none">None</option>
-            </select>
-          </label>
-        </div>
+          <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
+            <label className={styles.checkboxField}>
+              <input
+                className={styles.checkboxInput}
+                type="checkbox"
+                checked={showBackgroundNeck}
+                onChange={(e) => {
+                  setShowBackgroundNeck(e.target.checked);
+                }}
+                autoComplete="off"
+              />
+              <span className={styles.checkboxLabel}>Background</span>
+            </label>
 
-        <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
-          <label className={styles.fieldGroup}>
-            <span className={styles.fieldLabel}>Pattern</span>
-            <select
-              className={styles.selectorInput}
-              value={selectedPattern}
-              onChange={(e) => {
-                setSelectedPattern(e.target.value as PatternName);
-              }}
-            >
-              {objectEntries(PATTERNS_GROUPED).map(([groupName, patterns]) => (
-                <optgroup
-                  key={groupName}
-                  label={groupName}
-                >
-                  {objectKeys(patterns).map((patternName) => (
-                    <option
-                      key={patternName}
-                      value={patternName}
-                    >
-                      {patternName}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </label>
+            <label className={styles.checkboxField}>
+              <input
+                className={styles.checkboxInput}
+                type="checkbox"
+                checked={showStrings}
+                onChange={(e) => {
+                  setShowStrings(e.target.checked);
+                }}
+                autoComplete="off"
+              />
+              <span className={styles.checkboxLabel}>Strings</span>
+            </label>
 
-          <label className={`${styles.fieldGroup} ${styles.rootNoteField}`}>
-            <span className={styles.fieldLabel}>Root note</span>
-            <select
-              className={styles.selectorInput}
-              value={selectedRootNote}
-              onChange={(e) => {
-                setSelectedRootNote(e.target.value as Note);
-              }}
-            >
-              {ROOT_NOTES.map((rootNote) => (
-                <option
-                  key={rootNote}
-                  value={rootNote}
-                >
-                  {rootNote}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+            <label className={styles.checkboxField}>
+              <input
+                className={styles.checkboxInput}
+                type="checkbox"
+                checked={showFretLines}
+                onChange={(e) => {
+                  setShowFretLines(e.target.checked);
+                }}
+                autoComplete="off"
+              />
+              <span className={styles.checkboxLabel}>Fret lines</span>
+            </label>
 
-        <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
-          <label className={styles.checkboxField}>
-            <input
-              className={styles.checkboxInput}
-              type="checkbox"
-              checked={showBackgroundNeck}
-              onChange={(e) => {
-                setShowBackgroundNeck(e.target.checked);
-              }}
-            />
-            <span className={styles.checkboxLabel}>Background</span>
-          </label>
+            <label className={styles.checkboxField}>
+              <input
+                className={styles.checkboxInput}
+                type="checkbox"
+                checked={showFretMarkers}
+                onChange={(e) => {
+                  setShowFretMarkers(e.target.checked);
+                }}
+                autoComplete="off"
+              />
+              <span className={styles.checkboxLabel}>Fret markers</span>
+            </label>
 
-          <label className={styles.checkboxField}>
-            <input
-              className={styles.checkboxInput}
-              type="checkbox"
-              checked={showStrings}
-              onChange={(e) => {
-                setShowStrings(e.target.checked);
-              }}
-            />
-            <span className={styles.checkboxLabel}>Strings</span>
-          </label>
+            <label className={styles.checkboxField}>
+              <input
+                className={styles.checkboxInput}
+                type="checkbox"
+                checked={showFretLabels}
+                onChange={(e) => {
+                  setShowFretLabels(e.target.checked);
+                }}
+                autoComplete="off"
+              />
+              <span className={styles.checkboxLabel}>Fret labels</span>
+            </label>
 
-          <label className={styles.checkboxField}>
-            <input
-              className={styles.checkboxInput}
-              type="checkbox"
-              checked={showFretLines}
-              onChange={(e) => {
-                setShowFretLines(e.target.checked);
-              }}
-            />
-            <span className={styles.checkboxLabel}>Fret lines</span>
-          </label>
+            <label className={styles.checkboxField}>
+              <input
+                className={styles.checkboxInput}
+                type="checkbox"
+                checked={showStringLabels}
+                onChange={(e) => {
+                  setShowStringLabels(e.target.checked);
+                }}
+                autoComplete="off"
+              />
+              <span className={styles.checkboxLabel}>String labels</span>
+            </label>
 
-          <label className={styles.checkboxField}>
-            <input
-              className={styles.checkboxInput}
-              type="checkbox"
-              checked={showFretMarkers}
-              onChange={(e) => {
-                setShowFretMarkers(e.target.checked);
-              }}
-            />
-            <span className={styles.checkboxLabel}>Fret markers</span>
-          </label>
-
-          <label className={styles.checkboxField}>
-            <input
-              className={styles.checkboxInput}
-              type="checkbox"
-              checked={showFretLabels}
-              onChange={(e) => {
-                setShowFretLabels(e.target.checked);
-              }}
-            />
-            <span className={styles.checkboxLabel}>Fret labels</span>
-          </label>
-
-          <label className={styles.checkboxField}>
-            <input
-              className={styles.checkboxInput}
-              type="checkbox"
-              checked={showStringLabels}
-              onChange={(e) => {
-                setShowStringLabels(e.target.checked);
-              }}
-            />
-            <span className={styles.checkboxLabel}>String labels</span>
-          </label>
-
-          <label className={styles.checkboxField}>
-            <input
-              className={styles.checkboxInput}
-              type="checkbox"
-              checked={showDropShadows}
-              onChange={(e) => {
-                setShowDropShadows(e.target.checked);
-              }}
-            />
-            <span className={styles.checkboxLabel}>Drop shadows</span>
-          </label>
-        </div>
+            <label className={styles.checkboxField}>
+              <input
+                className={styles.checkboxInput}
+                type="checkbox"
+                checked={showDropShadows}
+                onChange={(e) => {
+                  setShowDropShadows(e.target.checked);
+                }}
+                autoComplete="off"
+              />
+              <span className={styles.checkboxLabel}>Drop shadows</span>
+            </label>
+          </div>
+        </form>
       </section>
 
       <section className={styles.fretboardSection}>
