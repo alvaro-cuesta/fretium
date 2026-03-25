@@ -1,5 +1,4 @@
-import cx from 'classnames';
-import { useId, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { objectEntries, objectKeys } from '../../../lib/object.ts';
 import { INSTRUMENTS } from '../../config/instruments.ts';
 import {
@@ -8,17 +7,14 @@ import {
   type PatternName,
 } from '../../config/patterns.ts';
 import { useHistoryState } from '../../hooks/useHistoryState.ts';
-import globalStyles from '../../index.module.scss';
-import { downloadBlob, PNG_CONTENT_TYPE } from '../../lib/file.ts';
 import { calculateFretRange } from '../../lib/fret-range.ts';
 import { type NoteDisplayMode } from '../../lib/fretboard.ts';
-import { rasterizeSvg } from '../../lib/image.ts';
 import type { Note } from '../../lib/music.ts';
 import { renderPattern } from '../../lib/pattern-engine.ts';
 import { getFretboardMetrics } from '../Fretboard/theme.ts';
 import { FretboardImg, type ImgChangeEvent } from '../FretboardImg.tsx';
 import { Layout } from '../Layout.tsx';
-import { MenuButton } from '../MenuButton.tsx';
+import { SaveMenu } from '../SaveMenu.tsx';
 import { Scrollable } from '../Scrollable.tsx';
 import styles from './App.module.scss';
 import {
@@ -58,9 +54,6 @@ const DEFAULT_SHOW_FRET_MARKERS = true;
 const DEFAULT_SHOW_FRET_LABELS = true;
 const DEFAULT_SHOW_STRING_LABELS = true;
 const DEFAULT_SHOW_DROP_SHADOWS = true;
-
-const PNG_EXPORT_SCALE_SD = 2 as const;
-const PNG_EXPORT_SCALE_HD = 4 as const;
 
 const NOTE_DISPLAY_MODE_VALUES: readonly NoteDisplayMode[] = [
   'note',
@@ -121,36 +114,7 @@ const DEFAULT_INSTRUMENT_TUNING =
   'Standard' satisfies keyof (typeof INSTRUMENTS)[typeof DEFAULT_INSTRUMENT]['tunings'];
 const DEFAULT_INSTRUMENT_TUNING_VALUE = `${DEFAULT_INSTRUMENT}::${DEFAULT_INSTRUMENT_TUNING}`;
 
-async function copyToClipboard(
-  contentType: string,
-  data: string | Blob | PromiseLike<string | Blob>,
-) {
-  await navigator.clipboard.write([new ClipboardItem({ [contentType]: data })]);
-}
-
-async function downloadSvgAsPng(
-  svgUrl: string,
-  filenameBase: string,
-  width: number,
-  height: number,
-) {
-  const pngBlob = await rasterizeSvg(svgUrl, PNG_CONTENT_TYPE, width, height);
-  downloadBlob(pngBlob, `${filenameBase}.png`);
-}
-
-async function copySvgToClipboardPng(
-  svgUrl: string,
-  width: number,
-  height: number,
-) {
-  const pngBlob = await rasterizeSvg(svgUrl, PNG_CONTENT_TYPE, width, height);
-  await copyToClipboard(PNG_CONTENT_TYPE, pngBlob);
-}
-
 export function App() {
-  const svgMenuGroupLabelId = useId();
-  const pngMenuGroupLabelId = useId();
-
   const [fretboardImg, setFretboardImg] = useState<ImgChangeEvent | null>(null);
   const [selectedPattern, setSelectedPattern] = useHistoryState<PatternName>(
     HISTORY_STATE_KEYS.selectedPattern,
@@ -230,7 +194,28 @@ export function App() {
 
   // Start/end fret
   const fretRangeState = useFretRangeState();
-  const fretRange = calculateFretRange(fretRangeState, renderPatternResult);
+  const fretRange = useMemo(
+    () => calculateFretRange(fretRangeState, renderPatternResult),
+    [fretRangeState, renderPatternResult],
+  );
+
+  const fretboardMetrics = useMemo(
+    () =>
+      getFretboardMetrics({
+        startFret: fretRange.start,
+        endFret: fretRange.end,
+        tuning: resolvedInstrumentTuning.tuning,
+        showStringLabels,
+        showFretLabels,
+      }),
+    [
+      fretRange.start,
+      fretRange.end,
+      resolvedInstrumentTuning.tuning,
+      showStringLabels,
+      showFretLabels,
+    ],
+  );
 
   return (
     <Layout>
@@ -513,193 +498,12 @@ export function App() {
         </Scrollable>
 
         {fretboardImg && (
-          <MenuButton
-            ariaLabel="Download options"
-            transitionMs={220}
-            className={styles.downloadMenu}
-            renderMenu={({ closeMenu, menuItemClassName }) => (
-              <>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className={cx(globalStyles.linkButton, menuItemClassName)}
-                  onClick={() => {
-                    closeMenu();
-                    window.print();
-                  }}
-                >
-                  Print
-                </button>
-
-                <div
-                  role="group"
-                  aria-labelledby={svgMenuGroupLabelId}
-                  className={styles.menuSection}
-                >
-                  <div
-                    id={svgMenuGroupLabelId}
-                    className={styles.menuSectionTitle}
-                  >
-                    .SVG
-                  </div>
-
-                  <a
-                    role="menuitem"
-                    href={fretboardImg.url}
-                    target="_blank"
-                    className={cx(globalStyles.linkButton, menuItemClassName)}
-                    onClick={closeMenu}
-                  >
-                    <span>Open in new tab</span>
-                  </a>
-
-                  <a
-                    role="menuitem"
-                    href={fretboardImg.url}
-                    download={`${fretboardImg.filenameBase}.svg`}
-                    className={cx(globalStyles.linkButton, menuItemClassName)}
-                    onClick={closeMenu}
-                  >
-                    <span>Download</span>
-                  </a>
-                </div>
-
-                <div
-                  role="group"
-                  aria-labelledby={pngMenuGroupLabelId}
-                  className={styles.menuSection}
-                >
-                  <div
-                    id={pngMenuGroupLabelId}
-                    className={styles.menuSectionTitle}
-                  >
-                    .PNG
-                  </div>
-
-                  {/* `navigator.clipboard.write` fails with SVG content type, so no SVG copy */}
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className={cx(globalStyles.linkButton, menuItemClassName)}
-                    onClick={() => {
-                      closeMenu();
-
-                      const metrics = getFretboardMetrics({
-                        startFret: fretRange.start,
-                        endFret: fretRange.end,
-                        tuning: resolvedInstrumentTuning.tuning,
-                        showStringLabels,
-                        showFretLabels,
-                      });
-
-                      void downloadSvgAsPng(
-                        fretboardImg.url,
-                        `${fretboardImg.filenameBase}-SD`,
-                        metrics.total.width * PNG_EXPORT_SCALE_SD,
-                        metrics.total.height * PNG_EXPORT_SCALE_SD,
-                      );
-                    }}
-                  >
-                    <span>
-                      Download <small>(SD)</small>
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className={cx(globalStyles.linkButton, menuItemClassName)}
-                    onClick={() => {
-                      closeMenu();
-
-                      const metrics = getFretboardMetrics({
-                        startFret: fretRange.start,
-                        endFret: fretRange.end,
-                        tuning: resolvedInstrumentTuning.tuning,
-                        showStringLabels,
-                        showFretLabels,
-                      });
-
-                      void downloadSvgAsPng(
-                        fretboardImg.url,
-                        `${fretboardImg.filenameBase}-HD`,
-                        metrics.total.width * PNG_EXPORT_SCALE_HD,
-                        metrics.total.height * PNG_EXPORT_SCALE_HD,
-                      );
-                    }}
-                  >
-                    <span>
-                      Download <small>(HD)</small>
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className={cx(globalStyles.linkButton, menuItemClassName)}
-                    onClick={() => {
-                      closeMenu();
-
-                      const metrics = getFretboardMetrics({
-                        startFret: fretRange.start,
-                        endFret: fretRange.end,
-                        tuning: resolvedInstrumentTuning.tuning,
-                        showStringLabels,
-                        showFretLabels,
-                      });
-
-                      void copySvgToClipboardPng(
-                        fretboardImg.url,
-                        metrics.total.width * PNG_EXPORT_SCALE_SD,
-                        metrics.total.height * PNG_EXPORT_SCALE_SD,
-                      );
-                    }}
-                  >
-                    <span>
-                      Copy to clipboard <small>(SD)</small>
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className={cx(globalStyles.linkButton, menuItemClassName)}
-                    onClick={() => {
-                      closeMenu();
-
-                      const metrics = getFretboardMetrics({
-                        startFret: fretRange.start,
-                        endFret: fretRange.end,
-                        tuning: resolvedInstrumentTuning.tuning,
-                        showStringLabels,
-                        showFretLabels,
-                      });
-
-                      void copySvgToClipboardPng(
-                        fretboardImg.url,
-                        metrics.total.width * PNG_EXPORT_SCALE_HD,
-                        metrics.total.height * PNG_EXPORT_SCALE_HD,
-                      );
-                    }}
-                  >
-                    <span>
-                      Copy to clipboard <small>(HD)</small>
-                    </span>
-                  </button>
-                </div>
-              </>
-            )}
-          >
-            {({ isOpen }) => (
-              <span
-                aria-hidden="true"
-                className={styles.menuTriggerIcon}
-              >
-                {isOpen ? '❌' : '💾'}
-              </span>
-            )}
-          </MenuButton>
+          <SaveMenu
+            svgUrl={fretboardImg.url}
+            filenameBase={fretboardImg.filenameBase}
+            width={fretboardMetrics.total.width}
+            height={fretboardMetrics.total.height}
+          />
         )}
       </section>
     </Layout>
