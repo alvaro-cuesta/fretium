@@ -35,6 +35,20 @@ async function copySvgToClipboardPng(
   await copyToClipboard(PNG_CONTENT_TYPE, pngBlob);
 }
 
+// @todo Consider using dataUrl here?
+// Has drawbacks (too long, might hit limits) but also benefits (no need to revoke object URL, can
+// be bookmarked, the URL is not revoked so it survives browser refresh, etc.)
+async function openInNewTabSvgAsPng(
+  svgUrl: string,
+  width: number,
+  height: number,
+) {
+  const pngBlob = await rasterizeSvg(svgUrl, PNG_CONTENT_TYPE, width, height);
+  const pngUrl = URL.createObjectURL(pngBlob);
+  window.open(pngUrl, '_blank');
+  URL.revokeObjectURL(pngUrl);
+}
+
 type SaveMenuProps = {
   svgUrl: string;
   filenameBase: string;
@@ -111,6 +125,44 @@ export function SaveMenu(props: SaveMenuProps) {
             >
               .PNG
             </div>
+
+            <button
+              type="button"
+              role="menuitem"
+              className={cx(globalStyles.linkButton, menuItemClassName)}
+              onClick={() => {
+                closeMenu();
+
+                void openInNewTabSvgAsPng(
+                  props.svgUrl,
+                  props.width * PNG_EXPORT_SCALE_SD,
+                  props.height * PNG_EXPORT_SCALE_SD,
+                );
+              }}
+            >
+              <span>
+                Open in new tab <small>(SD)</small>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              role="menuitem"
+              className={cx(globalStyles.linkButton, menuItemClassName)}
+              onClick={() => {
+                closeMenu();
+
+                void openInNewTabSvgAsPng(
+                  props.svgUrl,
+                  props.width * PNG_EXPORT_SCALE_HD,
+                  props.height * PNG_EXPORT_SCALE_HD,
+                );
+              }}
+            >
+              <span>
+                Open in new tab <small>(HD)</small>
+              </span>
+            </button>
 
             <button
               type="button"
