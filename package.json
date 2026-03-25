@@ -47,7 +47,7 @@
     "test": "vitest --typecheck",
     "debug:visualize-build": "vite-bundle-visualizer",
     "generate:pwa-assets": "pwa-assets-generator",
-    "generate:og-assets": "node ./bin/generate-og-assets.ts"
+    "generate:og-assets": "./bin/generate-og-assets.ts"
   },
   "dependencies": {
     "@ver0/deep-equal": "^2.0.1",

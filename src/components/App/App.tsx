@@ -7,6 +7,7 @@ import {
   PATTERNS_GROUPED,
   type PatternName,
 } from '../../config/patterns.ts';
+import { useHistoryState } from '../../hooks/useHistoryState.ts';
 import globalStyles from '../../index.module.scss';
 import { downloadBlob, PNG_CONTENT_TYPE } from '../../lib/file.ts';
 import { calculateFretRange } from '../../lib/fret-range.ts';
@@ -25,6 +26,7 @@ import {
   START_FRET_OPTIONS,
   useFretRangeState,
 } from './fret-range.ts';
+import { HISTORY_STATE_KEYS } from './history.ts';
 
 const ROOT_NOTES = [
   'C',
@@ -60,6 +62,35 @@ const DEFAULT_SHOW_DROP_SHADOWS = true;
 const PNG_EXPORT_SCALE_SD = 2 as const;
 const PNG_EXPORT_SCALE_HD = 4 as const;
 
+const NOTE_DISPLAY_MODE_VALUES: readonly NoteDisplayMode[] = [
+  'note',
+  'interval',
+  'degree',
+  'none',
+];
+
+function isBoolean(value: unknown): value is boolean {
+  return typeof value === 'boolean';
+}
+
+function isPatternName(value: unknown): value is PatternName {
+  return typeof value === 'string' && Object.hasOwn(PATTERNS, value);
+}
+
+function isRootNote(value: unknown): value is Note {
+  return (
+    typeof value === 'string' &&
+    (ROOT_NOTES as readonly string[]).includes(value)
+  );
+}
+
+function isNoteDisplayMode(value: unknown): value is NoteDisplayMode {
+  return (
+    typeof value === 'string' &&
+    (NOTE_DISPLAY_MODE_VALUES as readonly string[]).includes(value)
+  );
+}
+
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({
     instrumentName,
@@ -73,6 +104,17 @@ const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
     })),
   }),
 );
+
+const instrumentTuningOptions = instrumentTuningGroups.flatMap(
+  (group) => group.tunings,
+);
+const instrumentTuningByValue = new Map(
+  instrumentTuningOptions.map((option) => [option.value, option]),
+);
+
+function isInstrumentTuningValue(value: unknown): value is string {
+  return typeof value === 'string' && instrumentTuningByValue.has(value);
+}
 
 const DEFAULT_INSTRUMENT = 'Guitar' satisfies keyof typeof INSTRUMENTS;
 const DEFAULT_INSTRUMENT_TUNING =
@@ -110,38 +152,71 @@ export function App() {
   const pngMenuGroupLabelId = useId();
 
   const [fretboardImg, setFretboardImg] = useState<ImgChangeEvent | null>(null);
-  const [selectedPattern, setSelectedPattern] =
-    useState<PatternName>(DEFAULT_PATTERN);
+  const [selectedPattern, setSelectedPattern] = useHistoryState<PatternName>(
+    HISTORY_STATE_KEYS.selectedPattern,
+    DEFAULT_PATTERN,
+    { isValid: isPatternName },
+  );
   const pattern = PATTERNS[selectedPattern];
-  const [selectedRootNote, setSelectedRootNote] =
-    useState<Note>(DEFAULT_ROOT_NOTE);
+  const [selectedRootNote, setSelectedRootNote] = useHistoryState<Note>(
+    HISTORY_STATE_KEYS.selectedRootNote,
+    DEFAULT_ROOT_NOTE,
+    { isValid: isRootNote },
+  );
   const [selectedNoteDisplayMode, setSelectedNoteDisplayMode] =
-    useState<NoteDisplayMode>(DEFAULT_NOTE_DISPLAY_MODE);
-  const [showBackgroundNeck, setShowBackgroundNeck] = useState(
+    useHistoryState<NoteDisplayMode>(
+      HISTORY_STATE_KEYS.selectedNoteDisplayMode,
+      DEFAULT_NOTE_DISPLAY_MODE,
+      { isValid: isNoteDisplayMode },
+    );
+  const [showBackgroundNeck, setShowBackgroundNeck] = useHistoryState(
+    HISTORY_STATE_KEYS.showBackgroundNeck,
     DEFAULT_SHOW_BACKGROUND_NECK,
+    { isValid: isBoolean },
   );
-  const [showStrings, setShowStrings] = useState(DEFAULT_SHOW_STRINGS);
-  const [showFretLines, setShowFretLines] = useState(DEFAULT_SHOW_FRET_LINES);
-  const [showFretMarkers, setShowFretMarkers] = useState(
+  const [showStrings, setShowStrings] = useHistoryState(
+    HISTORY_STATE_KEYS.showStrings,
+    DEFAULT_SHOW_STRINGS,
+    { isValid: isBoolean },
+  );
+  const [showFretLines, setShowFretLines] = useHistoryState(
+    HISTORY_STATE_KEYS.showFretLines,
+    DEFAULT_SHOW_FRET_LINES,
+    { isValid: isBoolean },
+  );
+  const [showFretMarkers, setShowFretMarkers] = useHistoryState(
+    HISTORY_STATE_KEYS.showFretMarkers,
     DEFAULT_SHOW_FRET_MARKERS,
+    { isValid: isBoolean },
   );
-  const [showFretLabels, setShowFretLabels] = useState(
+  const [showFretLabels, setShowFretLabels] = useHistoryState(
+    HISTORY_STATE_KEYS.showFretLabels,
     DEFAULT_SHOW_FRET_LABELS,
+    { isValid: isBoolean },
   );
-  const [showStringLabels, setShowStringLabels] = useState(
+  const [showStringLabels, setShowStringLabels] = useHistoryState(
+    HISTORY_STATE_KEYS.showStringLabels,
     DEFAULT_SHOW_STRING_LABELS,
+    { isValid: isBoolean },
   );
-  const [showDropShadows, setShowDropShadows] = useState(
+  const [showDropShadows, setShowDropShadows] = useHistoryState(
+    HISTORY_STATE_KEYS.showDropShadows,
     DEFAULT_SHOW_DROP_SHADOWS,
+    { isValid: isBoolean },
   );
 
   // Instrument tuning
-  const [selectedInstrumentTuning, setSelectedInstrumentTuning] = useState(
-    DEFAULT_INSTRUMENT_TUNING_VALUE,
+  const [selectedInstrumentTuning, setSelectedInstrumentTuning] =
+    useHistoryState(
+      HISTORY_STATE_KEYS.selectedInstrumentTuning,
+      DEFAULT_INSTRUMENT_TUNING_VALUE,
+      {
+        isValid: isInstrumentTuningValue,
+      },
+    );
+  const resolvedInstrumentTuning = instrumentTuningByValue.get(
+    selectedInstrumentTuning,
   );
-  const resolvedInstrumentTuning = instrumentTuningGroups
-    .flatMap((group) => group.tunings)
-    .find((option) => option.value === selectedInstrumentTuning);
 
   if (!resolvedInstrumentTuning) {
     throw new Error('Expected at least one instrument tuning to be available.');

@@ -16,6 +16,12 @@ vi.mock('../../lib/image.ts', async (importOriginal) => {
   };
 });
 
+afterEach(() => {
+  window.history.replaceState(null, '');
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
+
 // Basic test to ensure the app renders without crashing
 test('renders core controls with defaults and exposes SVG and PNG downloads in the menu', async () => {
   rasterizeSvgMock.mockReset();
@@ -255,5 +261,59 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   anchorClick.mockRestore();
   createObjectUrl.mockRestore();
   revokeObjectUrl.mockRestore();
-  vi.unstubAllGlobals();
+});
+
+test('loads form controls from history.state and persists updates with replaceState', async () => {
+  window.history.replaceState(
+    {
+      'app.controls.pattern': 'Minor scale',
+      'app.controls.rootNote': 'A',
+      'app.controls.noteDisplayMode': 'interval',
+      'app.controls.showBackgroundNeck': false,
+      'app.controls.showStrings': false,
+      'app.controls.showFretLines': false,
+      'app.controls.showFretMarkers': false,
+      'app.controls.showFretLabels': false,
+      'app.controls.showStringLabels': false,
+      'app.controls.showDropShadows': false,
+      'app.controls.instrumentTuning': 'Bass::Standard',
+      'app.controls.fretRange': {
+        start: 3,
+        end: 7,
+      },
+    },
+    '',
+  );
+
+  const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
+
+  render(<App />);
+
+  expect(screen.getByLabelText('Instrument')).toHaveValue('Bass::Standard');
+  expect(screen.getByLabelText('Pattern')).toHaveValue('Minor scale');
+  expect(screen.getByLabelText('Root note')).toHaveValue('A');
+  expect(screen.getByLabelText('Note labels')).toHaveValue('interval');
+  expect(screen.getByLabelText('Start fret')).toHaveValue('3');
+  expect(screen.getByLabelText('End fret')).toHaveValue('7');
+  expect(screen.getByLabelText('Background')).not.toBeChecked();
+  expect(screen.getByLabelText('Strings')).not.toBeChecked();
+  expect(screen.getByLabelText('Fret lines')).not.toBeChecked();
+  expect(screen.getByLabelText('Fret markers')).not.toBeChecked();
+  expect(screen.getByLabelText('Fret labels')).not.toBeChecked();
+  expect(screen.getByLabelText('String labels')).not.toBeChecked();
+  expect(screen.getByLabelText('Drop shadows')).not.toBeChecked();
+
+  fireEvent.change(screen.getByLabelText('Root note'), {
+    target: {
+      value: 'Bb',
+    },
+  });
+
+  await waitFor(() => {
+    const historyState = window.history.state as Record<string, unknown> | null;
+
+    expect(historyState?.['app.controls.rootNote']).toBe('Bb');
+  });
+
+  expect(replaceStateSpy).toHaveBeenCalled();
 });
