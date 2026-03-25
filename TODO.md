@@ -43,6 +43,7 @@
   - But in this specific case (showing multiple chords) we don't want to merge, we want to show all of them!
   - Hard to tell how to do this with these conflicting requirements and still keep UI/UX/pattern DSL simple and intuitive
 - Toggle to view as text?
+- PWA
 
 ### Share
 
