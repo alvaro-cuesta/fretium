@@ -6,6 +6,7 @@
 - Add more patterns (chords, scales, arpeggios...)
 - Curate patterns: e.g. currently dom7 arpeggio G position is wrong(ish)
 - Refactor pattern generation? E.g. tool to automatically mark duplicate options transparent, or automatically find overlapping chords instead of manually doing it
+- Overlap chors on "Arpeggio - Full" -- the same (individual ones) + the full one with all 4 variants!
 
 ## Features
 
