@@ -5,6 +5,7 @@ import type {
   FretRangeInput,
   StartFretValue,
 } from '../../lib/fret-range';
+import type { HistoryStateDeserializeResult } from '../../lib/history-state';
 import { clamp } from '../../lib/math';
 import { MAX_FRET, MIN_FRET, TOTAL_FRETS } from '../../lib/pattern-engine';
 import { checkIsNever } from '../../lib/type';
@@ -130,12 +131,24 @@ function fretRangeReducer(
   }
 }
 
+function serialize(fretRange: FretRangeInput): FretRangeInput {
+  return fretRange;
+}
+
+function deserialize(
+  value: unknown,
+): HistoryStateDeserializeResult<FretRangeInput> {
+  return isPersistedFretRangeInput(value)
+    ? { type: 'success', value }
+    : { type: 'error' };
+}
+
 export function useFretRangeState() {
   const [state, dispatch] = useHistoryReducer(
     HISTORY_STATE_KEYS.fretRange,
     fretRangeReducer,
     DEFAULT_FRET_RANGE,
-    { isValid: isPersistedFretRangeInput },
+    { serialize, deserialize },
   );
 
   const setStart = useCallback(

@@ -1,5 +1,15 @@
+import type { JsonValue } from 'type-fest';
+import { checkIsNever } from './type';
+
+export type HistoryStateDeserializeResult<TValue> =
+  | { type: 'success'; value: TValue }
+  | { type: 'error' };
+
 export type HistoryStateOptions<TValue> = {
-  isValid: (value: unknown) => value is TValue;
+  serialize(value: TValue): JsonValue;
+  // @todo Is `value` here guaranteed to be `unknown` or should it be `JsonValue`
+  // since it's coming from `history.state`?
+  deserialize(value: unknown): HistoryStateDeserializeResult<TValue>;
 };
 
 export function resolveInitialValue<TValue>(
@@ -12,7 +22,7 @@ export function resolveInitialValue<TValue>(
   return initialValue;
 }
 
-export function getHistoryState(): Record<string, unknown> | null {
+function getHistoryState(): Record<string, unknown> | null {
   const historyState: unknown = window.history.state;
 
   if (
@@ -26,6 +36,29 @@ export function getHistoryState(): Record<string, unknown> | null {
   return historyState as Record<string, unknown>;
 }
 
+export function storeValue<TValue>(
+  key: string,
+  value: TValue,
+  options: HistoryStateOptions<TValue>,
+): void {
+  const historyState = getHistoryState();
+  const serializedValue = options.serialize(value);
+
+  // Avoid calling `replaceState` if the value to store is the same as the current
+  // value in `history.state` since it would be a no-op
+  if (historyState !== null && Object.is(historyState[key], serializedValue)) {
+    return;
+  }
+
+  window.history.replaceState(
+    {
+      ...historyState,
+      [key]: serializedValue,
+    },
+    '',
+  );
+}
+
 export function getStoredValue<TValue>(
   key: string,
   options: HistoryStateOptions<TValue>,
@@ -33,5 +66,15 @@ export function getStoredValue<TValue>(
   const historyState = getHistoryState();
   if (historyState === null) return undefined;
   const storedValue = historyState[key];
-  return options.isValid(storedValue) ? storedValue : undefined;
+
+  const result = options.deserialize(storedValue);
+
+  switch (result.type) {
+    case 'success':
+      return result.value;
+    case 'error':
+      return undefined;
+    default:
+      return checkIsNever(result);
+  }
 }

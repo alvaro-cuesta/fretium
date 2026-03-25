@@ -2,10 +2,14 @@ import { useMemo, useState } from 'react';
 import { objectEntries, objectKeys } from '../../../lib/object.ts';
 import { INSTRUMENTS } from '../../config/instruments.ts';
 import { PATTERNS_GROUPED, type PatternName } from '../../config/patterns.ts';
-import { useHistoryState } from '../../hooks/useHistoryState.ts';
+import {
+  historyStateBoolean,
+  useHistoryState,
+} from '../../hooks/useHistoryState.ts';
 import { calculateFretRange } from '../../lib/fret-range.ts';
 import { type NoteDisplayMode } from '../../lib/fretboard.ts';
-import type { Note } from '../../lib/music.ts';
+import type { HistoryStateDeserializeResult } from '../../lib/history-state.ts';
+import { NOTES, type Note } from '../../lib/music.ts';
 import { renderPattern } from '../../lib/pattern-engine.ts';
 import { getFretboardMetrics } from '../Fretboard/theme.ts';
 import { FretboardImg, type ImgChangeEvent } from '../FretboardImg.tsx';
@@ -21,26 +25,6 @@ import {
 import { HISTORY_STATE_KEYS } from './history.ts';
 import { usePattern } from './pattern.ts';
 
-const ROOT_NOTES = [
-  'C',
-  'C#',
-  'Db',
-  'D',
-  'D#',
-  'Eb',
-  'E',
-  'F',
-  'F#',
-  'Gb',
-  'G',
-  'G#',
-  'Ab',
-  'A',
-  'A#',
-  'Bb',
-  'B',
-] as const satisfies readonly Note[];
-
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
 const DEFAULT_SHOW_BACKGROUND_NECK = true;
@@ -51,6 +35,24 @@ const DEFAULT_SHOW_FRET_LABELS = true;
 const DEFAULT_SHOW_STRING_LABELS = true;
 const DEFAULT_SHOW_DROP_SHADOWS = true;
 
+// Root note
+function isRootNote(value: unknown): value is Note {
+  return (
+    typeof value === 'string' && (NOTES as readonly string[]).includes(value)
+  );
+}
+
+function serializeRootNote(value: Note): Note {
+  return value;
+}
+
+function deserializeRootNote(
+  value: unknown,
+): HistoryStateDeserializeResult<Note> {
+  return isRootNote(value) ? { type: 'success', value } : { type: 'error' };
+}
+
+// Note display mode
 const NOTE_DISPLAY_MODE_VALUES: readonly NoteDisplayMode[] = [
   'note',
   'interval',
@@ -58,23 +60,27 @@ const NOTE_DISPLAY_MODE_VALUES: readonly NoteDisplayMode[] = [
   'none',
 ];
 
-function isBoolean(value: unknown): value is boolean {
-  return typeof value === 'boolean';
-}
-
-function isRootNote(value: unknown): value is Note {
-  return (
-    typeof value === 'string' &&
-    (ROOT_NOTES as readonly string[]).includes(value)
-  );
-}
-
 function isNoteDisplayMode(value: unknown): value is NoteDisplayMode {
   return (
     typeof value === 'string' &&
     (NOTE_DISPLAY_MODE_VALUES as readonly string[]).includes(value)
   );
 }
+
+function serializeNoteDisplayMode(value: NoteDisplayMode): NoteDisplayMode {
+  return value;
+}
+
+function deserializeNoteDisplayMode(
+  value: unknown,
+): HistoryStateDeserializeResult<NoteDisplayMode> {
+  return isNoteDisplayMode(value)
+    ? { type: 'success', value }
+    : { type: 'error' };
+}
+
+// Instrument + Tuning
+type InstrumentTuningOption = `${string}::${string}`;
 
 const instrumentTuningGroups = objectEntries(INSTRUMENTS).map(
   ([instrumentName, instrument]) => ({
@@ -97,14 +103,33 @@ const instrumentTuningByValue = new Map(
   instrumentTuningOptions.map((option) => [option.value, option]),
 );
 
-function isInstrumentTuningValue(value: unknown): value is string {
+function isInstrumentTuningValue(
+  value: unknown,
+): value is InstrumentTuningOption {
   return typeof value === 'string' && instrumentTuningByValue.has(value);
+}
+
+function serializeInstrumentTuning(
+  value: InstrumentTuningOption,
+): InstrumentTuningOption {
+  return value;
+}
+
+function deserializeInstrumentTuning(
+  value: unknown,
+): HistoryStateDeserializeResult<InstrumentTuningOption> {
+  return isInstrumentTuningValue(value)
+    ? { type: 'success', value }
+    : { type: 'error' };
 }
 
 const DEFAULT_INSTRUMENT = 'Guitar' satisfies keyof typeof INSTRUMENTS;
 const DEFAULT_INSTRUMENT_TUNING =
   'Standard' satisfies keyof (typeof INSTRUMENTS)[typeof DEFAULT_INSTRUMENT]['tunings'];
-const DEFAULT_INSTRUMENT_TUNING_VALUE = `${DEFAULT_INSTRUMENT}::${DEFAULT_INSTRUMENT_TUNING}`;
+const DEFAULT_INSTRUMENT_TUNING_VALUE =
+  `${DEFAULT_INSTRUMENT}::${DEFAULT_INSTRUMENT_TUNING}` satisfies InstrumentTuningOption;
+
+///////////
 
 export function App() {
   const [fretboardImg, setFretboardImg] = useState<ImgChangeEvent | null>(null);
@@ -114,12 +139,15 @@ export function App() {
   const [selectedRootNote, setSelectedRootNote] = useHistoryState(
     HISTORY_STATE_KEYS.selectedRootNote,
     DEFAULT_ROOT_NOTE,
-    { isValid: isRootNote },
+    { serialize: serializeRootNote, deserialize: deserializeRootNote },
   );
   const [selectedNoteDisplayMode, setSelectedNoteDisplayMode] = useHistoryState(
     HISTORY_STATE_KEYS.selectedNoteDisplayMode,
     DEFAULT_NOTE_DISPLAY_MODE,
-    { isValid: isNoteDisplayMode },
+    {
+      serialize: serializeNoteDisplayMode,
+      deserialize: deserializeNoteDisplayMode,
+    },
   );
 
   // Instrument tuning
@@ -128,7 +156,8 @@ export function App() {
       HISTORY_STATE_KEYS.selectedInstrumentTuning,
       DEFAULT_INSTRUMENT_TUNING_VALUE,
       {
-        isValid: isInstrumentTuningValue,
+        serialize: serializeInstrumentTuning,
+        deserialize: deserializeInstrumentTuning,
       },
     );
   const resolvedInstrumentTuning = instrumentTuningByValue.get(
@@ -156,37 +185,37 @@ export function App() {
   const [showBackgroundNeck, setShowBackgroundNeck] = useHistoryState(
     HISTORY_STATE_KEYS.showBackgroundNeck,
     DEFAULT_SHOW_BACKGROUND_NECK,
-    { isValid: isBoolean },
+    historyStateBoolean,
   );
   const [showStrings, setShowStrings] = useHistoryState(
     HISTORY_STATE_KEYS.showStrings,
     DEFAULT_SHOW_STRINGS,
-    { isValid: isBoolean },
+    historyStateBoolean,
   );
   const [showFretLines, setShowFretLines] = useHistoryState(
     HISTORY_STATE_KEYS.showFretLines,
     DEFAULT_SHOW_FRET_LINES,
-    { isValid: isBoolean },
+    historyStateBoolean,
   );
   const [showFretMarkers, setShowFretMarkers] = useHistoryState(
     HISTORY_STATE_KEYS.showFretMarkers,
     DEFAULT_SHOW_FRET_MARKERS,
-    { isValid: isBoolean },
+    historyStateBoolean,
   );
   const [showFretLabels, setShowFretLabels] = useHistoryState(
     HISTORY_STATE_KEYS.showFretLabels,
     DEFAULT_SHOW_FRET_LABELS,
-    { isValid: isBoolean },
+    historyStateBoolean,
   );
   const [showStringLabels, setShowStringLabels] = useHistoryState(
     HISTORY_STATE_KEYS.showStringLabels,
     DEFAULT_SHOW_STRING_LABELS,
-    { isValid: isBoolean },
+    historyStateBoolean,
   );
   const [showDropShadows, setShowDropShadows] = useHistoryState(
     HISTORY_STATE_KEYS.showDropShadows,
     DEFAULT_SHOW_DROP_SHADOWS,
-    { isValid: isBoolean },
+    historyStateBoolean,
   );
 
   //////
@@ -226,7 +255,9 @@ export function App() {
                 className={styles.selectorInput}
                 value={resolvedInstrumentTuning.value}
                 onChange={(e) => {
-                  setSelectedInstrumentTuning(e.target.value);
+                  setSelectedInstrumentTuning(
+                    e.target.value as InstrumentTuningOption,
+                  );
                 }}
                 autoComplete="off"
               >
@@ -356,7 +387,7 @@ export function App() {
                 }}
                 autoComplete="off"
               >
-                {ROOT_NOTES.map((rootNote) => (
+                {NOTES.map((rootNote) => (
                   <option
                     key={rootNote}
                     value={rootNote}

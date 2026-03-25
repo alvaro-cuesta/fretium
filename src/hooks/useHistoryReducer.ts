@@ -1,8 +1,8 @@
 import { useEffect, useReducer, type Dispatch, type Reducer } from 'react';
 import {
-  getHistoryState,
   getStoredValue,
   resolveInitialValue,
+  storeValue,
   type HistoryStateOptions,
 } from '../lib/history-state';
 
@@ -23,29 +23,14 @@ export function useHistoryReducer<TState, TAction>(
     initialState,
     (initialValue): TState => {
       const storedValue = getStoredValue(key, options);
-
-      if (storedValue !== undefined) {
-        return storedValue;
-      }
-
+      if (storedValue !== undefined) return storedValue;
       return resolveInitialValue(initialValue);
     },
   );
 
   useEffect(() => {
-    const historyState = getHistoryState();
-    if (historyState !== null && Object.is(historyState[key], state)) {
-      return;
-    }
-
-    window.history.replaceState(
-      {
-        ...historyState,
-        [key]: state,
-      },
-      '',
-    );
-  }, [key, state]);
+    storeValue(key, state, options);
+  }, [key, state, options]);
 
   return [state, dispatch];
 }

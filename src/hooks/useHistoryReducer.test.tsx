@@ -25,6 +25,22 @@ function counterReducer(
   }
 }
 
+function isCounterState(value: unknown): value is CounterState {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    'count' in value &&
+    typeof value.count === 'number'
+  );
+}
+
+function deserializeCounterState(value: unknown) {
+  return isCounterState(value)
+    ? { type: 'success' as const, value }
+    : { type: 'error' as const };
+}
+
 afterEach(() => {
   window.history.replaceState(null, '');
   vi.restoreAllMocks();
@@ -49,12 +65,8 @@ test('initializes from history.state and preserves other history keys', () => {
       counterReducer,
       { count: 0 },
       {
-        isValid: (value): value is CounterState =>
-          typeof value === 'object' &&
-          value !== null &&
-          !Array.isArray(value) &&
-          'count' in value &&
-          typeof value.count === 'number',
+        serialize: (value) => value,
+        deserialize: deserializeCounterState,
       },
     ),
   );
@@ -90,12 +102,8 @@ test('falls back to default state when stored value is invalid', async () => {
       counterReducer,
       { count: 3 },
       {
-        isValid: (value): value is CounterState =>
-          typeof value === 'object' &&
-          value !== null &&
-          !Array.isArray(value) &&
-          'count' in value &&
-          typeof value.count === 'number',
+        serialize: (value) => value,
+        deserialize: deserializeCounterState,
       },
     ),
   );

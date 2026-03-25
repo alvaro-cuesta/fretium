@@ -1,21 +1,24 @@
-export type Note =
-  | 'C'
-  | 'C#'
-  | 'Db'
-  | 'D'
-  | 'D#'
-  | 'Eb'
-  | 'E'
-  | 'F'
-  | 'F#'
-  | 'Gb'
-  | 'G'
-  | 'G#'
-  | 'Ab'
-  | 'A'
-  | 'A#'
-  | 'Bb'
-  | 'B';
+export const NOTES = [
+  'C',
+  'C#',
+  'Db',
+  'D',
+  'D#',
+  'Eb',
+  'E',
+  'F',
+  'F#',
+  'Gb',
+  'G',
+  'G#',
+  'Ab',
+  'A',
+  'A#',
+  'Bb',
+  'B',
+] as const;
+
+export type Note = (typeof NOTES)[number];
 
 export type NoteClass =
   | 0 // C

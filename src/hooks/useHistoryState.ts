@@ -1,12 +1,23 @@
-import { useCallback, useEffect, useState, type Dispatch } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import {
-  getHistoryState,
   getStoredValue,
   resolveInitialValue,
+  storeValue,
   type HistoryStateOptions,
 } from '../lib/history-state';
 
-type UseHistoryStateResult<TValue> = [TValue, Dispatch<TValue>];
+export const historyStateBoolean: HistoryStateOptions<boolean> = {
+  serialize(value) {
+    return value;
+  },
+  deserialize(value) {
+    return typeof value === 'boolean'
+      ? { type: 'success', value }
+      : { type: 'error' };
+  },
+};
+
+type UseHistoryStateResult<TValue> = [TValue, Dispatch<SetStateAction<TValue>>];
 
 /**
  * Persists component state in `history.state` using `replaceState` so
@@ -17,36 +28,15 @@ export function useHistoryState<TValue>(
   initialValue: TValue | (() => TValue),
   options: HistoryStateOptions<TValue>,
 ): UseHistoryStateResult<TValue> {
-  // eslint-disable-next-line react-x/use-state
-  const [state, setStateOriginal] = useState<TValue>(() => {
+  const [state, setState] = useState<TValue>(() => {
     const storedValue = getStoredValue(key, options);
-
-    if (storedValue !== undefined) {
-      return storedValue;
-    }
-
+    if (storedValue !== undefined) return storedValue;
     return resolveInitialValue(initialValue);
   });
 
   useEffect(() => {
-    const historyState = getHistoryState();
-    if (historyState !== null && Object.is(historyState[key], state)) {
-      return;
-    }
-
-    window.history.replaceState(
-      {
-        ...historyState,
-        [key]: state,
-      },
-      '',
-    );
-  }, [key, state]);
-
-  // @todo Implement updater (Dispatch<SetStateAction<TValue>>) if ever needed
-  const setState = useCallback((newState: TValue) => {
-    setStateOriginal(newState);
-  }, []);
+    storeValue(key, state, options);
+  }, [key, state, options]);
 
   return [state, setState];
 }

@@ -1,6 +1,18 @@
 import { act, renderHook } from '@testing-library/react';
 import { useHistoryState } from './useHistoryState';
 
+function deserializeString(value: unknown) {
+  return typeof value === 'string'
+    ? { type: 'success' as const, value }
+    : { type: 'error' as const };
+}
+
+function deserializeNumber(value: unknown) {
+  return typeof value === 'number'
+    ? { type: 'success' as const, value }
+    : { type: 'error' as const };
+}
+
 afterEach(() => {
   window.history.replaceState(null, '');
   vi.restoreAllMocks();
@@ -19,7 +31,8 @@ test('initializes from history.state and preserves other history keys', () => {
 
   const { result } = renderHook(() =>
     useHistoryState('field', 'default', {
-      isValid: (value): value is string => typeof value === 'string',
+      serialize: (value) => value,
+      deserialize: deserializeString,
     }),
   );
 
@@ -48,7 +61,8 @@ test('falls back to default value when stored value is invalid', () => {
 
   const { result } = renderHook(() =>
     useHistoryState('numericField', 12, {
-      isValid: (value): value is number => typeof value === 'number',
+      serialize: (value) => value,
+      deserialize: deserializeNumber,
     }),
   );
 
