@@ -32,7 +32,6 @@
 - Add collections (a way to quickly explore via dropdown related chords and scales)
 - Transparent background in SVG only makes sense in the context of the webpage, but not for export, print, etc...
   - Actually it kinda makes sense to support both black/white backgrounds... but it feels weird at the same time -- see what we can do
-- Consider changing patterns from flat list to nested subvariations
 - Consider changing complex patterns (e.g we have arpeggio+chord in a single pattern which hasan explosion of combinations) into just allowing having multiple patterns on the same fretboard
   - In a way this is worse for the user because they have to find related stuff
   - But it's more flexible too (they don't need their specific combination listed) as long as they can bookmark somehow (so they can come back to their saved presets)

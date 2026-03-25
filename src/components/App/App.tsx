@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { objectEntries, objectKeys } from '../../../lib/object.ts';
 import { INSTRUMENTS } from '../../config/instruments.ts';
-import { PATTERNS_GROUPED, type PatternName } from '../../config/patterns.ts';
 import {
   historyStateBoolean,
   useHistoryState,
@@ -23,7 +22,7 @@ import {
   useFretRangeState,
 } from './fret-range.ts';
 import { HISTORY_STATE_KEYS } from './history.ts';
-import { usePattern } from './pattern.ts';
+import { getPatternSelectDescriptors, usePattern } from './pattern.ts';
 
 const DEFAULT_ROOT_NOTE = 'C' satisfies Note;
 const DEFAULT_NOTE_DISPLAY_MODE = 'note' as const;
@@ -133,9 +132,17 @@ const DEFAULT_INSTRUMENT_TUNING_VALUE =
 
 export function App() {
   const [fretboardImg, setFretboardImg] = useState<ImgChangeEvent | null>(null);
+  const firstPatternSelectRef = useRef<HTMLSelectElement | null>(null);
 
   // Fretboard state
-  const { patternName, setPatternName, pattern } = usePattern();
+  const { patternPath, setPatternPath, patternConfigEntryPattern } =
+    usePattern();
+
+  const patternSelects = useMemo(
+    () => getPatternSelectDescriptors(patternPath),
+    [patternPath],
+  );
+
   const [selectedRootNote, setSelectedRootNote] = useHistoryState(
     HISTORY_STATE_KEYS.selectedRootNote,
     DEFAULT_ROOT_NOTE,
@@ -168,10 +175,19 @@ export function App() {
     throw new Error('Expected at least one instrument tuning to be available.');
   }
 
+  // Rendered pattern
   const renderPatternResult = useMemo(
     () =>
-      renderPattern(resolvedInstrumentTuning.tuning, pattern, selectedRootNote),
-    [resolvedInstrumentTuning.tuning, pattern, selectedRootNote],
+      renderPattern(
+        resolvedInstrumentTuning.tuning,
+        patternConfigEntryPattern,
+        selectedRootNote,
+      ),
+    [
+      resolvedInstrumentTuning.tuning,
+      patternConfigEntryPattern,
+      selectedRootNote,
+    ],
   );
 
   // Fret range
@@ -347,35 +363,72 @@ export function App() {
           </div>
 
           <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
-            <label className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>Pattern</span>
-              <select
-                className={styles.selectorInput}
-                value={patternName}
-                onChange={(e) => {
-                  setPatternName(e.target.value as PatternName);
-                }}
-                autoComplete="off"
-              >
-                {objectEntries(PATTERNS_GROUPED).map(
-                  ([groupName, patterns]) => (
-                    <optgroup
-                      key={groupName}
-                      label={groupName}
+            <div className={styles.fieldGroup}>
+              <fieldset className={styles.patternFieldset}>
+                <legend className={styles.patternLegend}>
+                  <span
+                    className={`${styles.fieldLabel} ${styles.legendButton}`}
+                    onClick={() => {
+                      firstPatternSelectRef.current?.focus();
+                    }}
+                  >
+                    Pattern
+                  </span>
+                </legend>
+
+                <div
+                  className={`${styles.rangeFields} ${styles.patternSelectsRow}`}
+                >
+                  {patternSelects.map((patternSelect, depth) => (
+                    <select
+                      key={
+                        depth === 0
+                          ? 'pattern-root'
+                          : `pattern-${patternPath.slice(0, depth).join('/')}`
+                      }
+                      ref={depth === 0 ? firstPatternSelectRef : undefined}
+                      className={`${styles.selectorInput} ${styles.patternSelectInput}`}
+                      value={patternSelect.value}
+                      onChange={(e) => {
+                        const nextSegment = e.target.value;
+
+                        setPatternPath((currentPath) => [
+                          ...currentPath.slice(0, depth),
+                          nextSegment,
+                          ...currentPath.slice(depth + 1),
+                        ]);
+                      }}
+                      autoComplete="off"
+                      aria-label={patternSelect.ariaLabel}
                     >
-                      {objectKeys(patterns).map((patternName) => (
+                      {patternSelect.options.options.map((option) => (
                         <option
-                          key={patternName}
-                          value={patternName}
+                          key={option.value}
+                          value={option.value}
                         >
-                          {patternName}
+                          {option.displayName}
                         </option>
                       ))}
-                    </optgroup>
-                  ),
-                )}
-              </select>
-            </label>
+                      {patternSelect.options.groups.map((group) => (
+                        <optgroup
+                          key={`group-${group.id}`}
+                          label={group.displayName}
+                        >
+                          {group.options.map((option) => (
+                            <option
+                              key={`${group.id}-${option.value}`}
+                              value={option.value}
+                            >
+                              {option.displayName}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                  ))}
+                </div>
+              </fieldset>
+            </div>
 
             <label className={`${styles.fieldGroup} ${styles.rootNoteField}`}>
               <span className={styles.fieldLabel}>Root note</span>
@@ -501,8 +554,8 @@ export function App() {
             onImgChange={(nextFretboardImg) => {
               setFretboardImg(nextFretboardImg);
             }}
-            pattern={pattern}
-            patternName={patternName}
+            pattern={patternConfigEntryPattern}
+            patternName={patternConfigEntryPattern.displayName}
             instrumentName={resolvedInstrumentTuning.instrumentName}
             tuningName={resolvedInstrumentTuning.tuningName}
             tuning={resolvedInstrumentTuning.tuning}

@@ -78,7 +78,9 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
 
   expect(screen.getByText(/Fretium/)).toBeInTheDocument();
   expect(screen.getByLabelText('Instrument')).toHaveValue('Guitar::Standard');
-  expect(screen.getByLabelText('Pattern')).toHaveValue('Major scale');
+  expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveValue(
+    'scales/major',
+  );
   expect(screen.getByLabelText('Root note')).toHaveValue('C');
   expect(screen.getByLabelText('Start fret')).toHaveValue('AUTO');
   expect(screen.getByLabelText('End fret')).toHaveValue('AUTO');
@@ -111,7 +113,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
     'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels].svg',
   );
 
-  fireEvent.pointerDown(screen.getByLabelText('Pattern'));
+  fireEvent.pointerDown(screen.getByRole('combobox', { name: 'Pattern' }));
 
   await waitFor(() => {
     expect(downloadToggle).toHaveAttribute('aria-expanded', 'false');
@@ -266,7 +268,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
 test('loads form controls from history.state and persists updates with replaceState', async () => {
   window.history.replaceState(
     {
-      'app.controls.pattern': 'Minor scale',
+      'app.controls.pattern': ['scales/minor'],
       'app.controls.rootNote': 'A',
       'app.controls.noteDisplayMode': 'interval',
       'app.controls.showBackgroundNeck': false,
@@ -290,7 +292,9 @@ test('loads form controls from history.state and persists updates with replaceSt
   render(<App />);
 
   expect(screen.getByLabelText('Instrument')).toHaveValue('Bass::Standard');
-  expect(screen.getByLabelText('Pattern')).toHaveValue('Minor scale');
+  expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveValue(
+    'scales/minor',
+  );
   expect(screen.getByLabelText('Root note')).toHaveValue('A');
   expect(screen.getByLabelText('Note labels')).toHaveValue('interval');
   expect(screen.getByLabelText('Start fret')).toHaveValue('3');
@@ -316,4 +320,104 @@ test('loads form controls from history.state and persists updates with replaceSt
   });
 
   expect(replaceStateSpy).toHaveBeenCalled();
+});
+
+test('clicking the pattern legend focuses the first pattern select', () => {
+  render(<App />);
+
+  fireEvent.click(screen.getByText('Pattern'));
+
+  expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveFocus();
+});
+
+test('shows a third pattern select for arpeggios', () => {
+  render(<App />);
+
+  expect(screen.getByRole('group', { name: 'Pattern' })).toBeInTheDocument();
+
+  fireEvent.change(screen.getByRole('combobox', { name: 'Pattern' }), {
+    target: {
+      value: 'arpeggios/maj7',
+    },
+  });
+
+  expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveValue(
+    'arpeggios/maj7',
+  );
+  expect(screen.getByLabelText('Maj7 Arpeggio Variant')).toHaveValue('full');
+  fireEvent.change(screen.getByLabelText('Maj7 Arpeggio Variant'), {
+    target: {
+      value: 'positions/g',
+    },
+  });
+
+  expect(screen.getByLabelText('Maj7 Arpeggio Variant')).toHaveValue(
+    'positions/g',
+  );
+  expect(screen.getByLabelText('G position Variant')).toHaveValue('base');
+  expect(
+    screen.getByRole('option', { name: '+ 6-4-3-2 (root)' }),
+  ).toBeInTheDocument();
+});
+
+test('shows a third pattern select for tetrads', () => {
+  render(<App />);
+
+  fireEvent.change(screen.getByRole('combobox', { name: 'Pattern' }), {
+    target: {
+      value: 'chords-tetrads/maj7',
+    },
+  });
+
+  expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveValue(
+    'chords-tetrads/maj7',
+  );
+  expect(screen.getByLabelText('Maj7 Tetrad Variant')).toHaveValue(
+    'drop3/_6432',
+  );
+  expect(
+    screen.getByLabelText('Drop 3 (Bass 6th) | 6-4-3-2 Variant'),
+  ).toHaveValue('all');
+  expect(
+    screen.getByRole('option', {
+      name: 'Root',
+    }),
+  ).toBeInTheDocument();
+});
+
+test('restores nested pattern paths from history.state arrays', () => {
+  window.history.replaceState(
+    {
+      'app.controls.pattern': ['arpeggios/dom7', 'positions/d', 'base'],
+    },
+    '',
+  );
+
+  render(<App />);
+
+  expect(screen.getByRole('group', { name: 'Pattern' })).toBeInTheDocument();
+  expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveValue(
+    'arpeggios/dom7',
+  );
+  expect(screen.getByLabelText('7 Arpeggio Variant')).toHaveValue(
+    'positions/d',
+  );
+  expect(screen.getByLabelText('D position Variant')).toHaveValue('base');
+});
+
+test('keeps focus on the same pattern select when its value changes', () => {
+  render(<App />);
+
+  const patternSelect = screen.getByRole('combobox', { name: 'Pattern' });
+
+  patternSelect.focus();
+  expect(patternSelect).toHaveFocus();
+
+  fireEvent.change(patternSelect, {
+    target: {
+      value: 'arpeggios/maj7',
+    },
+  });
+
+  expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveFocus();
 });

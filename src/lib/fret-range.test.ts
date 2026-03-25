@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import { INSTRUMENTS } from '../config/instruments';
-import { PATTERNS } from '../config/patterns';
+import { PATTERNS_GROUPED } from '../config/patterns/patterns';
 import { calculateFretRange } from './fret-range';
+import { getPatternConfigEntryPatternAtPath } from './pattern-config';
 import {
   MAX_FRET,
   OCTAVE_FRET,
@@ -119,9 +120,18 @@ describe('calculateFretRange', () => {
 
   test('keeps the screenshot Maj7 G-position fixed start exact with the real pattern data', () => {
     const tuning = INSTRUMENTS.Guitar.tunings['Standard'];
+    const pattern = getPatternConfigEntryPatternAtPath(PATTERNS_GROUPED, [
+      'arpeggios/maj7',
+      'positions/g',
+      'base',
+    ]);
 
     if (!tuning) {
       throw new Error('Missing Guitar Standard tuning test fixture');
+    }
+
+    if (!pattern) {
+      throw new Error('Missing Maj7 G-position pattern test fixture');
     }
 
     const fretRange = calculateFretRange(
@@ -129,7 +139,7 @@ describe('calculateFretRange', () => {
         start: 16,
         end: 'AUTO',
       },
-      renderPattern(tuning, PATTERNS['Maj7 Arpeggio (G position)'], 'F'),
+      renderPattern(tuning, pattern, 'F'),
     );
 
     expect(fretRange).toEqual({

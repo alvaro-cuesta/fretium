@@ -13,12 +13,6 @@ export function objectKeys<TObject extends Record<string, unknown>>(
   return Object.keys(obj) as ObjectKey<TObject>[];
 }
 
-export function objectValues<TObject extends Record<string, unknown>>(
-  obj: TObject,
-): TObject[keyof TObject][] {
-  return Object.values(obj) as TObject[keyof TObject][];
-}
-
 export function objectEntries<TObject extends Record<string, unknown>>(
   obj: TObject,
 ): ObjectEntry<TObject>[] {
