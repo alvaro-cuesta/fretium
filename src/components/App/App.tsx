@@ -258,201 +258,198 @@ export function App() {
     <Layout>
       <section className={styles.controlsSection}>
         <form
-        // Elements here have autoComplete="off" to prevent Firefox from changing DOM values on
-        // history navigation/restoring closed tab/duplicating tab, which causes React internal
-        // state to desync from DOM
-        // For some reason it didn't work here in <form> and I had to add it to each individual
-        // input/select element
+          className={styles.controlsForm}
+          // Elements here have autoComplete="off" to prevent Firefox from changing DOM values on
+          // history navigation/restoring closed tab/duplicating tab, which causes React internal
+          // state to desync from DOM
+          // For some reason it didn't work here in <form> and I had to add it to each individual
+          // input/select element
         >
-          <div className={styles.controlsRow}>
-            <label className={styles.fieldGroup}>
-              <span className={styles.fieldLabel}>Instrument</span>
-              <select
-                className={styles.selectorInput}
-                value={resolvedInstrumentTuning.value}
-                onChange={(e) => {
-                  setSelectedInstrumentTuning(
-                    e.target.value as InstrumentTuningOption,
-                  );
-                }}
-                autoComplete="off"
-              >
-                {objectEntries(INSTRUMENTS).map(
-                  ([instrumentName, instrument]) => (
-                    <optgroup
-                      key={instrumentName}
-                      label={instrumentName}
-                    >
-                      {objectKeys(instrument.tunings).map((tuningName) => {
-                        const value = `${instrumentName}::${tuningName}`;
-                        const label = `${instrumentName} ${tuningName}`;
-                        return (
-                          <option
-                            key={value}
-                            value={value}
-                          >
-                            {label}
-                          </option>
-                        );
-                      })}
-                    </optgroup>
-                  ),
-                )}
-              </select>
-            </label>
-
-            <div className={styles.rangeFields}>
-              <label className={styles.fieldGroup}>
-                <span className={styles.fieldLabel}>Start fret</span>
-                <select
-                  className={styles.selectorInput}
-                  value={fretRangeState.start}
-                  onChange={(e) => {
-                    fretRangeState.setStart(e.target.value);
-                  }}
-                  autoComplete="off"
-                >
-                  {START_FRET_OPTIONS.map(({ label, value }) => (
-                    <option
-                      key={value}
-                      value={value}
-                    >
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className={styles.fieldGroup}>
-                <span className={styles.fieldLabel}>End fret</span>
-                <select
-                  className={styles.selectorInput}
-                  value={fretRangeState.end}
-                  onChange={(e) => {
-                    fretRangeState.setEnd(e.target.value);
-                  }}
-                  autoComplete="off"
-                >
-                  {END_FRET_OPTIONS.map(({ label, value }) => (
-                    <option
-                      key={value}
-                      value={value}
-                    >
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <label className={`${styles.fieldGroup} ${styles.noteLabelsField}`}>
-              <span className={styles.fieldLabel}>Note labels</span>
-              <select
-                className={styles.selectorInput}
-                value={selectedNoteDisplayMode}
-                onChange={(e) => {
-                  setSelectedNoteDisplayMode(e.target.value as NoteDisplayMode);
-                }}
-                autoComplete="off"
-              >
-                <option value="note">Note</option>
-                <option value="interval">Intervals</option>
-                <option value="degree">Degrees</option>
-                <option value="none">None</option>
-              </select>
-            </label>
-          </div>
-
-          <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
-            <div className={styles.fieldGroup}>
-              <fieldset className={styles.patternFieldset}>
-                <legend className={styles.patternLegend}>
-                  <span
-                    className={`${styles.fieldLabel} ${styles.legendButton}`}
-                    onClick={() => {
-                      firstPatternSelectRef.current?.focus();
-                    }}
+          <label className={`${styles.fieldGroup} ${styles.instrumentField}`}>
+            <span className={styles.fieldLabel}>Instrument</span>
+            <select
+              className={styles.selectorInput}
+              value={resolvedInstrumentTuning.value}
+              onChange={(e) => {
+                setSelectedInstrumentTuning(
+                  e.target.value as InstrumentTuningOption,
+                );
+              }}
+              autoComplete="off"
+            >
+              {objectEntries(INSTRUMENTS).map(
+                ([instrumentName, instrument]) => (
+                  <optgroup
+                    key={instrumentName}
+                    label={instrumentName}
                   >
-                    Pattern
-                  </span>
-                </legend>
-
-                <div
-                  className={`${styles.rangeFields} ${styles.patternSelectsRow}`}
-                >
-                  {patternSelects.map((patternSelect, depth) => (
-                    <select
-                      key={
-                        depth === 0
-                          ? 'pattern-root'
-                          : `pattern-${patternPath.slice(0, depth).join('/')}`
-                      }
-                      ref={depth === 0 ? firstPatternSelectRef : undefined}
-                      className={`${styles.selectorInput} ${styles.patternSelectInput}`}
-                      value={patternSelect.value}
-                      onChange={(e) => {
-                        const nextSegment = e.target.value;
-
-                        setPatternPath((currentPath) => [
-                          ...currentPath.slice(0, depth),
-                          nextSegment,
-                          ...currentPath.slice(depth + 1),
-                        ]);
-                      }}
-                      autoComplete="off"
-                      aria-label={patternSelect.ariaLabel}
-                    >
-                      {patternSelect.options.options.map((option) => (
+                    {objectKeys(instrument.tunings).map((tuningName) => {
+                      const value = `${instrumentName}::${tuningName}`;
+                      const label = `${instrumentName} ${tuningName}`;
+                      return (
                         <option
-                          key={option.value}
-                          value={option.value}
+                          key={value}
+                          value={value}
                         >
-                          {option.displayName}
+                          {label}
                         </option>
-                      ))}
-                      {patternSelect.options.groups.map((group) => (
-                        <optgroup
-                          key={`group-${group.id}`}
-                          label={group.displayName}
-                        >
-                          {group.options.map((option) => (
-                            <option
-                              key={`${group.id}-${option.value}`}
-                              value={option.value}
-                            >
-                              {option.displayName}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ))}
-                    </select>
-                  ))}
-                </div>
-              </fieldset>
-            </div>
+                      );
+                    })}
+                  </optgroup>
+                ),
+              )}
+            </select>
+          </label>
 
-            <label className={`${styles.fieldGroup} ${styles.rootNoteField}`}>
-              <span className={styles.fieldLabel}>Root note</span>
+          <div className={`${styles.rangeFields} ${styles.fretRangeFields}`}>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>Start fret</span>
               <select
                 className={styles.selectorInput}
-                value={selectedRootNote}
+                value={fretRangeState.start}
                 onChange={(e) => {
-                  setSelectedRootNote(e.target.value as Note);
+                  fretRangeState.setStart(e.target.value);
                 }}
                 autoComplete="off"
               >
-                {NOTES.map((rootNote) => (
+                {START_FRET_OPTIONS.map(({ label, value }) => (
                   <option
-                    key={rootNote}
-                    value={rootNote}
+                    key={value}
+                    value={value}
                   >
-                    {rootNote}
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={styles.fieldGroup}>
+              <span className={styles.fieldLabel}>End fret</span>
+              <select
+                className={styles.selectorInput}
+                value={fretRangeState.end}
+                onChange={(e) => {
+                  fretRangeState.setEnd(e.target.value);
+                }}
+                autoComplete="off"
+              >
+                {END_FRET_OPTIONS.map(({ label, value }) => (
+                  <option
+                    key={value}
+                    value={value}
+                  >
+                    {label}
                   </option>
                 ))}
               </select>
             </label>
           </div>
 
-          <div className={`${styles.controlsRow} ${styles.controlsRowFill}`}>
+          <label className={`${styles.fieldGroup} ${styles.noteLabelsField}`}>
+            <span className={styles.fieldLabel}>Note labels</span>
+            <select
+              className={styles.selectorInput}
+              value={selectedNoteDisplayMode}
+              onChange={(e) => {
+                setSelectedNoteDisplayMode(e.target.value as NoteDisplayMode);
+              }}
+              autoComplete="off"
+            >
+              <option value="note">Note</option>
+              <option value="interval">Intervals</option>
+              <option value="degree">Degrees</option>
+              <option value="none">None</option>
+            </select>
+          </label>
+
+          <div className={`${styles.fieldGroup} ${styles.patternField}`}>
+            <fieldset className={styles.patternFieldset}>
+              <legend className={styles.patternLegend}>
+                <span
+                  className={`${styles.fieldLabel} ${styles.legendButton}`}
+                  onClick={() => {
+                    firstPatternSelectRef.current?.focus();
+                  }}
+                >
+                  Pattern
+                </span>
+              </legend>
+
+              <div
+                className={`${styles.rangeFields} ${styles.patternSelectsRow}`}
+              >
+                {patternSelects.map((patternSelect, depth) => (
+                  <select
+                    key={
+                      depth === 0
+                        ? 'pattern-root'
+                        : `pattern-${patternPath.slice(0, depth).join('/')}`
+                    }
+                    ref={depth === 0 ? firstPatternSelectRef : undefined}
+                    className={styles.selectorInput}
+                    value={patternSelect.value}
+                    onChange={(e) => {
+                      const nextSegment = e.target.value;
+
+                      setPatternPath((currentPath) => [
+                        ...currentPath.slice(0, depth),
+                        nextSegment,
+                        ...currentPath.slice(depth + 1),
+                      ]);
+                    }}
+                    autoComplete="off"
+                    aria-label={patternSelect.ariaLabel}
+                  >
+                    {patternSelect.options.options.map((option) => (
+                      <option
+                        key={option.value}
+                        value={option.value}
+                      >
+                        {option.displayName}
+                      </option>
+                    ))}
+                    {patternSelect.options.groups.map((group) => (
+                      <optgroup
+                        key={`group-${group.id}`}
+                        label={group.displayName}
+                      >
+                        {group.options.map((option) => (
+                          <option
+                            key={`${group.id}-${option.value}`}
+                            value={option.value}
+                          >
+                            {option.displayName}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                ))}
+              </div>
+            </fieldset>
+          </div>
+
+          <label className={`${styles.fieldGroup} ${styles.rootNoteField}`}>
+            <span className={styles.fieldLabel}>Root note</span>
+            <select
+              className={styles.selectorInput}
+              value={selectedRootNote}
+              onChange={(e) => {
+                setSelectedRootNote(e.target.value as Note);
+              }}
+              autoComplete="off"
+            >
+              {NOTES.map((rootNote) => (
+                <option
+                  key={rootNote}
+                  value={rootNote}
+                >
+                  {rootNote}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className={styles.checkboxRow}>
             <label className={styles.checkboxField}>
               <input
                 className={styles.checkboxInput}
