@@ -4,7 +4,7 @@ import * as packageJson from './package.json';
 
 test('defines the author placeholder used by index.html', () => {
   expect(getPackageMetaEnv('test').PACKAGE_CONFIG_AUTHOR).toBe(
-    packageJson.author.name,
+    `${packageJson.author.name} (${packageJson.author.url})`,
   );
 
   expect(indexHtml).toContain('%PACKAGE_CONFIG_AUTHOR%');
