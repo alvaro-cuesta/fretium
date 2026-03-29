@@ -11,7 +11,7 @@ import { ViteMinifyPlugin } from 'vite-plugin-minify';
 import ViteSvgr from 'vite-plugin-svgr';
 import type { MyImportMetaEnv } from './lib/define';
 import { fromEntries, objectKeys } from './lib/object';
-import * as packageJson from './package.json';
+import { getPackageMetaEnv } from './lib/package-meta-env';
 
 type MetaEnvKey<TEnv extends Record<string, unknown>> = Extract<
   keyof TEnv,
@@ -80,21 +80,7 @@ export default defineConfig(async ({ mode }) => {
       ViteMinifyPlugin(),
       ViteSvgr(),
     ],
-    define: makeMetaEnvDefines<MyImportMetaEnv>({
-      GIT_COMMIT_SHORT_SHA: gitCommit,
-      PACKAGE_DESCRIPTION: packageJson.description,
-      PACKAGE_HOMEPAGE: packageJson.homepage,
-      PACKAGE_AUTHOR: packageJson.author,
-      PACKAGE_CONFIG_AUTHOR: packageJson.author.name,
-      PACKAGE_BUGS: packageJson.bugs,
-      PACKAGE_CONFIG_NAME: packageJson.config.name,
-      PACKAGE_CONFIG_SHORT_NAME: packageJson.config.shortName,
-      PACKAGE_CONFIG_DESCRIPTION: packageJson.config.description,
-      PACKAGE_CONFIG_SHORT_DESCRIPTION: packageJson.config.shortDescription,
-      PACKAGE_CONFIG_THEME_COLOR: packageJson.config.themeColor,
-      PACKAGE_CONFIG_PUBLIC_URL_BASE: packageJson.config.publicUrlBase,
-      PACKAGE_CONFIG_REPOSITORY_URL: packageJson.config.repositoryUrl,
-    }),
+    define: makeMetaEnvDefines<MyImportMetaEnv>(getPackageMetaEnv(gitCommit)),
     build: {
       outDir: 'build',
       target: 'es2023',
