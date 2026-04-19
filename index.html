@@ -148,11 +148,22 @@
             "codeRepository": "%PACKAGE_CONFIG_REPOSITORY_URL%",
             "author": { "@id": "%PACKAGE_AUTHOR_URL%/#person" },
             "publisher": { "@id": "%PACKAGE_AUTHOR_URL%/#person" },
-            "mainEntityOfPage": { "@id": "%PACKAGE_HOMEPAGE%/#website" }
+            "mainEntityOfPage": { "@id": "%PACKAGE_HOMEPAGE%/#webpage" }
+          },
+          {
+            "@type": "WebPage",
+            "@id": "%PACKAGE_HOMEPAGE%/#webpage",
+            "url": "%PACKAGE_HOMEPAGE%",
+            "name": "%PACKAGE_CONFIG_NAME%",
+            "description": "%PACKAGE_CONFIG_DESCRIPTION%",
+            "inLanguage": "en",
+            "isPartOf": { "@id": "%PACKAGE_HOMEPAGE%/#website" },
+            "mainEntity": { "@id": "%PACKAGE_HOMEPAGE%/#app" },
+            "image": "%PACKAGE_CONFIG_PUBLIC_URL_BASE%/fretium-og-center.png"
           },
           {
             "@type": "SoftwareSourceCode",
-            "@id": "%PACKAGE_CONFIG_REPOSITORY_URL%#source",
+            "@id": "%PACKAGE_HOMEPAGE%/#source",
             "codeRepository": "%PACKAGE_CONFIG_REPOSITORY_URL%",
             "targetProduct": { "@id": "%PACKAGE_HOMEPAGE%/#app" },
             "license": "https://www.gnu.org/licenses/gpl-3.0.html",
