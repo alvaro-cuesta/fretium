@@ -77,14 +77,14 @@ function make7ArpeggioGroup(
         type: 'optgroup',
         displayName: 'Positions',
         entries: {
-          g: {
+          e: {
             type: 'sublist',
-            displayName: 'G position',
+            displayName: 'E position',
             entries: {
               base: {
                 displayName: 'No chord tones',
                 rules: [
-                  ...make7Arpeggio_GPosition(
+                  ...make7Arpeggio_EPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -96,7 +96,7 @@ function make7ArpeggioGroup(
               '6432-root': {
                 displayName: '+ 6-4-3-2 (root)',
                 rules: [
-                  ...make7Arpeggio_GPosition(
+                  ...make7Arpeggio_EPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -115,7 +115,7 @@ function make7ArpeggioGroup(
               '6543-root': {
                 displayName: '+ 6-5-4-3 (root)',
                 rules: [
-                  ...make7Arpeggio_GPosition(
+                  ...make7Arpeggio_EPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -134,7 +134,7 @@ function make7ArpeggioGroup(
               '4321-3rd': {
                 displayName: '+ 4-3-2-1 (3rd inversion)',
                 rules: [
-                  ...make7Arpeggio_GPosition(
+                  ...make7Arpeggio_EPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -152,14 +152,14 @@ function make7ArpeggioGroup(
               },
             },
           },
-          e: {
+          ed: {
             type: 'sublist',
-            displayName: 'E position',
+            displayName: 'E-D position',
             entries: {
               base: {
                 displayName: 'No chord tones',
                 rules: [
-                  ...make7Arpeggio_EPosition(
+                  ...make7Arpeggio_EDPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -171,7 +171,7 @@ function make7ArpeggioGroup(
               'left-6432-root': {
                 displayName: '+ Left 6-4-3-2 (root)',
                 rules: [
-                  ...make7Arpeggio_EPosition(
+                  ...make7Arpeggio_EDPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -190,7 +190,7 @@ function make7ArpeggioGroup(
               'left-4321-3rd': {
                 displayName: '+ Left 4-3-2-1 (3rd inversion)',
                 rules: [
-                  ...make7Arpeggio_EPosition(
+                  ...make7Arpeggio_EDPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -209,7 +209,7 @@ function make7ArpeggioGroup(
               '6543-root': {
                 displayName: '+ 6-5-4-3 (root)',
                 rules: [
-                  ...make7Arpeggio_EPosition(
+                  ...make7Arpeggio_EDPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -228,7 +228,7 @@ function make7ArpeggioGroup(
               '5432-2nd': {
                 displayName: '+ 5-4-3-2 (2nd inversion)',
                 rules: [
-                  ...make7Arpeggio_EPosition(
+                  ...make7Arpeggio_EDPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -247,7 +247,7 @@ function make7ArpeggioGroup(
               '5321-2nd': {
                 displayName: '+ 5-3-2-1 (2nd inversion)',
                 rules: [
-                  ...make7Arpeggio_EPosition(
+                  ...make7Arpeggio_EDPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -266,7 +266,7 @@ function make7ArpeggioGroup(
               'right-6432-1st': {
                 displayName: '+ Right 6-4-3-2 (1st inversion)',
                 rules: [
-                  ...make7Arpeggio_EPosition(
+                  ...make7Arpeggio_EDPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -285,7 +285,7 @@ function make7ArpeggioGroup(
               'right-4321-root': {
                 displayName: '+ Right 4-3-2-1 (root)',
                 rules: [
-                  ...make7Arpeggio_EPosition(
+                  ...make7Arpeggio_EDPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -529,100 +529,6 @@ function make7ArpeggioGroup(
               },
             },
           },
-          ca: {
-            type: 'sublist',
-            displayName: 'C-A position',
-            entries: {
-              base: {
-                displayName: 'No chord tones',
-                rules: [
-                  ...make7Arpeggio_CAPosition(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    SCALE_ROOT_COLOR,
-                    SCALE_TONE_COLOR,
-                  ),
-                ],
-              },
-              '6543-2nd': {
-                displayName: '+ 6-5-4-3 (2nd inversion)',
-                rules: [
-                  ...make7Arpeggio_CAPosition(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    SCALE_ROOT_COLOR,
-                    SCALE_TONE_COLOR,
-                  ),
-                  ...make7Tetrad_6543_2ndInversion(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    CHORD_ROOT_COLOR,
-                    CHORD_TONE_COLOR,
-                  ),
-                ],
-              },
-              '5432-root': {
-                displayName: '+ 5-4-3-2 (root)',
-                rules: [
-                  ...make7Arpeggio_CAPosition(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    SCALE_ROOT_COLOR,
-                    SCALE_TONE_COLOR,
-                  ),
-                  ...make7Tetrad_5432_RootPosition(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    CHORD_ROOT_COLOR,
-                    CHORD_TONE_COLOR,
-                  ),
-                ],
-              },
-              '5321-root': {
-                displayName: '+ 5-3-2-1 (root)',
-                rules: [
-                  ...make7Arpeggio_CAPosition(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    SCALE_ROOT_COLOR,
-                    SCALE_TONE_COLOR,
-                  ),
-                  ...make7Tetrad_5321_RootPosition(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    CHORD_ROOT_COLOR,
-                    CHORD_TONE_COLOR,
-                  ),
-                ],
-              },
-              '4321-2nd': {
-                displayName: '+ 4-3-2-1 (2nd inversion)',
-                rules: [
-                  ...make7Arpeggio_CAPosition(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    SCALE_ROOT_COLOR,
-                    SCALE_TONE_COLOR,
-                  ),
-                  ...make7Tetrad_4321_2ndInversion(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    CHORD_ROOT_COLOR,
-                    CHORD_TONE_COLOR,
-                  ),
-                ],
-              },
-            },
-          },
           a: {
             type: 'sublist',
             displayName: 'A position',
@@ -639,8 +545,8 @@ function make7ArpeggioGroup(
                   ),
                 ],
               },
-              '6432-3rd': {
-                displayName: '+ 6-4-3-2 (3rd inversion)',
+              '6543-2nd': {
+                displayName: '+ 6-5-4-3 (2nd inversion)',
                 rules: [
                   ...make7Arpeggio_APosition(
                     thirdInterval,
@@ -649,26 +555,7 @@ function make7ArpeggioGroup(
                     SCALE_ROOT_COLOR,
                     SCALE_TONE_COLOR,
                   ),
-                  ...make7Tetrad_6432_3rdInversion(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    CHORD_ROOT_COLOR,
-                    CHORD_TONE_COLOR,
-                  ),
-                ],
-              },
-              '6543-3rd': {
-                displayName: '+ 6-5-4-3 (3rd inversion)',
-                rules: [
-                  ...make7Arpeggio_APosition(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    SCALE_ROOT_COLOR,
-                    SCALE_TONE_COLOR,
-                  ),
-                  ...make7Tetrad_6543_3rdInversion(
+                  ...make7Tetrad_6543_2ndInversion(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -752,8 +639,8 @@ function make7ArpeggioGroup(
                   ),
                 ],
               },
-              'left-6432-3rd': {
-                displayName: '+ Left 6-4-3-2 (3rd inversion)',
+              '6432-3rd': {
+                displayName: '+ 6-4-3-2 (3rd inversion)',
                 rules: [
                   ...make7Arpeggio_AGPosition(
                     thirdInterval,
@@ -763,25 +650,6 @@ function make7ArpeggioGroup(
                     SCALE_TONE_COLOR,
                   ),
                   ...make7Tetrad_6432_3rdInversion(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    CHORD_ROOT_COLOR,
-                    CHORD_TONE_COLOR,
-                  ),
-                ],
-              },
-              'left-4321-2nd': {
-                displayName: '+ Left 4-3-2-1 (2nd inversion)',
-                rules: [
-                  ...make7Arpeggio_AGPosition(
-                    thirdInterval,
-                    fifthInterval,
-                    seventhInterval,
-                    SCALE_ROOT_COLOR,
-                    SCALE_TONE_COLOR,
-                  ),
-                  ...make7Tetrad_4321_2ndInversion(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -809,10 +677,142 @@ function make7ArpeggioGroup(
                   ),
                 ],
               },
+              '5432-root': {
+                displayName: '+ 5-4-3-2 (root)',
+                rules: [
+                  ...make7Arpeggio_AGPosition(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    SCALE_ROOT_COLOR,
+                    SCALE_TONE_COLOR,
+                  ),
+                  ...make7Tetrad_5432_RootPosition(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    CHORD_ROOT_COLOR,
+                    CHORD_TONE_COLOR,
+                  ),
+                ],
+              },
+              '5321-root': {
+                displayName: '+ 5-3-2-1 (root)',
+                rules: [
+                  ...make7Arpeggio_AGPosition(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    SCALE_ROOT_COLOR,
+                    SCALE_TONE_COLOR,
+                  ),
+                  ...make7Tetrad_5321_RootPosition(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    CHORD_ROOT_COLOR,
+                    CHORD_TONE_COLOR,
+                  ),
+                ],
+              },
+              '4321-2nd': {
+                displayName: '+ 4-3-2-1 (2nd inversion)',
+                rules: [
+                  ...make7Arpeggio_AGPosition(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    SCALE_ROOT_COLOR,
+                    SCALE_TONE_COLOR,
+                  ),
+                  ...make7Tetrad_4321_2ndInversion(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    CHORD_ROOT_COLOR,
+                    CHORD_TONE_COLOR,
+                  ),
+                ],
+              },
+            },
+          },
+          g: {
+            type: 'sublist',
+            displayName: 'G position',
+            entries: {
+              base: {
+                displayName: 'No chord tones',
+                rules: [
+                  ...make7Arpeggio_GPosition(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    SCALE_ROOT_COLOR,
+                    SCALE_TONE_COLOR,
+                  ),
+                ],
+              },
+              'left-6432-3rd': {
+                displayName: '+ Left 6-4-3-2 (3rd inversion)',
+                rules: [
+                  ...make7Arpeggio_GPosition(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    SCALE_ROOT_COLOR,
+                    SCALE_TONE_COLOR,
+                  ),
+                  ...make7Tetrad_6432_3rdInversion(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    CHORD_ROOT_COLOR,
+                    CHORD_TONE_COLOR,
+                  ),
+                ],
+              },
+              'left-4321-2nd': {
+                displayName: '+ Left 4-3-2-1 (2nd inversion)',
+                rules: [
+                  ...make7Arpeggio_GPosition(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    SCALE_ROOT_COLOR,
+                    SCALE_TONE_COLOR,
+                  ),
+                  ...make7Tetrad_4321_2ndInversion(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    CHORD_ROOT_COLOR,
+                    CHORD_TONE_COLOR,
+                  ),
+                ],
+              },
+              '6543-3rd': {
+                displayName: '+ 6-5-4-3 (3rd inversion)',
+                rules: [
+                  ...make7Arpeggio_GPosition(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    SCALE_ROOT_COLOR,
+                    SCALE_TONE_COLOR,
+                  ),
+                  ...make7Tetrad_6543_3rdInversion(
+                    thirdInterval,
+                    fifthInterval,
+                    seventhInterval,
+                    CHORD_ROOT_COLOR,
+                    CHORD_TONE_COLOR,
+                  ),
+                ],
+              },
               '5432-1st': {
                 displayName: '+ 5-4-3-2 (1st inversion)',
                 rules: [
-                  ...make7Arpeggio_AGPosition(
+                  ...make7Arpeggio_GPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -831,7 +831,7 @@ function make7ArpeggioGroup(
               '5321-1st': {
                 displayName: '+ 5-3-2-1 (1st inversion)',
                 rules: [
-                  ...make7Arpeggio_AGPosition(
+                  ...make7Arpeggio_GPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -850,7 +850,7 @@ function make7ArpeggioGroup(
               'right-6432-root': {
                 displayName: '+ Right 6-4-3-2 (root)',
                 rules: [
-                  ...make7Arpeggio_AGPosition(
+                  ...make7Arpeggio_GPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -869,7 +869,7 @@ function make7ArpeggioGroup(
               'right-4321-3rd': {
                 displayName: '+ Right 4-3-2-1 (3rd inversion)',
                 rules: [
-                  ...make7Arpeggio_AGPosition(
+                  ...make7Arpeggio_GPosition(
                     thirdInterval,
                     fifthInterval,
                     seventhInterval,
@@ -893,7 +893,7 @@ function make7ArpeggioGroup(
   };
 }
 
-function make7Arpeggio_GPosition(
+function make7Arpeggio_EPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
@@ -915,7 +915,7 @@ function make7Arpeggio_GPosition(
   ] as const;
 }
 
-function make7Arpeggio_EPosition(
+function make7Arpeggio_EDPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
@@ -999,7 +999,7 @@ function make7Arpeggio_CPosition(
   ] as const;
 }
 
-function make7Arpeggio_CAPosition(
+function make7Arpeggio_APosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
@@ -1025,7 +1025,7 @@ function make7Arpeggio_CAPosition(
   ] as const;
 }
 
-function make7Arpeggio_APosition(
+function make7Arpeggio_AGPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
@@ -1050,7 +1050,7 @@ function make7Arpeggio_APosition(
   ] as const;
 }
 
-function make7Arpeggio_AGPosition(
+function make7Arpeggio_GPosition(
   thirdInterval: ThirdInterval,
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
