@@ -110,7 +110,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   );
   expect(screen.getByRole('menuitem', { name: 'Download' })).toHaveAttribute(
     'download',
-    'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels].svg',
+    'fretium-[guitar-standard-EADGBE]-[major-scale-full]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels].svg',
   );
 
   fireEvent.pointerDown(screen.getByRole('combobox', { name: 'Pattern' }));
@@ -248,13 +248,13 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(clickedDownloads).toEqual([
     {
       download:
-        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-SD.png',
+        'fretium-[guitar-standard-EADGBE]-[major-scale-full]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-SD.png',
       href: 'blob:mock-download',
       rel: 'noopener',
     },
     {
       download:
-        'fretium-[guitar-standard-EADGBE]-[major-scale]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-HD.png',
+        'fretium-[guitar-standard-EADGBE]-[major-scale-full]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-HD.png',
       href: 'blob:mock-download',
       rel: 'noopener',
     },

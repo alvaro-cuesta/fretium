@@ -159,6 +159,41 @@ export function getPatternDisplayNameAtPath<
 }
 
 /**
+ * Walks the pattern path collecting each segment's displayName and joins them with ` / `, so the
+ * resulting name carries the full hierarchical context (e.g. `Major scale / E position`).
+ *
+ * Returns `null` if any segment of the path cannot be resolved.
+ */
+export function getPatternFullDisplayNameAtPath<
+  TList extends PatternConfigEntryList,
+>(list: TList, path: ValidatedPatternPath<TList>): string | null {
+  const displayNames: string[] = [];
+  let currentList: PatternConfigEntryList = list;
+
+  for (const [index, segment] of path.entries()) {
+    const option = resolvePatternPathSegment(currentList, segment);
+
+    if (option === null) {
+      return null;
+    }
+
+    displayNames.push(option.displayName);
+
+    if (index === path.length - 1) {
+      return displayNames.join(' / ');
+    }
+
+    if (option.entry.type === 'pattern') {
+      return null;
+    }
+
+    currentList = option.entry;
+  }
+
+  return null;
+}
+
+/**
  * Coerces a pattern path that may be incomplete or contain invalid segments into a valid pattern path by:
  *
  * 1. Traversing as far down the path as possible until an invalid segment is encountered.

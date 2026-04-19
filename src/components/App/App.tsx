@@ -10,7 +10,10 @@ import { calculateFretRange } from '../../lib/fret-range.ts';
 import { type NoteDisplayMode } from '../../lib/fretboard.ts';
 import type { HistoryStateDeserializeResult } from '../../lib/history-state.ts';
 import { NOTES, type Note } from '../../lib/music.ts';
-import { markPatternPathAsValidated } from '../../lib/pattern-config.ts';
+import {
+  getPatternFullDisplayNameAtPath,
+  markPatternPathAsValidated,
+} from '../../lib/pattern-config.ts';
 import { renderPattern } from '../../lib/pattern-engine.ts';
 import { getFretboardMetrics } from '../Fretboard/theme.ts';
 import { FretboardImg, type ImgChangeEvent } from '../FretboardImg.tsx';
@@ -556,7 +559,10 @@ export function App() {
               setFretboardImg(nextFretboardImg);
             }}
             pattern={patternConfigEntryPattern}
-            patternName={patternConfigEntryPattern.displayName}
+            patternName={
+              getPatternFullDisplayNameAtPath(PATTERNS_GROUPED, patternPath) ??
+              patternConfigEntryPattern.displayName
+            }
             instrumentName={resolvedInstrumentTuning.instrumentName}
             tuningName={resolvedInstrumentTuning.tuningName}
             tuning={resolvedInstrumentTuning.tuning}
