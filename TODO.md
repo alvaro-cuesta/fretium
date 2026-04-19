@@ -6,7 +6,7 @@
 - Add more patterns (chords, scales, arpeggios...)
 - Curate patterns: e.g. currently dom7 arpeggio G position is wrong(ish)
 - Refactor pattern generation? E.g. tool to automatically mark duplicate options transparent, or automatically find overlapping chords instead of manually doing it
-- Overlap chors on "Arpeggio - Full" -- the same (individual ones) + the full one with all 4 variants!
+- Overlap chords on "Arpeggio - Full" -- the same (individual ones) + the full one with all 4 variants!
 
 ## Features
 
@@ -29,7 +29,6 @@
   - Sheet mode should also have a way to customize layout (e.g. number of columns, spacing between diagrams... or even fully custom layout with drag and drop or similar?)
   - Should also have a special print view
   - Should also be able to be shared, saved, exported, restored...
-- Add a way to specify (and display) fingerings in diagrams
 - Add collections (a way to quickly explore via dropdown related chords and scales)
 - Transparent background in SVG only makes sense in the context of the webpage, but not for export, print, etc...
   - Actually it kinda makes sense to support both black/white backgrounds... but it feels weird at the same time -- see what we can do
@@ -42,7 +41,6 @@
   - But note that this overriding/merging is also a feature, because we want to sometimes merge notes together
   - But in this specific case (showing multiple chords) we don't want to merge, we want to show all of them!
   - Hard to tell how to do this with these conflicting requirements and still keep UI/UX/pattern DSL simple and intuitive
-- Toggle to view as text?
 - PWA
 
 ### Share
@@ -52,7 +50,6 @@
 
 ### Export
 
-- Download/copy to clipboard as text
 - Make print view have a special layout that is optimized for printing (e.g. remove controls and replace them with a small description)
   - If printing only one diagram, do not trigger full-page print view, but instead just print the diagram it is being printed (inside the special layout)
 
@@ -64,3 +61,22 @@
 - Toast when "copy to clipboard" (in save menu) succeeds or fails
 
 ## Bugs
+
+- Print view is not usable right now
+
+## Features to consider
+
+- Text view/export?
+  - E.g.
+    ```
+    E--|-------|-------|--
+    B--|---5---|-------|--
+    G--|-------|---3---|--
+    D--|-------|---7---|--
+    A--|-------|-------|--
+    E--|---1---|-------|--
+    ```
+  - Toggle to view as text, e.g.:
+  - Download .txt file
+  - Copy to clipboard as text
+- Add a way to specify (and display) fingerings in diagrams
