@@ -4,7 +4,7 @@ import ViteReact from '@vitejs/plugin-react';
 import { exec } from 'node:child_process';
 import process from 'node:process';
 import util from 'node:util';
-import { defineConfig, loadEnv, type UserConfig } from 'vite';
+import { defineConfig, loadEnv, type Plugin, type UserConfig } from 'vite';
 import { patchCssModules } from 'vite-css-modules';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import { ViteMinifyPlugin } from 'vite-plugin-minify';
@@ -27,6 +27,48 @@ function makeMetaEnvDefines<TEnv extends Record<string, unknown>>(
       JSON.stringify(env[key]),
     ]),
   );
+}
+
+/**
+ * Minifies inline `<script type="application/ld+json">` blocks: parses the
+ * body as JSON and re-serializes it without whitespace. Escapes `<` to
+ * `\u003c` so the result cannot accidentally close the script tag.
+ */
+function minifyJsonLdPlugin(): Plugin {
+  const OPEN = '<script type="application/ld+json">';
+  const CLOSE = '</script>';
+
+  return {
+    name: 'minify-json-ld',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html) {
+        let out = '';
+        let cursor = 0;
+        for (;;) {
+          const start = html.indexOf(OPEN, cursor);
+          if (start === -1) {
+            out += html.slice(cursor);
+            return out;
+          }
+          const bodyStart = start + OPEN.length;
+          const bodyEnd = html.indexOf(CLOSE, bodyStart);
+          if (bodyEnd === -1) {
+            throw new Error(
+              'minify-json-ld: unclosed <script type="application/ld+json"> tag',
+            );
+          }
+          const body = html.slice(bodyStart, bodyEnd);
+          const minified = JSON.stringify(JSON.parse(body)).replaceAll(
+            '<',
+            '\\u003c',
+          );
+          out += html.slice(cursor, bodyStart) + minified;
+          cursor = bodyEnd;
+        }
+      },
+    },
+  };
 }
 
 // https://vite.dev/config/
@@ -77,10 +119,9 @@ export default defineConfig(async ({ mode }) => {
           ],
         },
       }),
-      ViteMinifyPlugin({
-        processScripts: ['application/ld+json'],
-      }),
+      ViteMinifyPlugin(),
       ViteSvgr(),
+      minifyJsonLdPlugin(),
     ],
     define: makeMetaEnvDefines<MyImportMetaEnv>(getPackageMetaEnv(gitCommit)),
     build: {
