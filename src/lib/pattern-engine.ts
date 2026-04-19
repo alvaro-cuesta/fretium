@@ -17,16 +17,36 @@ type NumberRangeCondition = {
   lte?: number;
 };
 
-type NumberCondition = number | readonly number[] | NumberRangeCondition;
+// `false`/`null`/`undefined` as a field value (or as an array entry within a field) means
+// "this part of the condition is ignored". For a scalar field that disables the whole rule;
+// for an array the falsy entries are filtered out, and an all-falsy array ends up empty which
+// also disables the rule. Convenient for writing conditional patterns like
+// `interval: someFlag ? '2' : false` without having to split rules across branches.
+type Falsy = false | null | undefined;
 
-type NoteCondition = Note | readonly Note[];
+type NumberCondition =
+  | number
+  | readonly (number | Falsy)[]
+  | NumberRangeCondition
+  | Falsy;
+
+type NoteCondition = Note | readonly (Note | Falsy)[] | Falsy;
+
+type IntervalCondition =
+  | LooseInterval
+  | readonly (LooseInterval | Falsy)[]
+  | Falsy;
 
 type PatternRuleCondition = {
   string?: NumberCondition;
   fret?: NumberCondition;
   note?: NoteCondition;
-  interval?: LooseInterval | readonly LooseInterval[];
+  interval?: IntervalCondition;
 };
+
+function isFalsySentinel(value: unknown): value is Falsy {
+  return value === false || value === null || value === undefined;
+}
 
 export type PatternRule = {
   condition: PatternRuleCondition;
@@ -93,14 +113,16 @@ type PatternMatchOptions = {
 
 function matchesNumberCondition(
   value: number,
-  condition: NumberCondition,
+  condition: Exclude<NumberCondition, Falsy>,
 ): boolean {
   if (typeof condition === 'number') {
     return condition === value;
   }
 
   if (Array.isArray(condition)) {
-    return condition.includes(value);
+    return condition.some(
+      (entry): entry is number => !isFalsySentinel(entry) && entry === value,
+    );
   }
 
   const rangeCondition = condition as NumberRangeCondition;
@@ -116,17 +138,31 @@ function matchesNumberCondition(
   return true;
 }
 
+function matchesNoteCondition(
+  noteClass: NoteClass,
+  condition: Exclude<NoteCondition, Falsy>,
+): boolean {
+  const candidates = typeof condition === 'string' ? [condition] : condition;
+  return candidates.some(
+    (candidate) =>
+      !isFalsySentinel(candidate) &&
+      NOTE_TO_NOTE_CLASS[candidate] === noteClass,
+  );
+}
+
 function matchesIntervalCondition(
   noteClass: NoteClass,
-  condition: LooseInterval | readonly LooseInterval[],
+  condition: Exclude<IntervalCondition, Falsy>,
   options: PatternMatchOptions,
 ): boolean {
   const rootNoteClass = NOTE_TO_NOTE_CLASS[options.rootNote];
   const noteSemitonesFromRoot = semitonesToNoteClass(noteClass - rootNoteClass);
   const intervals = typeof condition === 'string' ? [condition] : condition;
-  return intervals.some((interval) => {
-    return LOOSE_INTERVAL_TO_NOTE_CLASS[interval] === noteSemitonesFromRoot;
-  });
+  return intervals.some(
+    (interval) =>
+      !isFalsySentinel(interval) &&
+      LOOSE_INTERVAL_TO_NOTE_CLASS[interval] === noteSemitonesFromRoot,
+  );
 }
 
 export function matchesPatternCondition(
@@ -134,37 +170,28 @@ export function matchesPatternCondition(
   value: PatternContext,
   options: PatternMatchOptions,
 ): boolean {
-  if (
-    condition.string !== undefined &&
-    !matchesNumberCondition(value.string, condition.string)
-  ) {
-    return false;
+  if ('string' in condition) {
+    if (isFalsySentinel(condition.string)) return false;
+    if (!matchesNumberCondition(value.string, condition.string)) return false;
   }
 
-  if (
-    condition.fret !== undefined &&
-    !matchesNumberCondition(value.fret, condition.fret)
-  ) {
-    return false;
+  if ('fret' in condition) {
+    if (isFalsySentinel(condition.fret)) return false;
+    if (!matchesNumberCondition(value.fret, condition.fret)) return false;
   }
 
-  if (condition.note !== undefined) {
-    const notes: readonly Note[] =
-      typeof condition.note === 'string' ? [condition.note] : condition.note;
-    const normalizedTargetNotes = notes.map(
-      (candidate) => NOTE_TO_NOTE_CLASS[candidate],
-    );
+  if ('note' in condition) {
+    if (isFalsySentinel(condition.note)) return false;
+    if (!matchesNoteCondition(value.noteClass, condition.note)) return false;
+  }
 
-    if (!normalizedTargetNotes.includes(value.noteClass)) {
+  if ('interval' in condition) {
+    if (isFalsySentinel(condition.interval)) return false;
+    if (
+      !matchesIntervalCondition(value.noteClass, condition.interval, options)
+    ) {
       return false;
     }
-  }
-
-  if (
-    condition.interval !== undefined &&
-    !matchesIntervalCondition(value.noteClass, condition.interval, options)
-  ) {
-    return false;
   }
 
   return true;

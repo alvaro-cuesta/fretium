@@ -46,6 +46,8 @@ function make7TetradGroup(
   fifthInterval: FifthInterval,
   seventhInterval: SeventhInterval,
 ): PatternConfigEntryListSublist {
+  const intervals = { thirdInterval, fifthInterval, seventhInterval } as const;
+
   return {
     type: 'sublist',
     displayName: `${displayName} Tetrad`,
@@ -56,9 +58,7 @@ function make7TetradGroup(
         entries: {
           _6432: make7TetradSubgroup(
             'Drop 3 (Bass 6th) | 6-4-3-2',
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
+            intervals,
             make7Tetrad_6432_RootPosition,
             make7Tetrad_6432_1stInversion,
             make7Tetrad_6432_2ndInversion,
@@ -66,9 +66,7 @@ function make7TetradGroup(
           ),
           _5321: make7TetradSubgroup(
             'Drop 3 (Bass 5th) | 5-3-2-1',
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
+            intervals,
             make7Tetrad_5321_RootPosition,
             make7Tetrad_5321_1stInversion,
             make7Tetrad_5321_2ndInversion,
@@ -82,9 +80,7 @@ function make7TetradGroup(
         entries: {
           _6543: make7TetradSubgroup(
             'Drop 2 (Bass 6th) | 6-5-4-3',
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
+            intervals,
             make7Tetrad_6543_RootPosition,
             make7Tetrad_6543_1stInversion,
             make7Tetrad_6543_2ndInversion,
@@ -92,9 +88,7 @@ function make7TetradGroup(
           ),
           _5432: make7TetradSubgroup(
             'Drop 2 (Bass 5th) | 5-4-3-2',
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
+            intervals,
             make7Tetrad_5432_RootPosition,
             make7Tetrad_5432_1stInversion,
             make7Tetrad_5432_2ndInversion,
@@ -102,9 +96,7 @@ function make7TetradGroup(
           ),
           _4321: make7TetradSubgroup(
             'Drop 2 (Bass 4th) | 4-3-2-1',
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
+            intervals,
             make7Tetrad_4321_RootPosition,
             make7Tetrad_4321_1stInversion,
             make7Tetrad_4321_2ndInversion,
@@ -116,16 +108,39 @@ function make7TetradGroup(
   };
 }
 
+type Make7TetradIntervals = {
+  thirdInterval: ThirdInterval;
+  fifthInterval: FifthInterval;
+  seventhInterval: SeventhInterval;
+};
+
 function make7TetradSubgroup(
   displayName: string,
-  thirdInterval: ThirdInterval,
-  fifthInterval: FifthInterval,
-  seventhInterval: SeventhInterval,
+  intervals: Make7TetradIntervals,
   makeRootPosition: Make7TetradPositionFn,
   make1stInversion: Make7TetradPositionFn,
   make2ndInversion: Make7TetradPositionFn,
   make3rdInversion: Make7TetradPositionFn,
 ): PatternConfigEntryListSublist {
+  const colors = [
+    {
+      rootColor: '1-STRONG',
+      toneColor: '1-LIGHT',
+    },
+    {
+      rootColor: '2-STRONG',
+      toneColor: '2-LIGHT',
+    },
+    {
+      rootColor: '3-STRONG',
+      toneColor: '3-LIGHT',
+    },
+    {
+      rootColor: '4-STRONG',
+      toneColor: '4-LIGHT',
+    },
+  ] as const;
+
   return {
     type: 'sublist',
     displayName,
@@ -134,80 +149,32 @@ function make7TetradSubgroup(
         type: 'pattern',
         displayName: 'All inversions',
         rules: [
-          ...makeRootPosition(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '1-STRONG',
-            '1-LIGHT',
-          ),
-          ...make1stInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '2-STRONG',
-            '2-LIGHT',
-          ),
-          ...make2ndInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '3-STRONG',
-            '3-LIGHT',
-          ),
-          ...make3rdInversion(
-            thirdInterval,
-            fifthInterval,
-            seventhInterval,
-            '4-STRONG',
-            '4-LIGHT',
-          ),
+          ...makeRootPosition({ ...intervals, ...colors[0] }),
+          ...make1stInversion({ ...intervals, ...colors[1] }),
+          ...make2ndInversion({ ...intervals, ...colors[2] }),
+          ...make3rdInversion({ ...intervals, ...colors[3] }),
         ],
         isFullOctave: true,
       },
       root: {
         type: 'pattern',
         displayName: 'Root',
-        rules: makeRootPosition(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '1-STRONG',
-          '1-LIGHT',
-        ),
+        rules: makeRootPosition({ ...intervals, ...colors[0] }),
       },
       '1st': {
         type: 'pattern',
         displayName: '1st inversion',
-        rules: make1stInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '1-STRONG',
-          '1-LIGHT',
-        ),
+        rules: make1stInversion({ ...intervals, ...colors[0] }),
       },
       '2nd': {
         type: 'pattern',
         displayName: '2nd inversion',
-        rules: make2ndInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '1-STRONG',
-          '1-LIGHT',
-        ),
+        rules: make2ndInversion({ ...intervals, ...colors[0] }),
       },
       '3rd': {
         type: 'pattern',
         displayName: '3rd inversion',
-        rules: make3rdInversion(
-          thirdInterval,
-          fifthInterval,
-          seventhInterval,
-          '1-STRONG',
-          '1-LIGHT',
-        ),
+        rules: make3rdInversion({ ...intervals, ...colors[0] }),
       },
     },
   };

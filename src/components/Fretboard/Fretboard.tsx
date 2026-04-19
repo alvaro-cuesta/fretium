@@ -773,8 +773,12 @@ function getMatchedInterval(
   const matchedIntervalCondition =
     appliedPatternRulesResult.matchingPatternRules
       .toReversed()
-      .find((patternRule) => patternRule.condition.interval !== undefined)
-      ?.condition.interval;
+      .find(
+        (patternRule) =>
+          patternRule.condition.interval !== undefined &&
+          patternRule.condition.interval !== false &&
+          patternRule.condition.interval !== null,
+      )?.condition.interval;
 
   if (!matchedIntervalCondition) {
     return null;
@@ -783,7 +787,10 @@ function getMatchedInterval(
   const candidateIntervals: readonly LooseInterval[] =
     typeof matchedIntervalCondition === 'string'
       ? [matchedIntervalCondition]
-      : matchedIntervalCondition;
+      : matchedIntervalCondition.filter(
+          (entry): entry is LooseInterval =>
+            entry !== false && entry !== null && entry !== undefined,
+        );
 
   const rootNoteClass = NOTE_TO_NOTE_CLASS[rootNote];
   const noteSemitonesFromRoot = semitonesToNoteClass(
