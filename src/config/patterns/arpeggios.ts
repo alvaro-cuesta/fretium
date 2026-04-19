@@ -3,7 +3,7 @@ import type {
   PatternConfigEntryList,
   PatternConfigEntryListSublist,
 } from '../../lib/pattern-config';
-import type { PatternRule } from '../../lib/pattern-engine';
+import type { PatternRuleNode } from '../../lib/pattern-engine';
 import {
   ALT_OPACITY,
   CHORD_ROOT_COLOR,
@@ -943,21 +943,36 @@ function make7Arpeggio_EPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): PatternRule[] {
+): PatternRuleNode[] {
   return [
-    { condition: { string: 1, interval: '1' }, color: rootColor },
-    { condition: { string: 1, interval: seventhInterval }, color: toneColor },
+    {
+      condition: { string: 1 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
+    },
     { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     { condition: { string: 3, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 4, interval: '1' }, color: rootColor },
-    { condition: { string: 4, interval: seventhInterval }, color: toneColor },
+    {
+      condition: { string: 4 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
+    },
     {
       condition: { string: 5, interval: [thirdInterval, fifthInterval] },
       color: toneColor,
     },
-    { condition: { string: 6, interval: '1' }, color: rootColor },
-    { condition: { string: 6, interval: seventhInterval }, color: toneColor },
-  ] as const;
+    {
+      condition: { string: 6 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
+    },
+  ];
 }
 
 function make7Arpeggio_EDPosition(
@@ -966,28 +981,53 @@ function make7Arpeggio_EDPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): PatternRule[] {
+): PatternRuleNode[] {
   return [
-    { condition: { string: 1, interval: '1' }, color: rootColor },
-    { condition: { string: 1, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 2, interval: seventhInterval }, color: toneColor },
     {
-      condition: { string: 2, interval: fifthInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 1 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: thirdInterval }, color: toneColor },
+      ],
     },
     {
-      condition: { string: 3, interval: fifthInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 2 },
+      children: [
+        { condition: { interval: seventhInterval }, color: toneColor },
+        {
+          condition: { interval: fifthInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+      ],
     },
-    { condition: { string: 3, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 4, interval: '1' }, color: rootColor },
-    { condition: { string: 4, interval: seventhInterval }, color: toneColor },
+    {
+      condition: { string: 3 },
+      children: [
+        {
+          condition: { interval: fifthInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+        { condition: { interval: thirdInterval }, color: toneColor },
+      ],
+    },
+    {
+      condition: { string: 4 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
+    },
     { condition: { string: 5, interval: fifthInterval }, color: toneColor },
-    { condition: { string: 6, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 6, interval: '1' }, color: rootColor },
-  ] as const;
+    {
+      condition: { string: 6 },
+      children: [
+        { condition: { interval: thirdInterval }, color: toneColor },
+        { condition: { interval: '1' }, color: rootColor },
+      ],
+    },
+  ];
 }
 
 function make7Arpeggio_DPosition(
@@ -996,36 +1036,56 @@ function make7Arpeggio_DPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): PatternRule[] {
+): PatternRuleNode[] {
   return [
     { condition: { string: 1, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 2, interval: '1' }, color: rootColor },
-    { condition: { string: 2, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     {
-      condition: { string: 3, interval: thirdInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 2 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
     },
     {
-      condition: { string: 4, interval: thirdInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 3 },
+      children: [
+        { condition: { interval: fifthInterval }, color: toneColor },
+        {
+          condition: { interval: thirdInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+      ],
     },
-    { condition: { string: 4, interval: '1' }, color: rootColor },
     {
-      condition: { string: 4, interval: seventhInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 4 },
+      children: [
+        {
+          condition: { interval: thirdInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+        { condition: { interval: '1' }, color: rootColor },
+        {
+          condition: { interval: seventhInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+      ],
     },
     {
-      condition: { string: 5, interval: seventhInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 5 },
+      children: [
+        {
+          condition: { interval: seventhInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+        { condition: { interval: fifthInterval }, color: toneColor },
+      ],
     },
-    { condition: { string: 5, interval: fifthInterval }, color: toneColor },
     { condition: { string: 6, interval: thirdInterval }, color: toneColor },
-  ] as const;
+  ];
 }
 
 function make7Arpeggio_CPosition(
@@ -1034,30 +1094,47 @@ function make7Arpeggio_CPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): PatternRule[] {
+): PatternRuleNode[] {
   return [
     {
       condition: { string: 1, interval: [thirdInterval, fifthInterval] },
       color: toneColor,
     },
-    { condition: { string: 2, interval: '1' }, color: rootColor },
     {
-      condition: { string: 2, interval: seventhInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 2 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        {
+          condition: { interval: seventhInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+      ],
     },
     {
-      condition: { string: 3, interval: seventhInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 3 },
+      children: [
+        {
+          condition: { interval: seventhInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+        { condition: { interval: fifthInterval }, color: toneColor },
+      ],
     },
-    { condition: { string: 3, interval: fifthInterval }, color: toneColor },
     { condition: { string: 4, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 5, interval: '1' }, color: rootColor },
-    { condition: { string: 5, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 6, interval: fifthInterval }, color: toneColor },
-    { condition: { string: 6, interval: thirdInterval }, color: toneColor },
-  ] as const;
+    {
+      condition: { string: 5 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
+    },
+    {
+      condition: { string: 6, interval: [thirdInterval, fifthInterval] },
+      color: toneColor,
+    },
+  ];
 }
 
 function make7Arpeggio_APosition(
@@ -1066,24 +1143,36 @@ function make7Arpeggio_APosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): PatternRule[] {
+): PatternRuleNode[] {
   return [
     {
       condition: { string: 1, interval: [fifthInterval, seventhInterval] },
       color: toneColor,
     },
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 3, interval: '1' }, color: rootColor },
-    { condition: { string: 3, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 4, interval: fifthInterval }, color: toneColor },
-    { condition: { string: 4, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 5, interval: '1' }, color: rootColor },
-    { condition: { string: 5, interval: seventhInterval }, color: toneColor },
+    {
+      condition: { string: 3 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
+    },
+    {
+      condition: { string: 4, interval: [thirdInterval, fifthInterval] },
+      color: toneColor,
+    },
+    {
+      condition: { string: 5 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
+    },
     {
       condition: { string: 6, interval: [thirdInterval, fifthInterval] },
       color: toneColor,
     },
-  ] as const;
+  ];
 }
 
 function make7Arpeggio_AGPosition(
@@ -1092,23 +1181,33 @@ function make7Arpeggio_AGPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): PatternRule[] {
+): PatternRuleNode[] {
   return [
     {
       condition: { string: 1, interval: [fifthInterval, seventhInterval] },
       color: toneColor,
     },
     { condition: { string: 2, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 3, interval: '1' }, color: rootColor },
-    { condition: { string: 3, interval: seventhInterval }, color: toneColor },
+    {
+      condition: { string: 3 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
+    },
     { condition: { string: 4, interval: fifthInterval }, color: toneColor },
-    { condition: { string: 5, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 5, interval: '1' }, color: rootColor },
+    {
+      condition: { string: 5 },
+      children: [
+        { condition: { interval: thirdInterval }, color: toneColor },
+        { condition: { interval: '1' }, color: rootColor },
+      ],
+    },
     {
       condition: { string: 6, interval: [fifthInterval, seventhInterval] },
       color: toneColor,
     },
-  ] as const;
+  ];
 }
 
 function make7Arpeggio_GPosition(
@@ -1117,35 +1216,60 @@ function make7Arpeggio_GPosition(
   seventhInterval: SeventhInterval,
   rootColor: FretboardNoteColorName,
   toneColor: FretboardNoteColorName,
-): PatternRule[] {
+): PatternRuleNode[] {
   return [
-    { condition: { string: 1, interval: '1' }, color: rootColor },
-    { condition: { string: 1, interval: seventhInterval }, color: toneColor },
-    { condition: { string: 2, interval: fifthInterval }, color: toneColor },
     {
-      condition: { string: 2, interval: thirdInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 1 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
     },
     {
-      condition: { string: 3, interval: thirdInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 2 },
+      children: [
+        { condition: { interval: fifthInterval }, color: toneColor },
+        {
+          condition: { interval: thirdInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+      ],
     },
-    { condition: { string: 3, interval: '1' }, color: rootColor },
     {
-      condition: { string: 3, interval: seventhInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 3 },
+      children: [
+        {
+          condition: { interval: thirdInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+        { condition: { interval: '1' }, color: rootColor },
+        {
+          condition: { interval: seventhInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+      ],
     },
     {
-      condition: { string: 4, interval: seventhInterval },
-      color: toneColor,
-      opacity: ALT_OPACITY,
+      condition: { string: 4 },
+      children: [
+        {
+          condition: { interval: seventhInterval },
+          color: toneColor,
+          opacity: ALT_OPACITY,
+        },
+        { condition: { interval: fifthInterval }, color: toneColor },
+      ],
     },
-    { condition: { string: 4, interval: fifthInterval }, color: toneColor },
     { condition: { string: 5, interval: thirdInterval }, color: toneColor },
-    { condition: { string: 6, interval: '1' }, color: rootColor },
-    { condition: { string: 6, interval: seventhInterval }, color: toneColor },
-  ] as const;
+    {
+      condition: { string: 6 },
+      children: [
+        { condition: { interval: '1' }, color: rootColor },
+        { condition: { interval: seventhInterval }, color: toneColor },
+      ],
+    },
+  ];
 }

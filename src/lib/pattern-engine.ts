@@ -34,10 +34,52 @@ export type PatternRule = {
   opacity?: number;
 };
 
+export type PatternRuleGroup = {
+  condition: PatternRuleCondition;
+  children: readonly PatternRuleNode[];
+};
+
+export type PatternRuleNode = PatternRule | PatternRuleGroup;
+
 export type Pattern = {
-  rules: readonly PatternRule[];
+  rules: readonly PatternRuleNode[];
   isFullOctave?: boolean | undefined;
 };
+
+// Rule arrays are defined at module scope in config files, so they're referentially stable —
+// caching by identity lets us flatten each pattern exactly once across all per-note lookups.
+const flattenedRulesCache = new WeakMap<
+  readonly PatternRuleNode[],
+  readonly PatternRule[]
+>();
+
+function flattenPatternRuleNodes(
+  nodes: readonly PatternRuleNode[],
+  parentCondition: PatternRuleCondition,
+  out: PatternRule[],
+): void {
+  for (const node of nodes) {
+    const mergedCondition = { ...parentCondition, ...node.condition };
+    if ('children' in node) {
+      flattenPatternRuleNodes(node.children, mergedCondition, out);
+    } else {
+      out.push({ ...node, condition: mergedCondition });
+    }
+  }
+}
+
+function getFlattenedPatternRules(
+  rules: readonly PatternRuleNode[],
+): readonly PatternRule[] {
+  const cached = flattenedRulesCache.get(rules);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const flattened: PatternRule[] = [];
+  flattenPatternRuleNodes(rules, {}, flattened);
+  flattenedRulesCache.set(rules, flattened);
+  return flattened;
+}
 
 type PatternContext = {
   string: number;
@@ -146,18 +188,19 @@ export function getMatchingPatternRules(
 
   const noteClass = semitonesToNoteClass(openNoteClass + fret);
 
-  const matchingPatternRules = pattern.rules.filter((patternRule) =>
-    matchesPatternCondition(
-      patternRule.condition,
-      {
-        string: stringNumber,
-        fret,
-        noteClass,
-      },
-      {
-        rootNote,
-      },
-    ),
+  const matchingPatternRules = getFlattenedPatternRules(pattern.rules).filter(
+    (patternRule) =>
+      matchesPatternCondition(
+        patternRule.condition,
+        {
+          string: stringNumber,
+          fret,
+          noteClass,
+        },
+        {
+          rootNote,
+        },
+      ),
   );
 
   if (matchingPatternRules.length === 0) {
