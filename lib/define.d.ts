@@ -2,10 +2,14 @@ import type packageJson from '../package.json';
 
 export type MyImportMetaEnv = {
   readonly GIT_COMMIT_SHORT_SHA: string;
+  readonly PACKAGE_VERSION: typeof packageJson.version;
   readonly PACKAGE_DESCRIPTION: typeof packageJson.description;
+  readonly PACKAGE_LICENSE: typeof packageJson.license;
   readonly PACKAGE_HOMEPAGE: typeof packageJson.homepage;
   readonly PACKAGE_AUTHOR: typeof packageJson.author;
   readonly PACKAGE_CONFIG_AUTHOR: string;
+  readonly PACKAGE_AUTHOR_NAME: typeof packageJson.author.name;
+  readonly PACKAGE_AUTHOR_URL: typeof packageJson.author.url;
   readonly PACKAGE_BUGS: typeof packageJson.bugs;
   readonly PACKAGE_CONFIG_NAME: typeof packageJson.config.name;
   readonly PACKAGE_CONFIG_SHORT_NAME: typeof packageJson.config.shortName;

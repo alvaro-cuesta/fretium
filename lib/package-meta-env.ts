@@ -8,10 +8,14 @@ import type { MyImportMetaEnv } from './define';
 export function getPackageMetaEnv(gitCommitShortSha: string): MyImportMetaEnv {
   return {
     GIT_COMMIT_SHORT_SHA: gitCommitShortSha,
+    PACKAGE_VERSION: packageJson.version,
     PACKAGE_DESCRIPTION: packageJson.description,
+    PACKAGE_LICENSE: packageJson.license,
     PACKAGE_HOMEPAGE: packageJson.homepage,
     PACKAGE_AUTHOR: packageJson.author,
     PACKAGE_CONFIG_AUTHOR: `${packageJson.author.name} (${packageJson.author.url})`,
+    PACKAGE_AUTHOR_NAME: packageJson.author.name,
+    PACKAGE_AUTHOR_URL: packageJson.author.url,
     PACKAGE_BUGS: packageJson.bugs,
     PACKAGE_CONFIG_NAME: packageJson.config.name,
     PACKAGE_CONFIG_SHORT_NAME: packageJson.config.shortName,

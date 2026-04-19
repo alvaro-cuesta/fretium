@@ -17,6 +17,18 @@
       name="author"
       content="%PACKAGE_CONFIG_AUTHOR%"
     />
+    <meta
+      name="application-name"
+      content="%PACKAGE_CONFIG_SHORT_NAME%"
+    />
+    <meta
+      name="robots"
+      content="index,follow,max-image-preview:large"
+    />
+    <link
+      rel="canonical"
+      href="%PACKAGE_HOMEPAGE%"
+    />
 
     <!-- Icons -->
     <link
@@ -44,6 +56,14 @@
       content="website"
     />
     <meta
+      property="og:site_name"
+      content="%PACKAGE_CONFIG_SHORT_NAME%"
+    />
+    <meta
+      property="og:locale"
+      content="en_US"
+    />
+    <meta
       property="og:url"
       content="%PACKAGE_HOMEPAGE%"
     />
@@ -67,7 +87,7 @@
     <!-- Twitter -->
     <meta
       name="twitter:card"
-      content="summary"
+      content="summary_large_image"
     />
     <meta
       property="twitter:url"
@@ -89,6 +109,66 @@
       name="twitter:image:alt"
       content="%PACKAGE_CONFIG_NAME%"
     />
+
+    <!-- Structured data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "%PACKAGE_HOMEPAGE%/#app",
+            "name": "%PACKAGE_CONFIG_SHORT_NAME%",
+            "alternateName": "%PACKAGE_CONFIG_NAME%",
+            "url": "%PACKAGE_HOMEPAGE%",
+            "description": "%PACKAGE_CONFIG_DESCRIPTION%",
+            "applicationCategory": "MultimediaApplication",
+            "applicationSubCategory": "MusicApplication",
+            "operatingSystem": "Any (web browser)",
+            "browserRequirements": "Requires JavaScript and a modern browser",
+            "inLanguage": "en",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "featureList": [
+              "Fretboard diagrams for guitar, bass, ukulele, and other stringed instruments",
+              "Chord diagrams",
+              "Scale diagrams",
+              "Custom tunings",
+              "Runs entirely in the browser, no installation required"
+            ],
+            "keywords": "fretboard, diagram, generator, guitar, bass, ukulele, chords, scales",
+            "screenshot": "%PACKAGE_CONFIG_PUBLIC_URL_BASE%/fretium-og-center.png",
+            "image": "%PACKAGE_CONFIG_PUBLIC_URL_BASE%/fretium-og-center.png",
+            "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+            "softwareVersion": "%PACKAGE_VERSION%",
+            "codeRepository": "%PACKAGE_CONFIG_REPOSITORY_URL%",
+            "author": { "@id": "%PACKAGE_AUTHOR_URL%/#person" },
+            "publisher": { "@id": "%PACKAGE_AUTHOR_URL%/#person" },
+            "mainEntityOfPage": { "@id": "%PACKAGE_HOMEPAGE%/#website" }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "%PACKAGE_HOMEPAGE%/#website",
+            "url": "%PACKAGE_HOMEPAGE%",
+            "name": "%PACKAGE_CONFIG_SHORT_NAME%",
+            "description": "%PACKAGE_CONFIG_SHORT_DESCRIPTION%",
+            "inLanguage": "en",
+            "publisher": { "@id": "%PACKAGE_AUTHOR_URL%/#person" },
+            "mainEntity": { "@id": "%PACKAGE_HOMEPAGE%/#app" }
+          },
+          {
+            "@type": "Person",
+            "@id": "%PACKAGE_AUTHOR_URL%/#person",
+            "name": "%PACKAGE_AUTHOR_NAME%",
+            "url": "%PACKAGE_AUTHOR_URL%"
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
