@@ -6,6 +6,7 @@ export const PATTERNS_SCALES_MODES = {
   displayName: 'Scales - Modes',
   entries: {
     lydian: {
+      type: 'pattern',
       displayName: 'Lydian',
       rules: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
@@ -17,6 +18,7 @@ export const PATTERNS_SCALES_MODES = {
       isFullOctave: true,
     },
     ionian: {
+      type: 'pattern',
       displayName: 'Ionian',
       rules: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
@@ -28,6 +30,7 @@ export const PATTERNS_SCALES_MODES = {
       isFullOctave: true,
     },
     mixolydian: {
+      type: 'pattern',
       displayName: 'Mixolydian',
       rules: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
@@ -39,6 +42,7 @@ export const PATTERNS_SCALES_MODES = {
       isFullOctave: true,
     },
     dorian: {
+      type: 'pattern',
       displayName: 'Dorian',
       rules: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
@@ -50,6 +54,7 @@ export const PATTERNS_SCALES_MODES = {
       isFullOctave: true,
     },
     aeolian: {
+      type: 'pattern',
       displayName: 'Aeolian',
       rules: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
@@ -61,6 +66,7 @@ export const PATTERNS_SCALES_MODES = {
       isFullOctave: true,
     },
     phrygian: {
+      type: 'pattern',
       displayName: 'Phrygian',
       rules: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
@@ -72,6 +78,7 @@ export const PATTERNS_SCALES_MODES = {
       isFullOctave: true,
     },
     locrian: {
+      type: 'pattern',
       displayName: 'Locrian',
       rules: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },

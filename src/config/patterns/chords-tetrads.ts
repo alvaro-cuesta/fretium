@@ -131,6 +131,7 @@ function make7TetradSubgroup(
     displayName,
     entries: {
       all: {
+        type: 'pattern',
         displayName: 'All inversions',
         rules: [
           ...makeRootPosition(
@@ -165,6 +166,7 @@ function make7TetradSubgroup(
         isFullOctave: true,
       },
       root: {
+        type: 'pattern',
         displayName: 'Root',
         rules: makeRootPosition(
           thirdInterval,
@@ -175,6 +177,7 @@ function make7TetradSubgroup(
         ),
       },
       '1st': {
+        type: 'pattern',
         displayName: '1st inversion',
         rules: make1stInversion(
           thirdInterval,
@@ -185,6 +188,7 @@ function make7TetradSubgroup(
         ),
       },
       '2nd': {
+        type: 'pattern',
         displayName: '2nd inversion',
         rules: make2ndInversion(
           thirdInterval,
@@ -195,6 +199,7 @@ function make7TetradSubgroup(
         ),
       },
       '3rd': {
+        type: 'pattern',
         displayName: '3rd inversion',
         rules: make3rdInversion(
           thirdInterval,

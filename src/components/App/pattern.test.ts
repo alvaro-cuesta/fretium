@@ -1,8 +1,5 @@
 import { PATTERNS_GROUPED } from '../../config/patterns/patterns';
-import {
-  getPatternConfigEntryAtPath,
-  isPatternConfigEntryPattern,
-} from '../../lib/pattern-config';
+import { getPatternConfigEntryAtPath } from '../../lib/pattern-config';
 import { getPatternSelectOptions } from './pattern';
 
 test('prefixes optgroup child values with their parent optgroup id', () => {
@@ -22,7 +19,7 @@ test('prefixes optgroup child values with their parent optgroup id', () => {
     'arpeggios/maj7',
   ]);
 
-  if (arpeggioEntry === null || isPatternConfigEntryPattern(arpeggioEntry)) {
+  if (arpeggioEntry === null || arpeggioEntry.type === 'pattern') {
     throw new Error('Expected Maj7 arpeggio entry to be a sublist.');
   }
 
@@ -41,7 +38,7 @@ test('prefixes optgroup child values with their parent optgroup id', () => {
     'chords-tetrads/maj7',
   ]);
 
-  if (chordEntry === null || isPatternConfigEntryPattern(chordEntry)) {
+  if (chordEntry === null || chordEntry.type === 'pattern') {
     throw new Error('Expected Maj7 chord entry to be a sublist.');
   }
 

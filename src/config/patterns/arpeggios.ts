@@ -61,6 +61,7 @@ function make7ArpeggioGroup(
     displayName: `${displayName} Arpeggio`,
     entries: {
       full: {
+        type: 'pattern',
         displayName: 'Full',
         rules: [
           { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
@@ -82,6 +83,7 @@ function make7ArpeggioGroup(
             displayName: 'E position',
             entries: {
               base: {
+                type: 'pattern',
                 displayName: 'No chord tones',
                 rules: [
                   ...make7Arpeggio_EPosition(
@@ -94,6 +96,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '6432-root': {
+                type: 'pattern',
                 displayName: '+ 6-4-3-2 (root)',
                 rules: [
                   ...make7Arpeggio_EPosition(
@@ -113,6 +116,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '6543-root': {
+                type: 'pattern',
                 displayName: '+ 6-5-4-3 (root)',
                 rules: [
                   ...make7Arpeggio_EPosition(
@@ -132,6 +136,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '4321-3rd': {
+                type: 'pattern',
                 displayName: '+ 4-3-2-1 (3rd inversion)',
                 rules: [
                   ...make7Arpeggio_EPosition(
@@ -157,6 +162,7 @@ function make7ArpeggioGroup(
             displayName: 'E-D position',
             entries: {
               base: {
+                type: 'pattern',
                 displayName: 'No chord tones',
                 rules: [
                   ...make7Arpeggio_EDPosition(
@@ -169,6 +175,7 @@ function make7ArpeggioGroup(
                 ],
               },
               'left-6432-root': {
+                type: 'pattern',
                 displayName: '+ Left 6-4-3-2 (root)',
                 rules: [
                   ...make7Arpeggio_EDPosition(
@@ -188,6 +195,7 @@ function make7ArpeggioGroup(
                 ],
               },
               'left-4321-3rd': {
+                type: 'pattern',
                 displayName: '+ Left 4-3-2-1 (3rd inversion)',
                 rules: [
                   ...make7Arpeggio_EDPosition(
@@ -207,6 +215,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '6543-root': {
+                type: 'pattern',
                 displayName: '+ 6-5-4-3 (root)',
                 rules: [
                   ...make7Arpeggio_EDPosition(
@@ -226,6 +235,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5432-2nd': {
+                type: 'pattern',
                 displayName: '+ 5-4-3-2 (2nd inversion)',
                 rules: [
                   ...make7Arpeggio_EDPosition(
@@ -245,6 +255,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5321-2nd': {
+                type: 'pattern',
                 displayName: '+ 5-3-2-1 (2nd inversion)',
                 rules: [
                   ...make7Arpeggio_EDPosition(
@@ -264,6 +275,7 @@ function make7ArpeggioGroup(
                 ],
               },
               'right-6432-1st': {
+                type: 'pattern',
                 displayName: '+ Right 6-4-3-2 (1st inversion)',
                 rules: [
                   ...make7Arpeggio_EDPosition(
@@ -283,6 +295,7 @@ function make7ArpeggioGroup(
                 ],
               },
               'right-4321-root': {
+                type: 'pattern',
                 displayName: '+ Right 4-3-2-1 (root)',
                 rules: [
                   ...make7Arpeggio_EDPosition(
@@ -308,6 +321,7 @@ function make7ArpeggioGroup(
             displayName: 'D position',
             entries: {
               base: {
+                type: 'pattern',
                 displayName: 'No chord tones',
                 rules: [
                   ...make7Arpeggio_DPosition(
@@ -320,6 +334,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '6432-1st': {
+                type: 'pattern',
                 displayName: '+ 6-4-3-2 (1st inversion)',
                 rules: [
                   ...make7Arpeggio_DPosition(
@@ -339,6 +354,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '6543-1st': {
+                type: 'pattern',
                 displayName: '+ 6-5-4-3 (1st inversion)',
                 rules: [
                   ...make7Arpeggio_DPosition(
@@ -358,6 +374,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5432-3rd': {
+                type: 'pattern',
                 displayName: '+ 5-4-3-2 (3rd inversion)',
                 rules: [
                   ...make7Arpeggio_DPosition(
@@ -377,6 +394,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5321-3rd': {
+                type: 'pattern',
                 displayName: '+ 5-3-2-1 (3rd inversion)',
                 rules: [
                   ...make7Arpeggio_DPosition(
@@ -396,6 +414,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '4321-root': {
+                type: 'pattern',
                 displayName: '+ 4-3-2-1 (root)',
                 rules: [
                   ...make7Arpeggio_DPosition(
@@ -421,6 +440,7 @@ function make7ArpeggioGroup(
             displayName: 'C position',
             entries: {
               base: {
+                type: 'pattern',
                 displayName: 'No chord tones',
                 rules: [
                   ...make7Arpeggio_CPosition(
@@ -433,6 +453,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '6432-2nd': {
+                type: 'pattern',
                 displayName: '+ 6-4-3-2 (2nd inversion)',
                 rules: [
                   ...make7Arpeggio_CPosition(
@@ -452,6 +473,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '6543-2nd': {
+                type: 'pattern',
                 displayName: '+ 6-5-4-3 (2nd inversion)',
                 rules: [
                   ...make7Arpeggio_CPosition(
@@ -471,6 +493,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5432-3rd': {
+                type: 'pattern',
                 displayName: '+ 5-4-3-2 (3rd inversion)',
                 rules: [
                   ...make7Arpeggio_CPosition(
@@ -490,6 +513,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5321-3rd': {
+                type: 'pattern',
                 displayName: '+ 5-3-2-1 (3rd inversion)',
                 rules: [
                   ...make7Arpeggio_CPosition(
@@ -509,6 +533,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '4321-1st': {
+                type: 'pattern',
                 displayName: '+ 4-3-2-1 (1st inversion)',
                 rules: [
                   ...make7Arpeggio_CPosition(
@@ -534,6 +559,7 @@ function make7ArpeggioGroup(
             displayName: 'A position',
             entries: {
               base: {
+                type: 'pattern',
                 displayName: 'No chord tones',
                 rules: [
                   ...make7Arpeggio_APosition(
@@ -547,6 +573,7 @@ function make7ArpeggioGroup(
               },
               '6543-2nd': {
                 displayName: '+ 6-5-4-3 (2nd inversion)',
+                type: 'pattern',
                 rules: [
                   ...make7Arpeggio_APosition(
                     thirdInterval,
@@ -565,6 +592,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5432-root': {
+                type: 'pattern',
                 displayName: '+ 5-4-3-2 (root)',
                 rules: [
                   ...make7Arpeggio_APosition(
@@ -584,6 +612,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5321-root': {
+                type: 'pattern',
                 displayName: '+ 5-3-2-1 (root)',
                 rules: [
                   ...make7Arpeggio_APosition(
@@ -603,6 +632,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '4321-2nd': {
+                type: 'pattern',
                 displayName: '+ 4-3-2-1 (2nd inversion)',
                 rules: [
                   ...make7Arpeggio_APosition(
@@ -628,6 +658,7 @@ function make7ArpeggioGroup(
             displayName: 'A-G position',
             entries: {
               base: {
+                type: 'pattern',
                 displayName: 'No chord tones',
                 rules: [
                   ...make7Arpeggio_AGPosition(
@@ -641,6 +672,7 @@ function make7ArpeggioGroup(
               },
               '6432-3rd': {
                 displayName: '+ 6-4-3-2 (3rd inversion)',
+                type: 'pattern',
                 rules: [
                   ...make7Arpeggio_AGPosition(
                     thirdInterval,
@@ -659,6 +691,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '6543-3rd': {
+                type: 'pattern',
                 displayName: '+ 6-5-4-3 (3rd inversion)',
                 rules: [
                   ...make7Arpeggio_AGPosition(
@@ -679,6 +712,7 @@ function make7ArpeggioGroup(
               },
               '5432-root': {
                 displayName: '+ 5-4-3-2 (root)',
+                type: 'pattern',
                 rules: [
                   ...make7Arpeggio_AGPosition(
                     thirdInterval,
@@ -698,6 +732,7 @@ function make7ArpeggioGroup(
               },
               '5321-root': {
                 displayName: '+ 5-3-2-1 (root)',
+                type: 'pattern',
                 rules: [
                   ...make7Arpeggio_AGPosition(
                     thirdInterval,
@@ -717,6 +752,7 @@ function make7ArpeggioGroup(
               },
               '4321-2nd': {
                 displayName: '+ 4-3-2-1 (2nd inversion)',
+                type: 'pattern',
                 rules: [
                   ...make7Arpeggio_AGPosition(
                     thirdInterval,
@@ -742,6 +778,7 @@ function make7ArpeggioGroup(
             entries: {
               base: {
                 displayName: 'No chord tones',
+                type: 'pattern',
                 rules: [
                   ...make7Arpeggio_GPosition(
                     thirdInterval,
@@ -754,6 +791,7 @@ function make7ArpeggioGroup(
               },
               'left-6432-3rd': {
                 displayName: '+ Left 6-4-3-2 (3rd inversion)',
+                type: 'pattern',
                 rules: [
                   ...make7Arpeggio_GPosition(
                     thirdInterval,
@@ -773,6 +811,7 @@ function make7ArpeggioGroup(
               },
               'left-4321-2nd': {
                 displayName: '+ Left 4-3-2-1 (2nd inversion)',
+                type: 'pattern',
                 rules: [
                   ...make7Arpeggio_GPosition(
                     thirdInterval,
@@ -792,6 +831,7 @@ function make7ArpeggioGroup(
               },
               '6543-3rd': {
                 displayName: '+ 6-5-4-3 (3rd inversion)',
+                type: 'pattern',
                 rules: [
                   ...make7Arpeggio_GPosition(
                     thirdInterval,
@@ -810,6 +850,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5432-1st': {
+                type: 'pattern',
                 displayName: '+ 5-4-3-2 (1st inversion)',
                 rules: [
                   ...make7Arpeggio_GPosition(
@@ -829,6 +870,7 @@ function make7ArpeggioGroup(
                 ],
               },
               '5321-1st': {
+                type: 'pattern',
                 displayName: '+ 5-3-2-1 (1st inversion)',
                 rules: [
                   ...make7Arpeggio_GPosition(
@@ -848,6 +890,7 @@ function make7ArpeggioGroup(
                 ],
               },
               'right-6432-root': {
+                type: 'pattern',
                 displayName: '+ Right 6-4-3-2 (root)',
                 rules: [
                   ...make7Arpeggio_GPosition(
@@ -867,6 +910,7 @@ function make7ArpeggioGroup(
                 ],
               },
               'right-4321-3rd': {
+                type: 'pattern',
                 displayName: '+ Right 4-3-2-1 (3rd inversion)',
                 rules: [
                   ...make7Arpeggio_GPosition(

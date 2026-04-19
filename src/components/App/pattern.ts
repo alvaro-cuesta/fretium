@@ -7,14 +7,16 @@ import {
   getPatternConfigEntryAtPath,
   getPatternConfigEntryPatternAtPath,
   getPatternDisplayNameAtPath,
-  isPatternConfigEntryPattern,
+  markPatternPathAsValidated,
   type PatternConfigEntry,
   type PatternConfigEntryList,
-  type PatternPath,
+  type ValidatedPatternPath,
 } from '../../lib/pattern-config';
 import { HISTORY_STATE_KEYS } from './history';
 
-const DEFAULT_PATTERN_PATH = ['scales/major'];
+type GroupedPatternPath = ValidatedPatternPath<typeof PATTERNS_GROUPED>;
+
+const DEFAULT_PATTERN_PATH = coercePatternPath(PATTERNS_GROUPED, []);
 
 const GROUPED_PATTERN_VALUE_SEPARATOR = '/';
 
@@ -48,7 +50,7 @@ export function getPatternSelectOptions(list: PatternConfigEntryList): {
       entry,
     } satisfies PatternSelectOption;
 
-    if (isPatternConfigEntryPattern(entry)) {
+    if (entry.type === 'pattern') {
       options.push(option);
       continue;
     }
@@ -94,14 +96,14 @@ export function getPatternSelectDescriptors(
       ariaLabel:
         index === 0
           ? 'Pattern'
-          : `${getPatternDisplayNameAtPath(PATTERNS_GROUPED, path.slice(0, index)) ?? 'Pattern'} Variant`,
+          : `${getPatternDisplayNameAtPath(PATTERNS_GROUPED, markPatternPathAsValidated(PATTERNS_GROUPED, path.slice(0, index))) ?? 'Pattern'} Variant`,
       value: segment,
       options: getPatternSelectOptions(currentList),
     });
 
     const entry = getPatternConfigEntryAtPath(currentList, [segment]);
 
-    if (entry === null || isPatternConfigEntryPattern(entry)) {
+    if (entry === null || entry.type === 'pattern') {
       break;
     }
 
@@ -111,17 +113,13 @@ export function getPatternSelectDescriptors(
   return descriptors;
 }
 
-function normalizePatternPath(path: readonly string[]): PatternPath {
-  return coercePatternPath(PATTERNS_GROUPED, path) ?? DEFAULT_PATTERN_PATH;
-}
-
-function serializePatternPath(value: PatternPath): PatternPath {
+function serializePatternPath(value: GroupedPatternPath): GroupedPatternPath {
   return value;
 }
 
 function deserializePatternPath(
   value: unknown,
-): HistoryStateDeserializeResult<PatternPath> {
+): HistoryStateDeserializeResult<GroupedPatternPath> {
   if (
     !Array.isArray(value) ||
     !value.every((segment) => typeof segment === 'string')
@@ -129,10 +127,10 @@ function deserializePatternPath(
     return { type: 'error' };
   }
 
-  const normalizedPath = coercePatternPath(PATTERNS_GROUPED, value);
-  return normalizedPath
-    ? { type: 'success', value: normalizedPath }
-    : { type: 'error' };
+  return {
+    type: 'success',
+    value: coercePatternPath(PATTERNS_GROUPED, value),
+  };
 }
 
 export function usePattern() {
@@ -145,18 +143,19 @@ export function usePattern() {
     },
   );
 
-  const setPatternPath: Dispatch<SetStateAction<PatternPath>> = useCallback(
-    (value) => {
-      setStoredPatternPath((currentValue) => {
-        const nextValue =
-          typeof value === 'function' ? value(currentValue) : value;
-        return normalizePatternPath(nextValue);
-      });
-    },
-    [setStoredPatternPath],
-  );
+  const setPatternPath: Dispatch<SetStateAction<GroupedPatternPath>> =
+    useCallback(
+      (value) => {
+        setStoredPatternPath((currentValue) => {
+          const nextValue =
+            typeof value === 'function' ? value(currentValue) : value;
+          return coercePatternPath(PATTERNS_GROUPED, nextValue);
+        });
+      },
+      [setStoredPatternPath],
+    );
 
-  const patternPath = normalizePatternPath(storedPatternPath);
+  const patternPath = coercePatternPath(PATTERNS_GROUPED, storedPatternPath);
   const patternConfigEntryPattern = getPatternConfigEntryPatternAtPath(
     PATTERNS_GROUPED,
     patternPath,

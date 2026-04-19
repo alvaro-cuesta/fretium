@@ -2,6 +2,7 @@ import { PATTERNS_GROUPED } from '../config/patterns/patterns';
 import {
   coercePatternPath,
   getPatternConfigEntryPatternAtPath,
+  markPatternPathAsValidated,
 } from './pattern-config';
 
 test('coerces canonical grouped ids and completes partial paths', () => {
@@ -34,18 +35,24 @@ test('coerces canonical grouped ids and completes partial paths', () => {
 
 test('resolves grouped paths to concrete patterns', () => {
   expect(
-    getPatternConfigEntryPatternAtPath(PATTERNS_GROUPED, [
-      'arpeggios/maj7',
-      'positions/d',
-      'base',
-    ]),
+    getPatternConfigEntryPatternAtPath(
+      PATTERNS_GROUPED,
+      markPatternPathAsValidated(PATTERNS_GROUPED, [
+        'arpeggios/maj7',
+        'positions/d',
+        'base',
+      ]),
+    ),
   ).not.toBeNull();
 
   expect(
-    getPatternConfigEntryPatternAtPath(PATTERNS_GROUPED, [
-      'chords-tetrads/maj7',
-      'drop2/_4321',
-      'root',
-    ]),
+    getPatternConfigEntryPatternAtPath(
+      PATTERNS_GROUPED,
+      markPatternPathAsValidated(PATTERNS_GROUPED, [
+        'chords-tetrads/maj7',
+        'drop2/_4321',
+        'root',
+      ]),
+    ),
   ).not.toBeNull();
 });

@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { objectEntries, objectKeys } from '../../../lib/object.ts';
 import { INSTRUMENTS } from '../../config/instruments.ts';
+import { PATTERNS_GROUPED } from '../../config/patterns/patterns.ts';
 import {
   historyStateBoolean,
   useHistoryState,
@@ -9,6 +10,7 @@ import { calculateFretRange } from '../../lib/fret-range.ts';
 import { type NoteDisplayMode } from '../../lib/fretboard.ts';
 import type { HistoryStateDeserializeResult } from '../../lib/history-state.ts';
 import { NOTES, type Note } from '../../lib/music.ts';
+import { markPatternPathAsValidated } from '../../lib/pattern-config.ts';
 import { renderPattern } from '../../lib/pattern-engine.ts';
 import { getFretboardMetrics } from '../Fretboard/theme.ts';
 import { FretboardImg, type ImgChangeEvent } from '../FretboardImg.tsx';
@@ -390,11 +392,13 @@ export function App() {
                     onChange={(e) => {
                       const nextSegment = e.target.value;
 
-                      setPatternPath((currentPath) => [
-                        ...currentPath.slice(0, depth),
-                        nextSegment,
-                        ...currentPath.slice(depth + 1),
-                      ]);
+                      setPatternPath((currentPath) =>
+                        markPatternPathAsValidated(PATTERNS_GROUPED, [
+                          ...currentPath.slice(0, depth),
+                          nextSegment,
+                          ...currentPath.slice(depth + 1),
+                        ]),
+                      );
                     }}
                     autoComplete="off"
                     aria-label={patternSelect.ariaLabel}

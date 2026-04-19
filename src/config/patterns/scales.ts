@@ -6,6 +6,7 @@ export const PATTERNS_SCALES = {
   displayName: 'Scales',
   entries: {
     major: {
+      type: 'pattern',
       displayName: 'Major scale',
       rules: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
@@ -17,6 +18,7 @@ export const PATTERNS_SCALES = {
       isFullOctave: true,
     },
     minor: {
+      type: 'pattern',
       displayName: 'Minor scale',
       rules: [
         { condition: { interval: '1' }, color: SCALE_ROOT_COLOR },
