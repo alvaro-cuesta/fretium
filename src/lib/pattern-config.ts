@@ -3,12 +3,11 @@ import type { Pattern } from './pattern-engine';
 
 export type PatternPath = readonly string[];
 
-export type ValidatedPatternPath<TList extends PatternConfigEntryList> =
-  Tagged<
-    PatternPath,
-    `ValidatedPatternPath<${TList['displayName']}>`,
-    TList
-  >;
+export type ValidatedPatternPath<TList extends PatternConfigEntryList> = Tagged<
+  PatternPath,
+  `ValidatedPatternPath<${TList['displayName']}>`,
+  TList
+>;
 
 type PatternConfigEntryBase = {
   displayName: string;
@@ -50,10 +49,9 @@ export type PatternConfigEntryList =
  * @param path The pattern path to mark as validated.
  * @returns The same pattern path, but with its type asserted as `ValidatedPatternPath`.
  */
-export function markPatternPathAsValidated<TList extends PatternConfigEntryList>(
-  _list: TList,
-  path: PatternPath,
-): ValidatedPatternPath<TList> {
+export function markPatternPathAsValidated<
+  TList extends PatternConfigEntryList,
+>(_list: TList, path: PatternPath): ValidatedPatternPath<TList> {
   return path as unknown as ValidatedPatternPath<TList>;
 }
 
