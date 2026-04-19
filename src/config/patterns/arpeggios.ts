@@ -912,6 +912,7 @@ function make7Arpeggio_EPosition(
       color: toneColor,
     },
     { condition: { string: 6, interval: '1' }, color: rootColor },
+    { condition: { string: 6, interval: seventhInterval }, color: toneColor },
   ] as const;
 }
 
