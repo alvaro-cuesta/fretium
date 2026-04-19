@@ -957,12 +957,28 @@ function make7Arpeggio_DPosition(
     { condition: { string: 2, interval: '1' }, color: rootColor },
     { condition: { string: 2, interval: seventhInterval }, color: toneColor },
     { condition: { string: 3, interval: fifthInterval }, color: toneColor },
-    { condition: { string: 4, interval: thirdInterval }, color: toneColor },
+    {
+      condition: { string: 3, interval: thirdInterval },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    {
+      condition: { string: 4, interval: thirdInterval },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
     { condition: { string: 4, interval: '1' }, color: rootColor },
     {
-      condition: { string: 5, interval: [fifthInterval, seventhInterval] },
+      condition: { string: 4, interval: seventhInterval },
       color: toneColor,
+      opacity: ALT_OPACITY,
     },
+    {
+      condition: { string: 5, interval: seventhInterval },
+      color: toneColor,
+      opacity: ALT_OPACITY,
+    },
+    { condition: { string: 5, interval: fifthInterval }, color: toneColor },
     { condition: { string: 6, interval: thirdInterval }, color: toneColor },
   ] as const;
 }
