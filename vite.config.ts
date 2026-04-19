@@ -77,7 +77,9 @@ export default defineConfig(async ({ mode }) => {
           ],
         },
       }),
-      ViteMinifyPlugin(),
+      ViteMinifyPlugin({
+        processScripts: ['application/ld+json'],
+      }),
       ViteSvgr(),
     ],
     define: makeMetaEnvDefines<MyImportMetaEnv>(getPackageMetaEnv(gitCommit)),
