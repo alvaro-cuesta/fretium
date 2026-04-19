@@ -347,14 +347,14 @@ test('shows a third pattern select for arpeggios', () => {
   expect(screen.getByLabelText('Maj7 Arpeggio Variant')).toHaveValue('full');
   fireEvent.change(screen.getByLabelText('Maj7 Arpeggio Variant'), {
     target: {
-      value: 'positions/g',
+      value: 'positions/e',
     },
   });
 
   expect(screen.getByLabelText('Maj7 Arpeggio Variant')).toHaveValue(
-    'positions/g',
+    'positions/e',
   );
-  expect(screen.getByLabelText('G position Variant')).toHaveValue('base');
+  expect(screen.getByLabelText('E position Variant')).toHaveValue('base');
   expect(
     screen.getByRole('option', { name: '+ 6-4-3-2 (root)' }),
   ).toBeInTheDocument();
