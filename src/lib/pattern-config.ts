@@ -66,7 +66,7 @@ function resolvePatternPathSegment(
   value: string,
 ): { value: string; displayName: string; entry: PatternConfigEntry } | null {
   for (const [id, entry] of Object.entries(list.entries)) {
-    if (entry.type === 'pattern') {
+    if (entry.type === 'pattern' || entry.type === 'sublist') {
       if (id === value) {
         return {
           value: id,

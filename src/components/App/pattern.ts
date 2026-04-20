@@ -44,14 +44,12 @@ export function getPatternSelectOptions(list: PatternConfigEntryList): {
   const groups: PatternSelectGroup[] = [];
 
   for (const [id, entry] of Object.entries(list.entries)) {
-    const option = {
-      value: id,
-      displayName: entry.displayName,
-      entry,
-    } satisfies PatternSelectOption;
-
-    if (entry.type === 'pattern') {
-      options.push(option);
+    if (entry.type === 'pattern' || entry.type === 'sublist') {
+      options.push({
+        value: id,
+        displayName: entry.displayName,
+        entry,
+      } satisfies PatternSelectOption);
       continue;
     }
 

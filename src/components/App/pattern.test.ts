@@ -2,16 +2,26 @@ import { PATTERNS_GROUPED } from '../../config/patterns/patterns';
 import { getPatternConfigEntryAtPath } from '../../lib/pattern-config';
 import { getPatternSelectOptions } from './pattern';
 
-test('prefixes optgroup child values with their parent optgroup id', () => {
+test('renders sublist children as single top-level options', () => {
   const topLevelOptions = getPatternSelectOptions(PATTERNS_GROUPED);
 
   expect(
-    topLevelOptions.groups.find((group) => group.displayName === 'Heptatonic'),
-  ).toMatchObject({ id: 'heptatonic' });
+    topLevelOptions.options.find(
+      (option) => option.displayName === 'Heptatonic',
+    ),
+  ).toMatchObject({ value: 'heptatonic' });
+});
+
+test('flattens optgroup children and prefixes their values with the parent optgroup id', () => {
+  const topLevelOptions = getPatternSelectOptions(PATTERNS_GROUPED);
+
+  expect(
+    topLevelOptions.groups.find((group) => group.displayName === 'Arpeggios'),
+  ).toMatchObject({ id: 'arpeggios' });
 
   expect(
     topLevelOptions.groups
-      .find((group) => group.displayName === 'Heptatonic')
+      .find((group) => group.displayName === 'Arpeggios')
       ?.options.map((option) => option.value),
   ).toEqual([
     'heptatonic/major',
