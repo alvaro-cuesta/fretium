@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-import { useHistoryReducer } from '../../hooks/useHistoryReducer';
 import type {
   EndFretValue,
   FretRangeInput,
@@ -9,9 +7,8 @@ import type { HistoryStateDeserializeResult } from '../../lib/history-state';
 import { clamp } from '../../lib/math';
 import { MAX_FRET, MIN_FRET, TOTAL_FRETS } from '../../lib/pattern-engine';
 import { checkIsNever } from '../../lib/type';
-import { HISTORY_STATE_KEYS } from './history';
 
-const DEFAULT_FRET_RANGE: FretRangeInput = {
+export const DEFAULT_FRET_RANGE: FretRangeInput = {
   start: 'AUTO',
   end: 'AUTO',
 };
@@ -95,7 +92,7 @@ function isPersistedFretRangeInput(value: unknown): value is FretRangeInput {
   );
 }
 
-function fretRangeReducer(
+export function fretRangeReducer(
   state: FretRangeInput,
   action: FretRangeAction,
 ): FretRangeInput {
@@ -131,53 +128,24 @@ function fretRangeReducer(
   }
 }
 
-function serialize(fretRange: FretRangeInput): FretRangeInput {
-  return fretRange;
+export function parseStartFretOptionValue(value: string): StartFretValue {
+  return value === 'AUTO' || value === 'AUTO_AVOID_OPEN'
+    ? value
+    : Number(value);
 }
 
-function deserialize(
+export function parseEndFretOptionValue(value: string): EndFretValue {
+  return value === 'AUTO' ? 'AUTO' : Number(value);
+}
+
+export function serializeFretRange(value: FretRangeInput): FretRangeInput {
+  return value;
+}
+
+export function deserializeFretRange(
   value: unknown,
 ): HistoryStateDeserializeResult<FretRangeInput> {
   return isPersistedFretRangeInput(value)
     ? { type: 'success', value }
     : { type: 'error' };
-}
-
-export function useFretRangeState() {
-  const [state, dispatch] = useHistoryReducer(
-    HISTORY_STATE_KEYS.fretRange,
-    fretRangeReducer,
-    DEFAULT_FRET_RANGE,
-    { serialize, deserialize },
-  );
-
-  const setStart = useCallback(
-    (start: string) => {
-      dispatch({
-        type: 'SET_START',
-        start:
-          start === 'AUTO' || start === 'AUTO_AVOID_OPEN'
-            ? start
-            : Number(start),
-      });
-    },
-    [dispatch],
-  );
-
-  const setEnd = useCallback(
-    (end: string) => {
-      dispatch({
-        type: 'SET_END',
-        end: end === 'AUTO' ? 'AUTO' : Number(end),
-      });
-    },
-    [dispatch],
-  );
-
-  return {
-    start: state.start,
-    end: state.end,
-    setStart,
-    setEnd,
-  };
 }

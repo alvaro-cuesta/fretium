@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { App } from './App';
 
 const PNG_CONTENT_TYPE = 'image/png';
@@ -21,6 +27,10 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
+
+function getFirstPanel() {
+  return screen.getByRole('article', { name: 'Fretboard 1' });
+}
 
 // Basic test to ensure the app renders without crashing
 test('renders core controls with defaults and exposes SVG and PNG downloads in the menu', async () => {
@@ -270,21 +280,22 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
 test('loads form controls from history.state and persists updates with replaceState', async () => {
   window.history.replaceState(
     {
-      'app.controls.pattern': ['heptatonic', 'minor'],
-      'app.controls.rootNote': 'A',
-      'app.controls.noteDisplayMode': 'interval',
-      'app.controls.showBackgroundNeck': false,
-      'app.controls.showStrings': false,
-      'app.controls.showFretLines': false,
-      'app.controls.showFretMarkers': false,
-      'app.controls.showFretLabels': false,
-      'app.controls.showStringLabels': false,
-      'app.controls.showDropShadows': false,
-      'app.controls.instrumentTuning': 'Bass::Standard',
-      'app.controls.fretRange': {
-        start: 3,
-        end: 7,
-      },
+      'app.fretboards': [
+        {
+          instrumentTuning: 'Bass::Standard',
+          pattern: ['heptatonic', 'minor'],
+          rootNote: 'A',
+          noteDisplayMode: 'interval',
+          fretRange: { start: 3, end: 7 },
+          showBackgroundNeck: false,
+          showStrings: false,
+          showFretLines: false,
+          showFretMarkers: false,
+          showFretLabels: false,
+          showStringLabels: false,
+          showDropShadows: false,
+        },
+      ],
     },
     '',
   );
@@ -318,8 +329,11 @@ test('loads form controls from history.state and persists updates with replaceSt
 
   await waitFor(() => {
     const historyState = window.history.state as Record<string, unknown> | null;
+    const fretboards = historyState?.['app.fretboards'] as
+      | { rootNote: string }[]
+      | undefined;
 
-    expect(historyState?.['app.controls.rootNote']).toBe('Bb');
+    expect(fretboards?.[0]?.rootNote).toBe('Bb');
   });
 
   expect(replaceStateSpy).toHaveBeenCalled();
@@ -391,7 +405,22 @@ test('shows a third pattern select for tetrads', () => {
 test('restores nested pattern paths from history.state arrays', () => {
   window.history.replaceState(
     {
-      'app.controls.pattern': ['arpeggios/dom7', 'caged-positions/d', 'base'],
+      'app.fretboards': [
+        {
+          instrumentTuning: 'Guitar::Standard',
+          pattern: ['arpeggios/dom7', 'caged-positions/d', 'base'],
+          rootNote: 'C',
+          noteDisplayMode: 'note',
+          fretRange: { start: 'AUTO', end: 'AUTO' },
+          showBackgroundNeck: true,
+          showStrings: true,
+          showFretLines: true,
+          showFretMarkers: true,
+          showFretLabels: true,
+          showStringLabels: true,
+          showDropShadows: true,
+        },
+      ],
     },
     '',
   );
@@ -423,4 +452,200 @@ test('keeps focus on the same pattern select when its value changes', () => {
   });
 
   expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveFocus();
+});
+
+// ----- Multiple fretboards -----
+
+test('starts with one panel and renders no reorder / delete controls', () => {
+  render(<App />);
+
+  expect(screen.getAllByRole('article')).toHaveLength(1);
+  const firstPanel = getFirstPanel();
+  expect(
+    within(firstPanel).queryByRole('button', { name: 'Drag to reorder' }),
+  ).toBeNull();
+  expect(
+    within(firstPanel).queryByRole('button', { name: 'Move fretboard up' }),
+  ).toBeNull();
+  expect(
+    within(firstPanel).queryByRole('button', { name: 'Move fretboard down' }),
+  ).toBeNull();
+  expect(
+    within(firstPanel).queryByRole('button', { name: 'Delete fretboard' }),
+  ).toBeNull();
+});
+
+test('insert-copy-below appends a copy of the panel below it', () => {
+  render(<App />);
+
+  const firstPanel = getFirstPanel();
+  // Change the root note so we can verify the copy carries it over
+  fireEvent.change(within(firstPanel).getByLabelText('Root note'), {
+    target: { value: 'F' },
+  });
+
+  fireEvent.click(
+    within(firstPanel).getByRole('button', {
+      name: 'Insert a copy of this fretboard below',
+    }),
+  );
+
+  const panels = screen.getAllByRole('article');
+  expect(panels).toHaveLength(2);
+  const secondPanel = screen.getByRole('article', { name: 'Fretboard 2' });
+  expect(within(secondPanel).getByLabelText('Root note')).toHaveValue('F');
+});
+
+test('insert-copy-above prepends a copy with the same config', () => {
+  render(<App />);
+
+  const firstPanel = getFirstPanel();
+  fireEvent.change(within(firstPanel).getByLabelText('Root note'), {
+    target: { value: 'G' },
+  });
+
+  fireEvent.click(
+    within(firstPanel).getByRole('button', {
+      name: 'Insert a copy of this fretboard above',
+    }),
+  );
+
+  expect(screen.getAllByRole('article')).toHaveLength(2);
+  // The new panel is now Fretboard 1 and the old one slid down to Fretboard 2.
+  expect(within(getFirstPanel()).getByLabelText('Root note')).toHaveValue('G');
+  expect(
+    within(screen.getByRole('article', { name: 'Fretboard 2' })).getByLabelText(
+      'Root note',
+    ),
+  ).toHaveValue('G');
+});
+
+test('inserted copies are independent (deep clone)', () => {
+  render(<App />);
+
+  fireEvent.click(
+    within(getFirstPanel()).getByRole('button', {
+      name: 'Insert a copy of this fretboard below',
+    }),
+  );
+
+  fireEvent.change(within(getFirstPanel()).getByLabelText('Root note'), {
+    target: { value: 'D' },
+  });
+
+  expect(within(getFirstPanel()).getByLabelText('Root note')).toHaveValue('D');
+  expect(
+    within(screen.getByRole('article', { name: 'Fretboard 2' })).getByLabelText(
+      'Root note',
+    ),
+  ).toHaveValue('C');
+});
+
+test('arrows reorder adjacent panels and wrap around at the ends', () => {
+  render(<App />);
+
+  // Add a second panel, then a third (so wrap-around is observable)
+  fireEvent.click(
+    within(getFirstPanel()).getByRole('button', {
+      name: 'Insert a copy of this fretboard below',
+    }),
+  );
+  fireEvent.click(
+    within(getFirstPanel()).getByRole('button', {
+      name: 'Insert a copy of this fretboard below',
+    }),
+  );
+
+  // Differentiate the three panels by root note
+  fireEvent.change(within(getFirstPanel()).getByLabelText('Root note'), {
+    target: { value: 'E' },
+  });
+  fireEvent.change(
+    within(screen.getByRole('article', { name: 'Fretboard 2' })).getByLabelText(
+      'Root note',
+    ),
+    { target: { value: 'A' } },
+  );
+  fireEvent.change(
+    within(screen.getByRole('article', { name: 'Fretboard 3' })).getByLabelText(
+      'Root note',
+    ),
+    { target: { value: 'G' } },
+  );
+
+  // Move first (E) down: order should become A, E, G
+  fireEvent.click(
+    within(getFirstPanel()).getByRole('button', {
+      name: 'Move fretboard down',
+    }),
+  );
+  expect(within(getFirstPanel()).getByLabelText('Root note')).toHaveValue('A');
+  expect(
+    within(screen.getByRole('article', { name: 'Fretboard 2' })).getByLabelText(
+      'Root note',
+    ),
+  ).toHaveValue('E');
+
+  // Move first (now A) up: wraps to the end → order becomes E, G, A
+  fireEvent.click(
+    within(getFirstPanel()).getByRole('button', { name: 'Move fretboard up' }),
+  );
+  expect(within(getFirstPanel()).getByLabelText('Root note')).toHaveValue('E');
+  expect(
+    within(screen.getByRole('article', { name: 'Fretboard 3' })).getByLabelText(
+      'Root note',
+    ),
+  ).toHaveValue('A');
+
+  // Move last (A) down: wraps to the start → order becomes A, E, G
+  fireEvent.click(
+    within(screen.getByRole('article', { name: 'Fretboard 3' })).getByRole(
+      'button',
+      { name: 'Move fretboard down' },
+    ),
+  );
+  expect(within(getFirstPanel()).getByLabelText('Root note')).toHaveValue('A');
+  expect(
+    within(screen.getByRole('article', { name: 'Fretboard 2' })).getByLabelText(
+      'Root note',
+    ),
+  ).toHaveValue('E');
+  expect(
+    within(screen.getByRole('article', { name: 'Fretboard 3' })).getByLabelText(
+      'Root note',
+    ),
+  ).toHaveValue('G');
+});
+
+test('delete shows confirmation; confirm removes panel; cancel keeps it', async () => {
+  render(<App />);
+
+  fireEvent.click(
+    within(getFirstPanel()).getByRole('button', {
+      name: 'Insert a copy of this fretboard below',
+    }),
+  );
+
+  expect(screen.getAllByRole('article')).toHaveLength(2);
+
+  // Cancel path — each panel has a delete button on both its above and below bars
+  const [firstCancelDelete] = within(getFirstPanel()).getAllByRole('button', {
+    name: 'Delete fretboard',
+  });
+  if (!firstCancelDelete) throw new Error('Expected a delete button');
+  fireEvent.click(firstCancelDelete);
+  fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+  expect(screen.getAllByRole('article')).toHaveLength(2);
+
+  // Confirm path
+  const [firstConfirmDelete] = within(getFirstPanel()).getAllByRole('button', {
+    name: 'Delete fretboard',
+  });
+  if (!firstConfirmDelete) throw new Error('Expected a delete button');
+  fireEvent.click(firstConfirmDelete);
+  fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+  await waitFor(() => {
+    expect(screen.getAllByRole('article')).toHaveLength(1);
+  });
 });

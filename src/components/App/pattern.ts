@@ -1,22 +1,18 @@
-import { useCallback, type Dispatch, type SetStateAction } from 'react';
 import { PATTERNS_GROUPED } from '../../config/patterns/patterns';
-import { useHistoryState } from '../../hooks/useHistoryState';
 import type { HistoryStateDeserializeResult } from '../../lib/history-state';
 import {
   coercePatternPath,
   getPatternConfigEntryAtPath,
-  getPatternConfigEntryPatternAtPath,
   getPatternDisplayNameAtPath,
   markPatternPathAsValidated,
   type PatternConfigEntry,
   type PatternConfigEntryList,
   type ValidatedPatternPath,
 } from '../../lib/pattern-config';
-import { HISTORY_STATE_KEYS } from './history';
 
-type GroupedPatternPath = ValidatedPatternPath<typeof PATTERNS_GROUPED>;
+export type GroupedPatternPath = ValidatedPatternPath<typeof PATTERNS_GROUPED>;
 
-const DEFAULT_PATTERN_PATH = coercePatternPath(PATTERNS_GROUPED, [
+export const DEFAULT_PATTERN_PATH = coercePatternPath(PATTERNS_GROUPED, [
   'heptatonic',
 ]);
 
@@ -113,11 +109,13 @@ export function getPatternSelectDescriptors(
   return descriptors;
 }
 
-function serializePatternPath(value: GroupedPatternPath): GroupedPatternPath {
+export function serializePatternPath(
+  value: GroupedPatternPath,
+): GroupedPatternPath {
   return value;
 }
 
-function deserializePatternPath(
+export function deserializePatternPath(
   value: unknown,
 ): HistoryStateDeserializeResult<GroupedPatternPath> {
   if (
@@ -131,43 +129,4 @@ function deserializePatternPath(
     type: 'success',
     value: coercePatternPath(PATTERNS_GROUPED, value),
   };
-}
-
-export function usePattern() {
-  const [storedPatternPath, setStoredPatternPath] = useHistoryState(
-    HISTORY_STATE_KEYS.selectedPattern,
-    DEFAULT_PATTERN_PATH,
-    {
-      serialize: serializePatternPath,
-      deserialize: deserializePatternPath,
-    },
-  );
-
-  const setPatternPath: Dispatch<SetStateAction<GroupedPatternPath>> =
-    useCallback(
-      (value) => {
-        setStoredPatternPath((currentValue) => {
-          const nextValue =
-            typeof value === 'function' ? value(currentValue) : value;
-          return coercePatternPath(PATTERNS_GROUPED, nextValue);
-        });
-      },
-      [setStoredPatternPath],
-    );
-
-  const patternPath = coercePatternPath(PATTERNS_GROUPED, storedPatternPath);
-  const patternConfigEntryPattern = getPatternConfigEntryPatternAtPath(
-    PATTERNS_GROUPED,
-    patternPath,
-  );
-
-  if (!patternConfigEntryPattern) {
-    throw new Error(`Invalid pattern path: ${patternPath.join(' / ')}`);
-  }
-
-  return {
-    patternPath,
-    setPatternPath,
-    patternConfigEntryPattern,
-  } as const;
 }

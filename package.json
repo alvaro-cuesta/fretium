@@ -50,6 +50,7 @@
     "generate:og-assets": "./bin/generate-og-assets.ts"
   },
   "dependencies": {
+    "@dnd-kit/react": "^0.4.0",
     "@ver0/deep-equal": "^2.0.1",
     "classnames": "^2.5.1",
     "react": "^19.2.4",

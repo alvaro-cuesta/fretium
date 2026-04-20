@@ -50,10 +50,6 @@
 
 I think the above could be easily implemented by just:
 
-- Having a + button
-- Allowing - removing diagrams
-- Allowing reordering with arrows and/or drag and drop
-- Reworking saved state to use JSON
 - Adding visualization modes for N columns + dropdown (collection mode)
 
 ### Share

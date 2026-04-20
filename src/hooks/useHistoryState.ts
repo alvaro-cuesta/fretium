@@ -6,17 +6,6 @@ import {
   type HistoryStateOptions,
 } from '../lib/history-state';
 
-export const historyStateBoolean: HistoryStateOptions<boolean> = {
-  serialize(value) {
-    return value;
-  },
-  deserialize(value) {
-    return typeof value === 'boolean'
-      ? { type: 'success', value }
-      : { type: 'error' };
-  },
-};
-
 type UseHistoryStateResult<TValue> = [TValue, Dispatch<SetStateAction<TValue>>];
 
 /**

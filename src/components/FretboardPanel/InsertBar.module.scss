@@ -1,0 +1,100 @@
+$bar-transition: 160ms ease;
+$bar-height: 36px;
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: $bar-height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// The draggable bar background — an absolutely-positioned layer behind the
+// icon/+ buttons. The buttons are rendered as *siblings* of this element (not
+// children), so pointerdowns on them never land on this element and never
+// activate @dnd-kit's drag sensor. Only clicks on the bar itself (the line
+// halves or the gap) activate drag.
+.bar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 44px; // leaves a gap in the middle for the + button to visually sit in
+}
+
+.barLine {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  opacity: 0.6;
+  transition:
+    height $bar-transition,
+    background-color $bar-transition,
+    opacity $bar-transition;
+}
+
+// When the bar is draggable (N > 1): grab cursor + hover thickens the line.
+.wrapperDraggable .bar {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// Active state applies both on hover of the draggable bar AND when the parent
+// explicitly marks this bar as active (e.g. when its sibling is hovered or
+// while the panel is being dragged).
+.wrapperDraggable:hover .barLine,
+.wrapperDraggable.wrapperActive .barLine {
+  height: 2px;
+  background: var(--accent-border);
+  opacity: 1;
+}
+
+// Central + button — always visible, never a drag activator (it's a sibling
+// of .bar so its pointerdown target is not inside the bar).
+.insertButton {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  > svg {
+    display: block;
+  }
+}
+
+.iconButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 8px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  > svg {
+    display: block;
+  }
+}
+
+.moveButton {
+  left: 4px;
+}
+
+.deleteButton {
+  right: 4px;
+}
