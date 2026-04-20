@@ -134,9 +134,9 @@ function make7ArpeggioGroup(
         ],
         isFullOctave: true,
       },
-      positions: {
+      'caged-positions': {
         type: 'optgroup',
-        displayName: 'Positions',
+        displayName: 'CAGED positions',
         entries: {
           e: {
             type: 'sublist',

@@ -127,7 +127,7 @@ describe('calculateFretRange', () => {
       PATTERNS_GROUPED,
       markPatternPathAsValidated(PATTERNS_GROUPED, [
         'arpeggios/maj7',
-        'positions/g',
+        'caged-positions/g',
         'base',
       ]),
     );

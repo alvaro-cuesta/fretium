@@ -35,9 +35,9 @@ test('prefixes optgroup child values with their parent optgroup id', () => {
   ]);
   expect(
     arpeggioOptions.groups
-      .find((group) => group.displayName === 'Positions')
+      .find((group) => group.displayName === 'CAGED positions')
       ?.options.map((option) => option.value),
-  ).toContain('positions/d');
+  ).toContain('caged-positions/d');
 
   const chordEntry = getPatternConfigEntryAtPath(PATTERNS_GROUPED, [
     'chords-tetrads/maj7',

@@ -9,10 +9,10 @@ test('coerces canonical grouped ids and completes partial paths', () => {
   expect(
     coercePatternPath(PATTERNS_GROUPED, [
       'arpeggios/maj7',
-      'positions/d',
+      'caged-positions/d',
       'base',
     ]),
-  ).toEqual(['arpeggios/maj7', 'positions/d', 'base']);
+  ).toEqual(['arpeggios/maj7', 'caged-positions/d', 'base']);
 
   expect(
     coercePatternPath(PATTERNS_GROUPED, [
@@ -39,7 +39,7 @@ test('resolves grouped paths to concrete patterns', () => {
       PATTERNS_GROUPED,
       markPatternPathAsValidated(PATTERNS_GROUPED, [
         'arpeggios/maj7',
-        'positions/d',
+        'caged-positions/d',
         'base',
       ]),
     ),

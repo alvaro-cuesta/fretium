@@ -347,12 +347,12 @@ test('shows a third pattern select for arpeggios', () => {
   expect(screen.getByLabelText('Maj7 Arpeggio Variant')).toHaveValue('full');
   fireEvent.change(screen.getByLabelText('Maj7 Arpeggio Variant'), {
     target: {
-      value: 'positions/e',
+      value: 'caged-positions/e',
     },
   });
 
   expect(screen.getByLabelText('Maj7 Arpeggio Variant')).toHaveValue(
-    'positions/e',
+    'caged-positions/e',
   );
   expect(screen.getByLabelText('E position Variant')).toHaveValue('base');
   expect(
@@ -388,7 +388,7 @@ test('shows a third pattern select for tetrads', () => {
 test('restores nested pattern paths from history.state arrays', () => {
   window.history.replaceState(
     {
-      'app.controls.pattern': ['arpeggios/dom7', 'positions/d', 'base'],
+      'app.controls.pattern': ['arpeggios/dom7', 'caged-positions/d', 'base'],
     },
     '',
   );
@@ -400,7 +400,7 @@ test('restores nested pattern paths from history.state arrays', () => {
     'arpeggios/dom7',
   );
   expect(screen.getByLabelText('7 Arpeggio Variant')).toHaveValue(
-    'positions/d',
+    'caged-positions/d',
   );
   expect(screen.getByLabelText('D position Variant')).toHaveValue('base');
 });

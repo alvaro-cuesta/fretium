@@ -64,9 +64,9 @@ function makeHeptatonic(
         ],
         isFullOctave: true,
       },
-      positions: {
+      'caged-positions': {
         type: 'optgroup',
-        displayName: 'Positions',
+        displayName: 'CAGED positions',
         entries: {
           e: {
             type: 'pattern',
