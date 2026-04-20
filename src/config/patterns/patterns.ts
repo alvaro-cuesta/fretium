@@ -7,7 +7,7 @@ export const PATTERNS_GROUPED = {
   type: 'sublist',
   displayName: 'Pattern',
   entries: {
-    ...PATTERNS_HEPTATONIC,
+    heptatonic: PATTERNS_HEPTATONIC,
     arpeggios: PATTERNS_ARPEGGIOS,
     'chords-tetrads': PATTERNS_CHORDS_TETRADS,
   },
