@@ -22,11 +22,11 @@ export function Layout(props: LayoutProps) {
             />
             <span className={styles.headerTitle}>
               {import.meta.env.PACKAGE_CONFIG_SHORT_NAME}
-            </span>
-          </a>{' '}
-          <small className={styles.headerSubtitle}>
-            {import.meta.env.PACKAGE_CONFIG_SHORT_DESCRIPTION}
-          </small>
+            </span>{' '}
+            <small className={styles.headerSubtitle}>
+              {import.meta.env.PACKAGE_CONFIG_SHORT_DESCRIPTION}
+            </small>
+          </a>
         </h1>
       </header>
 
