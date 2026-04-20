@@ -1,3 +1,4 @@
+import cx from 'classnames';
 import { useEffect, useRef } from 'react';
 import globalStyles from '../index.module.scss';
 import styles from './ConfirmDialog.module.scss';
@@ -78,7 +79,7 @@ export function ConfirmDialog({
           </button>
           <button
             type="button"
-            className={`${globalStyles.linkButton} ${styles.confirmButton}`}
+            className={cx(globalStyles.linkButton, styles.confirmButton)}
             onClick={onConfirm}
             autoFocus
           >

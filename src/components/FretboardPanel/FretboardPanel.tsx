@@ -1,5 +1,6 @@
 import { PointerSensor } from '@dnd-kit/react';
 import { useSortable } from '@dnd-kit/react/sortable';
+import cx from 'classnames';
 import { useMemo, useRef, useState } from 'react';
 import { objectKeys } from '../../../lib/object.ts';
 import { INSTRUMENTS } from '../../config/instruments.ts';
@@ -163,7 +164,7 @@ export function FretboardPanel({
     <article
       ref={sortableRef}
       aria-label={`Fretboard ${index + 1}`}
-      className={`${styles.panel} ${isRemoving ? styles.panelRemoving : ''}`}
+      className={cx(styles.panel, { [styles.panelRemoving]: isRemoving })}
       aria-hidden={isRemoving}
     >
       <InsertBar
@@ -180,7 +181,7 @@ export function FretboardPanel({
       <div className={styles.panelContent}>
         <section className={styles.controlsSection}>
           <form className={styles.controlsForm}>
-            <label className={`${styles.fieldGroup} ${styles.instrumentField}`}>
+            <label className={cx(styles.fieldGroup, styles.instrumentField)}>
               <span className={styles.fieldLabel}>Instrument</span>
               <select
                 className={styles.selectorInput}
@@ -216,7 +217,7 @@ export function FretboardPanel({
               </select>
             </label>
 
-            <div className={`${styles.rangeFields} ${styles.fretRangeFields}`}>
+            <div className={cx(styles.rangeFields, styles.fretRangeFields)}>
               <label className={styles.fieldGroup}>
                 <span className={styles.fieldLabel}>Start fret</span>
                 <select
@@ -269,7 +270,7 @@ export function FretboardPanel({
               </label>
             </div>
 
-            <label className={`${styles.fieldGroup} ${styles.noteLabelsField}`}>
+            <label className={cx(styles.fieldGroup, styles.noteLabelsField)}>
               <span className={styles.fieldLabel}>Note labels</span>
               <select
                 className={styles.selectorInput}
@@ -288,11 +289,11 @@ export function FretboardPanel({
               </select>
             </label>
 
-            <div className={`${styles.fieldGroup} ${styles.patternField}`}>
+            <div className={cx(styles.fieldGroup, styles.patternField)}>
               <fieldset className={styles.patternFieldset}>
                 <legend className={styles.patternLegend}>
                   <span
-                    className={`${styles.fieldLabel} ${styles.legendButton}`}
+                    className={cx(styles.fieldLabel, styles.legendButton)}
                     onClick={() => {
                       firstPatternSelectRef.current?.focus();
                     }}
@@ -302,7 +303,7 @@ export function FretboardPanel({
                 </legend>
 
                 <div
-                  className={`${styles.rangeFields} ${styles.patternSelectsRow}`}
+                  className={cx(styles.rangeFields, styles.patternSelectsRow)}
                 >
                   {patternSelects.map((patternSelect, depth) => (
                     <select
@@ -359,7 +360,7 @@ export function FretboardPanel({
               </fieldset>
             </div>
 
-            <label className={`${styles.fieldGroup} ${styles.rootNoteField}`}>
+            <label className={cx(styles.fieldGroup, styles.rootNoteField)}>
               <span className={styles.fieldLabel}>Root note</span>
               <select
                 className={styles.selectorInput}

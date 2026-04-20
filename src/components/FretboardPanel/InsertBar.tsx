@@ -1,3 +1,4 @@
+import cx from 'classnames';
 import globalStyles from '../../index.module.scss';
 import { ArrowDownIcon, ArrowUpIcon, PlusIcon, TrashIcon } from './icons.tsx';
 import styles from './InsertBar.module.scss';
@@ -44,7 +45,11 @@ export function InsertBar({
 
   return (
     <div
-      className={`${styles.wrapper} ${showControls ? styles.wrapperDraggable : ''} ${isActive ? styles.wrapperActive : ''} ${isDragging ? styles.wrapperDragging : ''}`}
+      className={cx(styles.wrapper, {
+        [styles.wrapperDraggable]: showControls,
+        [styles.wrapperActive]: isActive,
+        [styles.wrapperDragging]: isDragging,
+      })}
       onPointerEnter={() => {
         onHoverChange(true);
       }}
@@ -70,7 +75,11 @@ export function InsertBar({
       {showControls && (
         <button
           type="button"
-          className={`${globalStyles.linkButton} ${styles.iconButton} ${styles.moveButton}`}
+          className={cx(
+            globalStyles.linkButton,
+            styles.iconButton,
+            styles.moveButton,
+          )}
           aria-label={moveLabel}
           onClick={onMove}
         >
@@ -80,7 +89,7 @@ export function InsertBar({
 
       <button
         type="button"
-        className={`${globalStyles.linkButton} ${styles.insertButton}`}
+        className={cx(globalStyles.linkButton, styles.insertButton)}
         aria-label={insertLabel}
         onClick={onInsertCopy}
       >
@@ -90,7 +99,11 @@ export function InsertBar({
       {showControls && (
         <button
           type="button"
-          className={`${globalStyles.linkButton} ${styles.iconButton} ${styles.deleteButton}`}
+          className={cx(
+            globalStyles.linkButton,
+            styles.iconButton,
+            styles.deleteButton,
+          )}
           aria-label="Delete fretboard"
           onClick={onRequestDelete}
         >
