@@ -16,6 +16,7 @@ test('prefixes optgroup child values with their parent optgroup id', () => {
   ).toEqual([
     'heptatonic/major',
     'heptatonic/minor',
+    'heptatonic/melodic-minor',
     'heptatonic/harmonic-minor',
   ]);
 
