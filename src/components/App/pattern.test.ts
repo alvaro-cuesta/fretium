@@ -6,14 +6,18 @@ test('prefixes optgroup child values with their parent optgroup id', () => {
   const topLevelOptions = getPatternSelectOptions(PATTERNS_GROUPED);
 
   expect(
-    topLevelOptions.groups.find((group) => group.displayName === 'Scales'),
-  ).toMatchObject({ id: 'scales' });
+    topLevelOptions.groups.find((group) => group.displayName === 'Heptatonic'),
+  ).toMatchObject({ id: 'heptatonic' });
 
   expect(
     topLevelOptions.groups
-      .find((group) => group.displayName === 'Scales')
+      .find((group) => group.displayName === 'Heptatonic')
       ?.options.map((option) => option.value),
-  ).toEqual(['scales/major', 'scales/minor']);
+  ).toEqual([
+    'heptatonic/major',
+    'heptatonic/minor',
+    'heptatonic/harmonic-minor',
+  ]);
 
   const arpeggioEntry = getPatternConfigEntryAtPath(PATTERNS_GROUPED, [
     'arpeggios/maj7',

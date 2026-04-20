@@ -79,7 +79,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(screen.getByText(/Fretium/)).toBeInTheDocument();
   expect(screen.getByLabelText('Instrument')).toHaveValue('Guitar::Standard');
   expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveValue(
-    'scales/major',
+    'heptatonic/major',
   );
   expect(screen.getByLabelText('Root note')).toHaveValue('C');
   expect(screen.getByLabelText('Start fret')).toHaveValue('AUTO');
@@ -91,7 +91,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(screen.getByLabelText('Fret labels')).toBeChecked();
   expect(screen.getByLabelText('String labels')).toBeChecked();
   expect(screen.getByLabelText('Drop shadows')).toBeChecked();
-  expect(await screen.findByAltText(/major scale/i)).toBeInTheDocument();
+  expect(await screen.findByAltText(/major/i)).toBeInTheDocument();
 
   const downloadToggle = await screen.findByRole('button', {
     name: 'Download options',
@@ -110,7 +110,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   );
   expect(screen.getByRole('menuitem', { name: 'Download' })).toHaveAttribute(
     'download',
-    'fretium-[guitar-standard-EADGBE]-[major-scale-full]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels].svg',
+    'fretium-[guitar-standard-EADGBE]-[major-full]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels].svg',
   );
 
   fireEvent.pointerDown(screen.getByRole('combobox', { name: 'Pattern' }));
@@ -248,13 +248,13 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(clickedDownloads).toEqual([
     {
       download:
-        'fretium-[guitar-standard-EADGBE]-[major-scale-full]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-SD.png',
+        'fretium-[guitar-standard-EADGBE]-[major-full]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-SD.png',
       href: 'blob:mock-download',
       rel: 'noopener',
     },
     {
       download:
-        'fretium-[guitar-standard-EADGBE]-[major-scale-full]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-HD.png',
+        'fretium-[guitar-standard-EADGBE]-[major-full]-[open-strings-frets-0-12]-[root-C]-[labels-note]-[with-fret-labels]-[with-string-labels]-HD.png',
       href: 'blob:mock-download',
       rel: 'noopener',
     },
@@ -268,7 +268,7 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
 test('loads form controls from history.state and persists updates with replaceState', async () => {
   window.history.replaceState(
     {
-      'app.controls.pattern': ['scales/minor'],
+      'app.controls.pattern': ['heptatonic/minor'],
       'app.controls.rootNote': 'A',
       'app.controls.noteDisplayMode': 'interval',
       'app.controls.showBackgroundNeck': false,
@@ -293,7 +293,7 @@ test('loads form controls from history.state and persists updates with replaceSt
 
   expect(screen.getByLabelText('Instrument')).toHaveValue('Bass::Standard');
   expect(screen.getByRole('combobox', { name: 'Pattern' })).toHaveValue(
-    'scales/minor',
+    'heptatonic/minor',
   );
   expect(screen.getByLabelText('Root note')).toHaveValue('A');
   expect(screen.getByLabelText('Note labels')).toHaveValue('interval');

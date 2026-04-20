@@ -21,7 +21,7 @@ type MakeCagedPositionOptions = {
   toneColor: FretboardNoteColorName;
 };
 
-export type MakeCagedPositionFn = (
+type MakeCagedPositionFn = (
   options: MakeCagedPositionOptions,
 ) => PatternRuleNode[];
 
