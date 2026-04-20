@@ -137,10 +137,11 @@ export const PATTERNS_HEPTATONIC = {
       type: 'optgroup',
       displayName: 'Major modes',
       entries: {
-        lydian: makeHeptatonic('Lydian', '2', '3', '#4', '5', '6', '7'),
         ionian: makeHeptatonic('Ionian (Major)', '2', '3', '4', '5', '6', '7'),
-        mixolydian: makeHeptatonic('Mixolydian', '2', '3', '4', '5', '6', 'b7'),
         dorian: makeHeptatonic('Dorian', '2', 'b3', '4', '5', '6', 'b7'),
+        phrygian: makeHeptatonic('Phrygian', 'b2', 'b3', '4', '5', 'b6', 'b7'),
+        lydian: makeHeptatonic('Lydian', '2', '3', '#4', '5', '6', '7'),
+        mixolydian: makeHeptatonic('Mixolydian', '2', '3', '4', '5', '6', 'b7'),
         aeolian: makeHeptatonic(
           'Aeolian (Natural minor)',
           '2',
@@ -150,7 +151,6 @@ export const PATTERNS_HEPTATONIC = {
           'b6',
           'b7',
         ),
-        phrygian: makeHeptatonic('Phrygian', 'b2', 'b3', '4', '5', 'b6', 'b7'),
         locrian: makeHeptatonic('Locrian', 'b2', 'b3', '4', 'b5', 'b6', 'b7'),
       },
     },
