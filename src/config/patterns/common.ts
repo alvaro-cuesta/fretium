@@ -6,9 +6,9 @@ export const CHORD_TONE_COLOR = '2-STRONG' as const;
 export const SCALE_ROOT_COLOR = '1-LIGHT' as const;
 export const SCALE_TONE_COLOR = '2-LIGHT' as const;
 
-export type SecondInterval = '2' | 'b2';
-export type ThirdInterval = '3' | 'b3';
-export type FourthInterval = '4' | '#4';
-export type FifthInterval = '5' | 'b5';
-export type SixthInterval = '6' | 'b6';
-export type SeventhInterval = '7' | 'b7' | 'bb7';
+export type SecondInterval = 'b2' | '2' | '#2';
+export type ThirdInterval = 'b3' | '3';
+export type FourthInterval = 'b4' | '4' | '#4';
+export type FifthInterval = 'b5' | '5' | '#5';
+export type SixthInterval = 'b6' | '6';
+export type SeventhInterval = 'bb7' | 'b7' | '7';
