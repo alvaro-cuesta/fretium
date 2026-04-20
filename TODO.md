@@ -6,7 +6,6 @@
 - More patterns
   - Triads
   - Hexatonic scales
-  - Octatonic scales
   - Chords
 - Curate patterns: e.g. currently dom7 arpeggio G position is wrong(ish)
 - Refactor pattern generation? E.g. tool to automatically mark duplicate options transparent, or automatically find overlapping chords instead of manually doing it
