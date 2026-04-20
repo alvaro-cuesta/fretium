@@ -116,6 +116,15 @@ export const PATTERNS_HEPTATONIC = {
     entries: {
       major: makeHeptatonic('Major', '2', '3', '4', '5', '6', '7'),
       minor: makeHeptatonic('Natural minor', '2', 'b3', '4', '5', 'b6', 'b7'),
+      'melodic-minor': makeHeptatonic(
+        'Melodic minor (ascending)',
+        '2',
+        'b3',
+        '4',
+        '5',
+        '6',
+        '7',
+      ),
       'harmonic-minor': makeHeptatonic(
         'Harmonic minor',
         '2',
@@ -127,7 +136,7 @@ export const PATTERNS_HEPTATONIC = {
       ),
     },
   },
-  modes: {
+  'major-modes': {
     type: 'optgroup',
     displayName: 'Heptatonic - Major modes',
     entries: {
@@ -138,6 +147,51 @@ export const PATTERNS_HEPTATONIC = {
       aeolian: makeHeptatonic('Aeolian', '2', 'b3', '4', '5', 'b6', 'b7'),
       phrygian: makeHeptatonic('Phrygian', 'b2', 'b3', '4', '5', 'b6', 'b7'),
       locrian: makeHeptatonic('Locrian', 'b2', 'b3', '4', 'b5', 'b6', 'b7'),
+    },
+  },
+  'melodic-minor-modes': {
+    type: 'optgroup',
+    displayName: 'Heptatonic - Melodic minor modes',
+    entries: {
+      'melodic-minor': makeHeptatonic(
+        'Ionian ♭3 (Melodic minor)',
+        '2',
+        'b3',
+        '4',
+        '5',
+        '6',
+        '7',
+      ),
+      'dorian-b2': makeHeptatonic('Dorian ♭2', 'b2', 'b3', '4', '5', '6', 'b7'),
+      'lydian-sharp-5': makeHeptatonic(
+        'Lydian ♯5',
+        '2',
+        '3',
+        '#4',
+        '#5',
+        '6',
+        '7',
+      ),
+      'lydian-b7': makeHeptatonic('Lydian ♭7', '2', '3', '#4', '5', '6', 'b7'),
+      'mixolydian-b6': makeHeptatonic(
+        'Mixolydian ♭6',
+        '2',
+        '3',
+        '4',
+        '5',
+        'b6',
+        'b7',
+      ),
+      'locrian-natural-2': makeHeptatonic(
+        'Locrian ♮2',
+        '2',
+        'b3',
+        '4',
+        'b5',
+        'b6',
+        'b7',
+      ),
+      altered: makeHeptatonic('Altered', 'b2', 'b3', 'b4', 'b5', 'b6', 'bb7'),
     },
   },
   'harmonic-minor-modes': {
