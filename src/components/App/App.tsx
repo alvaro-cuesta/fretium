@@ -10,6 +10,7 @@ export function App() {
   const {
     fretboards,
     removingIds,
+    insertingIds,
     updateConfig,
     insertCopyAt,
     removeFretboard,
@@ -73,6 +74,7 @@ export function App() {
               total={fretboards.length}
               config={fretboard.config}
               isRemoving={removingIds.has(fretboard.id)}
+              isInserting={insertingIds.has(fretboard.id)}
               onChangeConfig={(next) => {
                 updateConfig(fretboard.id, next);
               }}

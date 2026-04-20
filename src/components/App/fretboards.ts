@@ -39,14 +39,15 @@ function loadInitialFretboards(): RuntimeFretboard[] {
 }
 
 /**
- * How long the fade-out animation runs before the panel is actually removed
- * from state. Kept in sync with `$remove-animation-ms` in FretboardPanel.module.scss.
+ * How long the fade-out / fade-in animations run. Kept in sync with
+ * `$remove-animation-ms` in FretboardPanel.module.scss.
  *
- * @todo Replace this manual two-phase (mark-removing → setTimeout → drop)
- * orchestration with React's `addTransitionType` + `<ViewTransition>` once
- * those APIs ship out of canary. That would let us express the fade
- * declaratively and drive the animation via CSS view transitions instead of
- * coordinating a removing-set, a timer map, and a matching CSS class.
+ * @todo Replace this manual two-phase (mark-removing → setTimeout → drop, or
+ * mark-inserting → rAF → unmark) orchestration with React's
+ * `addTransitionType` + `<ViewTransition>` once those APIs ship out of canary.
+ * That would let us express the fade declaratively and drive the animation
+ * via CSS view transitions instead of coordinating a set, a timer map, and a
+ * matching CSS class.
  * See https://react.dev/reference/react/addTransitionType
  */
 const REMOVE_ANIMATION_MS = 220;
@@ -71,17 +72,31 @@ export function useFretboards() {
     () => new Set(),
   );
 
+  // IDs freshly inserted and still rendering in their "entering" state for one
+  // frame, so the panel starts at opacity 0 / scaled down and CSS can transition
+  // to its resting state.
+  const [insertingIds, setInsertingIds] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
+
   // Track pending removal timers so an unmount doesn't leave them dangling and
   // so a second removeFretboard(id) for the same id doesn't schedule twice.
   const removeTimersRef = useRef<Map<string, number>>(new Map());
+  // Track pending insertion rAF handles so we can cancel them on unmount.
+  const insertFramesRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     const timers = removeTimersRef.current;
+    const frames = insertFramesRef.current;
     return () => {
       for (const handle of timers.values()) {
         window.clearTimeout(handle);
       }
       timers.clear();
+      for (const handle of frames) {
+        window.cancelAnimationFrame(handle);
+      }
+      frames.clear();
     };
   }, []);
 
@@ -103,14 +118,47 @@ export function useFretboards() {
 
   const insertCopyAt = useCallback(
     (index: number, sourceConfig: FretboardConfig) => {
+      // Generate the id up front so we can flag it as inserting in the same
+      // batch that adds it to the fretboards array.
+      const newFretboard: RuntimeFretboard = {
+        id: crypto.randomUUID(),
+        // structuredClone ensures later edits to one panel don't mutate the
+        // copy through any shared nested references (e.g. `pattern` arrays)
+        config: structuredClone(sourceConfig),
+      };
+
+      setInsertingIds((ids) => {
+        const next = new Set(ids);
+        next.add(newFretboard.id);
+        return next;
+      });
+
       setFretboards((current) => {
         const clamped = Math.max(0, Math.min(index, current.length));
         const next = current.slice();
-        // structuredClone ensures later edits to one panel don't mutate the
-        // copy through any shared nested references (e.g. `pattern` arrays)
-        next.splice(clamped, 0, makeFretboard(structuredClone(sourceConfig)));
+        next.splice(clamped, 0, newFretboard);
         return next;
       });
+
+      // Wait two animation frames before clearing the inserting flag. The first
+      // frame lets React commit and the browser paint the panel in its
+      // entering state (opacity 0 / scale 0.96); the second frame ensures that
+      // paint actually landed so the class-removal triggers a real CSS
+      // transition instead of being collapsed with the initial render.
+      const firstFrame = window.requestAnimationFrame(() => {
+        insertFramesRef.current.delete(firstFrame);
+        const secondFrame = window.requestAnimationFrame(() => {
+          insertFramesRef.current.delete(secondFrame);
+          setInsertingIds((ids) => {
+            if (!ids.has(newFretboard.id)) return ids;
+            const next = new Set(ids);
+            next.delete(newFretboard.id);
+            return next;
+          });
+        });
+        insertFramesRef.current.add(secondFrame);
+      });
+      insertFramesRef.current.add(firstFrame);
     },
     [],
   );
@@ -173,6 +221,7 @@ export function useFretboards() {
   return {
     fretboards,
     removingIds,
+    insertingIds,
     updateConfig,
     insertCopyAt,
     removeFretboard,

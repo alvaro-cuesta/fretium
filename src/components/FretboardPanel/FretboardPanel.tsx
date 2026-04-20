@@ -45,6 +45,8 @@ type FretboardPanelProps = {
   config: FretboardConfig;
   /** True while the panel is mid-fade-out — about to unmount. */
   isRemoving: boolean;
+  /** True for the first frame after mount so the entering animation can play. */
+  isInserting: boolean;
   onChangeConfig: (next: FretboardConfig) => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -59,6 +61,7 @@ export function FretboardPanel({
   total,
   config,
   isRemoving,
+  isInserting,
   onChangeConfig,
   onMoveUp,
   onMoveDown,
@@ -164,7 +167,10 @@ export function FretboardPanel({
     <article
       ref={sortableRef}
       aria-label={`Fretboard ${index + 1}`}
-      className={cx(styles.panel, { [styles.panelRemoving]: isRemoving })}
+      className={cx(styles.panel, {
+        [styles.panelRemoving]: isRemoving,
+        [styles.panelInserting]: isInserting,
+      })}
       aria-hidden={isRemoving}
     >
       <InsertBar
