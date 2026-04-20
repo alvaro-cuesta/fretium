@@ -3,7 +3,12 @@
 ## Data
 
 - Add more instruments and tunings
-- Add more patterns (chords, scales, arpeggios...)
+- More patterns
+  - Triads
+  - Pentatonic scales
+  - Hexatonic scales
+  - Octatonic scales
+  - Chords
 - Curate patterns: e.g. currently dom7 arpeggio G position is wrong(ish)
 - Refactor pattern generation? E.g. tool to automatically mark duplicate options transparent, or automatically find overlapping chords instead of manually doing it
 - Overlap chords on "Arpeggio - Full" -- the same (individual ones) + the full one with all 4 variants!
@@ -16,7 +21,6 @@
   - It should automatically find the best root note to fit the pattern in the diagram, so that the diagram is as compact as possible (e.g. for a Cmaj7 chord, it should choose E as the root note, so that the diagram only shows 4 frets instead of 5)
   - It should also have an option to avoid using open strings, so the Cmaj7 chord chooses F instead
   - Consider thoroughly how this interacts with min/max fret auto options
-- Allow better pattern DSL
 - Add support for custom pattern
   - Needs editing capabilities in the fretboard or maybe a way to allow editing JSON of patterns?
   - Needs a way to save patterns (to hash? to file? to local storage?)
@@ -25,11 +29,6 @@
 - Add a way to customize diagram appearance
   - Colors, fonts, sizes, shown elements... anything that can be customized as `Fretboard` props should be added, plus current constants like `SPACING_BETWEEN_STRINGS`
   - Probably many of the options should be grouped as themes and not individual options, to keep it simple
-- Add a way to display multiple diagrams at once (for chord progressions, scale variations...) -- i.e. sheet mode
-  - Sheet mode should also have a way to customize layout (e.g. number of columns, spacing between diagrams... or even fully custom layout with drag and drop or similar?)
-  - Should also have a special print view
-  - Should also be able to be shared, saved, exported, restored...
-- Add collections (a way to quickly explore via dropdown related chords and scales)
 - Transparent background in SVG only makes sense in the context of the webpage, but not for export, print, etc...
   - Actually it kinda makes sense to support both black/white backgrounds... but it feels weird at the same time -- see what we can do
 - Consider changing complex patterns (e.g we have arpeggio+chord in a single pattern which hasan explosion of combinations) into just allowing having multiple patterns on the same fretboard
@@ -42,6 +41,22 @@
   - But in this specific case (showing multiple chords) we don't want to merge, we want to show all of them!
   - Hard to tell how to do this with these conflicting requirements and still keep UI/UX/pattern DSL simple and intuitive
 - PWA
+
+### Multiple fretboards
+
+- Add a way to display multiple diagrams at once (for chord progressions, scale variations...) -- i.e. sheet mode
+  - Sheet mode should also have a way to customize layout (e.g. number of columns, spacing between diagrams... or even fully custom layout with drag and drop or similar?)
+  - Should also have a special print view
+  - Should also be able to be shared, saved, exported, restored...
+- Add collections (a way to quickly explore via dropdown related chords and scales)
+
+I think the above could be easily implemented by just:
+
+- Having a + button
+- Allowing - removing diagrams
+- Allowing reordering with arrows and/or drag and drop
+- Reworking saved state to use JSON
+- Adding visualization modes for N columns + dropdown (collection mode)
 
 ### Share
 
