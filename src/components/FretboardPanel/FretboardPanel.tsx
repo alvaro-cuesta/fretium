@@ -170,6 +170,7 @@ export function FretboardPanel({
         direction="above"
         showControls={!isSolo}
         isActive={isBarActive}
+        isDragging={isDragging}
         onHoverChange={setIsBarHovered}
         onInsertCopy={onInsertCopyAbove}
         onMove={onMoveUp}
@@ -520,6 +521,7 @@ export function FretboardPanel({
         direction="below"
         showControls={!isSolo}
         isActive={isBarActive}
+        isDragging={isDragging}
         onHoverChange={setIsBarHovered}
         onInsertCopy={onInsertCopyBelow}
         onMove={onMoveDown}

@@ -12,6 +12,11 @@ type InsertBarProps = {
    * or the panel is being dragged.
    */
   isActive: boolean;
+  /**
+   * When true, escalate the active visual to the "dragging" state — stronger
+   * than a plain hover so the user can tell the panel is being moved.
+   */
+  isDragging: boolean;
   /** Called with true/false as the pointer enters/leaves the bar's hit area. */
   onHoverChange: (hovered: boolean) => void;
   onInsertCopy: () => void;
@@ -23,6 +28,7 @@ export function InsertBar({
   direction,
   showControls,
   isActive,
+  isDragging,
   onHoverChange,
   onInsertCopy,
   onMove,
@@ -38,7 +44,7 @@ export function InsertBar({
 
   return (
     <div
-      className={`${styles.wrapper} ${showControls ? styles.wrapperDraggable : ''} ${isActive ? styles.wrapperActive : ''}`}
+      className={`${styles.wrapper} ${showControls ? styles.wrapperDraggable : ''} ${isActive ? styles.wrapperActive : ''} ${isDragging ? styles.wrapperDragging : ''}`}
       onPointerEnter={() => {
         onHoverChange(true);
       }}

@@ -54,6 +54,14 @@ $bar-height: 36px;
   opacity: 1;
 }
 
+// Dragging escalates the active state: a chunkier line in the full accent
+// color so the user can clearly tell the panel is in transit.
+.wrapperDraggable.wrapperDragging .barLine {
+  height: 3px;
+  background: var(--accent);
+  opacity: 1;
+}
+
 // Central + button — always visible, never a drag activator (it's a sibling
 // of .bar so its pointerdown target is not inside the bar).
 .insertButton {
