@@ -3,16 +3,19 @@ import type { PatternRuleNode } from '../../../lib/pattern-engine';
 import {
   ALT_OPACITY,
   type FifthInterval,
+  type FourthInterval,
+  type SecondInterval,
   type SeventhInterval,
+  type SixthInterval,
   type ThirdInterval,
 } from '../common';
 
 type MakeCagedPositionOptions = {
-  secondInterval: '2' | false;
+  secondInterval: SecondInterval | false;
   thirdInterval: ThirdInterval | false;
-  fourthInterval: '4' | false;
+  fourthInterval: FourthInterval | false;
   fifthInterval: FifthInterval | false;
-  sixthInterval: '6' | false;
+  sixthInterval: SixthInterval | false;
   seventhInterval: SeventhInterval | false;
   rootColor: FretboardNoteColorName;
   toneColor: FretboardNoteColorName;
