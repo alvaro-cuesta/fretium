@@ -24,10 +24,12 @@ test('flattens optgroup children and prefixes their values with the parent optgr
       .find((group) => group.displayName === 'Arpeggios')
       ?.options.map((option) => option.value),
   ).toEqual([
-    'heptatonic/major',
-    'heptatonic/minor',
-    'heptatonic/melodic-minor',
-    'heptatonic/harmonic-minor',
+    'arpeggios/maj7',
+    'arpeggios/dom7',
+    'arpeggios/min7',
+    'arpeggios/min7b5',
+    'arpeggios/dim7',
+    'arpeggios/minMaj7',
   ]);
 
   const arpeggioEntry = getPatternConfigEntryAtPath(PATTERNS_GROUPED, [

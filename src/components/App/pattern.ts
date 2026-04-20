@@ -16,7 +16,9 @@ import { HISTORY_STATE_KEYS } from './history';
 
 type GroupedPatternPath = ValidatedPatternPath<typeof PATTERNS_GROUPED>;
 
-const DEFAULT_PATTERN_PATH = coercePatternPath(PATTERNS_GROUPED, []);
+const DEFAULT_PATTERN_PATH = coercePatternPath(PATTERNS_GROUPED, [
+  'heptatonic',
+]);
 
 const GROUPED_PATTERN_VALUE_SEPARATOR = '/';
 

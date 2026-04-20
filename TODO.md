@@ -5,7 +5,6 @@
 - Add more instruments and tunings
 - More patterns
   - Triads
-  - Pentatonic scales
   - Hexatonic scales
   - Octatonic scales
   - Chords
