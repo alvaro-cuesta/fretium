@@ -89,3 +89,5 @@ I think the above could be easily implemented by just:
   - Download .txt file
   - Copy to clipboard as text
 - Add a way to specify (and display) fingerings in diagrams
+
+replace line with 3 lines?
