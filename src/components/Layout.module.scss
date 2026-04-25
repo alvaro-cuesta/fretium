@@ -5,7 +5,11 @@ $page-margin: 16px;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  // Anchor content to the top so adding/removing panels doesn't shift the
+  // page vertically (which a centered layout would do as total height grows
+  // and shrinks). Footer follows the main content directly — no auto margin
+  // — so its position relative to the content stays consistent too.
+  justify-content: flex-start;
   align-items: center;
   gap: 12px;
   padding: clamp(12px, 2.5svh, 24px) 0;
