@@ -68,8 +68,14 @@ export function InsertBar({
         aria-hidden="true"
         data-drag-bar={showControls ? 'true' : undefined}
       >
-        <span className={styles.barLine} />
-        <span className={styles.barLine} />
+        <span className={styles.barLine}>
+          <span />
+          <span />
+        </span>
+        <span className={styles.barLine}>
+          <span />
+          <span />
+        </span>
       </div>
 
       {/*

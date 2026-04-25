@@ -22,20 +22,50 @@ $bar-height: 36px;
   align-items: center;
   justify-content: center;
   gap: 44px; // leaves a gap in the middle for the + button to visually sit in
+
+  // Fade the lines toward the far left/right ends of the bar so they don't
+  // hard-stop against the panel edges.
+  $fade: 40px;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 $fade,
+    #000 calc(100% - #{$fade}),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 $fade,
+    #000 calc(100% - #{$fade}),
+    transparent
+  );
 }
 
+// Each half of the drag bar renders two thin stacked lines.
 .barLine {
   flex: 1;
-  height: 1px;
-  background: var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
   opacity: 0.6;
-  transition:
-    height $bar-transition,
-    background-color $bar-transition,
-    opacity $bar-transition;
+  transition: opacity $bar-transition;
 }
 
-// When the bar is draggable (N > 1): grab cursor + hover thickens the line.
+.barLine > span {
+  height: 1px;
+  background: var(--border);
+  transition: background-color $bar-transition;
+}
+
+// Hide the lines entirely when the panel is solo (not draggable). The +
+// button is a sibling of .bar and stays visible.
+.wrapper:not(.wrapperDraggable) .bar {
+  display: none;
+}
+
+// When the bar is draggable (N > 1): grab cursor.
 .wrapperDraggable .bar {
   cursor: grab;
 
@@ -49,17 +79,18 @@ $bar-height: 36px;
 // while the panel is being dragged).
 .wrapperDraggable:hover .barLine,
 .wrapperDraggable.wrapperActive .barLine {
-  height: 2px;
-  background: var(--accent-border);
   opacity: 1;
 }
 
-// Dragging escalates the active state: a chunkier line in the full accent
-// color so the user can clearly tell the panel is in transit.
-.wrapperDraggable.wrapperDragging .barLine {
-  height: 3px;
+.wrapperDraggable:hover .barLine > span,
+.wrapperDraggable.wrapperActive .barLine > span {
+  background: var(--accent-border);
+}
+
+// Dragging escalates the active state: full accent color so the user can
+// clearly tell the panel is in transit.
+.wrapperDraggable.wrapperDragging .barLine > span {
   background: var(--accent);
-  opacity: 1;
 }
 
 // Central + button — always visible, never a drag activator (it's a sibling
