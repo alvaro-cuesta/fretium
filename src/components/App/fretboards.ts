@@ -39,18 +39,14 @@ function loadInitialFretboards(): RuntimeFretboard[] {
 }
 
 /**
- * How long the fade-out / fade-in animations run. Kept in sync with
- * `$remove-animation-ms` in FretboardPanel.module.scss.
- *
- * @todo Replace this manual two-phase (mark-removing → setTimeout → drop, or
- * mark-inserting → rAF → unmark) orchestration with React's
+ * @todo Replace this manual two-phase (mark-removing → transitionend → drop,
+ * or mark-inserting → rAF → unmark) orchestration with React's
  * `addTransitionType` + `<ViewTransition>` once those APIs ship out of canary.
  * That would let us express the fade declaratively and drive the animation
- * via CSS view transitions instead of coordinating a set, a timer map, and a
- * matching CSS class.
+ * via CSS view transitions instead of coordinating a set and a matching CSS
+ * class.
  * See https://react.dev/reference/react/addTransitionType
  */
-const REMOVE_ANIMATION_MS = 220;
 
 function moveItem<T>(items: readonly T[], from: number, to: number): T[] {
   if (from === to || from < 0 || from >= items.length) return items.slice();
@@ -79,20 +75,12 @@ export function useFretboards() {
     () => new Set(),
   );
 
-  // Track pending removal timers so an unmount doesn't leave them dangling and
-  // so a second removeFretboard(id) for the same id doesn't schedule twice.
-  const removeTimersRef = useRef<Map<string, number>>(new Map());
   // Track pending insertion rAF handles so we can cancel them on unmount.
   const insertFramesRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
-    const timers = removeTimersRef.current;
     const frames = insertFramesRef.current;
     return () => {
-      for (const handle of timers.values()) {
-        window.clearTimeout(handle);
-      }
-      timers.clear();
       for (const handle of frames) {
         window.cancelAnimationFrame(handle);
       }
@@ -163,34 +151,32 @@ export function useFretboards() {
     [],
   );
 
+  // Flags the panel as removing so it fades out via CSS. The actual unmount is
+  // deferred until the panel reports its fade-out is done via finalizeRemoval.
   const removeFretboard = useCallback((id: string) => {
-    // Ignore if already scheduled for removal
-    if (removeTimersRef.current.has(id)) return;
-
     setRemovingIds((ids) => {
       if (ids.has(id)) return ids;
       const next = new Set(ids);
       next.add(id);
       return next;
     });
+  }, []);
 
-    const handle = window.setTimeout(() => {
-      removeTimersRef.current.delete(id);
-      setFretboards((current) => {
-        // Always keep at least one panel — the trash button is disabled when
-        // there's only one, but guard here too in case of races/programmatic use
-        if (current.length <= 1) return current;
-        return current.filter((f) => f.id !== id);
-      });
-      setRemovingIds((ids) => {
-        if (!ids.has(id)) return ids;
-        const next = new Set(ids);
-        next.delete(id);
-        return next;
-      });
-    }, REMOVE_ANIMATION_MS);
-
-    removeTimersRef.current.set(id, handle);
+  // Called by the panel itself when its remove transition ends (or is
+  // canceled). Drops it from state and clears the removing flag.
+  const finalizeRemoval = useCallback((id: string) => {
+    setFretboards((current) => {
+      // Always keep at least one panel — the trash button is disabled when
+      // there's only one, but guard here too in case of races/programmatic use
+      if (current.length <= 1) return current;
+      return current.filter((f) => f.id !== id);
+    });
+    setRemovingIds((ids) => {
+      if (!ids.has(id)) return ids;
+      const next = new Set(ids);
+      next.delete(id);
+      return next;
+    });
   }, []);
 
   // Move up/down wrap around: clicking up on the first panel moves it to the
@@ -225,6 +211,7 @@ export function useFretboards() {
     updateConfig,
     insertCopyAt,
     removeFretboard,
+    finalizeRemoval,
     moveUp,
     moveDown,
     reorder,

@@ -1,6 +1,8 @@
 $page-margin: 16px;
-// Keep in sync with REMOVE_ANIMATION_MS in src/components/App/fretboards.ts
-$remove-animation-ms: 220ms;
+// Drives both the enter and remove transitions on `.panel`. The unmount on
+// remove is driven by transitionend on the panel element, so this is the
+// single source of truth for panel animation timing.
+$panel-animation-ms: 220ms;
 
 .panel {
   display: flex;
@@ -9,8 +11,8 @@ $remove-animation-ms: 220ms;
   width: 100%;
   margin: 0;
   transition:
-    opacity $remove-animation-ms ease,
-    transform $remove-animation-ms ease;
+    opacity $panel-animation-ms ease,
+    transform $panel-animation-ms ease;
   // Keep panels on their own compositor layer so the first insert/delete
   // doesn't pay a layer-promotion cost mid-transition (notably on Firefox
   // mobile). Panels are also transform-animated by @dnd-kit during reorders.

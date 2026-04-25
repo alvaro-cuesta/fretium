@@ -14,6 +14,7 @@ export function App() {
     updateConfig,
     insertCopyAt,
     removeFretboard,
+    finalizeRemoval,
     moveUp,
     moveDown,
     reorder,
@@ -75,6 +76,9 @@ export function App() {
               config={fretboard.config}
               isRemoving={removingIds.has(fretboard.id)}
               isInserting={insertingIds.has(fretboard.id)}
+              onRemoveAnimationEnd={() => {
+                finalizeRemoval(fretboard.id);
+              }}
               onChangeConfig={(next) => {
                 updateConfig(fretboard.id, next);
               }}

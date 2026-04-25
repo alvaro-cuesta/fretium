@@ -1,7 +1,7 @@
 import { PointerSensor } from '@dnd-kit/react';
 import { useSortable } from '@dnd-kit/react/sortable';
 import cx from 'classnames';
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { objectKeys } from '../../../lib/object.ts';
 import { INSTRUMENTS } from '../../config/instruments.ts';
 import { PATTERNS_GROUPED } from '../../config/patterns/patterns.ts';
@@ -47,6 +47,8 @@ type FretboardPanelProps = {
   isRemoving: boolean;
   /** True for the first frame after mount so the entering animation can play. */
   isInserting: boolean;
+  /** Called when the remove transition finishes so the parent can drop us. */
+  onRemoveAnimationEnd: () => void;
   onChangeConfig: (next: FretboardConfig) => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -62,6 +64,7 @@ export function FretboardPanel({
   config,
   isRemoving,
   isInserting,
+  onRemoveAnimationEnd,
   onChangeConfig,
   onMoveUp,
   onMoveDown,
@@ -102,6 +105,48 @@ export function FretboardPanel({
     disabled: isSolo,
     sensors,
   });
+
+  // We need direct access to the panel element to listen for transitionend on
+  // the remove animation, but `useSortable` already takes the article's ref.
+  // Combine them: store the element ourselves AND forward to dnd-kit.
+  const panelRef = useRef<HTMLElement | null>(null);
+  const setPanelRef = useCallback(
+    (el: HTMLElement | null) => {
+      panelRef.current = el;
+      sortableRef(el);
+    },
+    [sortableRef],
+  );
+
+  // While the panel is fading out, finalize the removal as soon as the opacity
+  // transition ends (or is canceled — e.g. interrupted by another animation).
+  // CSS owns the timing; we just observe.
+  useEffect(() => {
+    if (!isRemoving) return;
+    const el = panelRef.current;
+    if (!el) return;
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      onRemoveAnimationEnd();
+    };
+    const handle = (event: TransitionEvent) => {
+      // The transition declaration animates both opacity and transform — only
+      // count one of them, and ignore bubbled transitions from descendants.
+      if (event.target !== el) return;
+      if (event.propertyName !== 'opacity') return;
+      finish();
+    };
+
+    el.addEventListener('transitionend', handle);
+    el.addEventListener('transitioncancel', handle);
+    return () => {
+      el.removeEventListener('transitionend', handle);
+      el.removeEventListener('transitioncancel', handle);
+    };
+  }, [isRemoving, onRemoveAnimationEnd]);
 
   // The above and below bars belong to the same panel, so hovering either one
   // should light up both — and both stay lit while the panel is being dragged.
@@ -165,7 +210,7 @@ export function FretboardPanel({
 
   return (
     <article
-      ref={sortableRef}
+      ref={setPanelRef}
       aria-label={`Fretboard ${index + 1}`}
       className={cx(styles.panel, {
         [styles.panelRemoving]: isRemoving,
