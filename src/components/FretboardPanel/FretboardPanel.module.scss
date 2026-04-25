@@ -11,6 +11,10 @@ $remove-animation-ms: 220ms;
   transition:
     opacity $remove-animation-ms ease,
     transform $remove-animation-ms ease;
+  // Keep panels on their own compositor layer so the first insert/delete
+  // doesn't pay a layer-promotion cost mid-transition (notably on Firefox
+  // mobile). Panels are also transform-animated by @dnd-kit during reorders.
+  will-change: transform, opacity;
 }
 
 // Fade-out state — set while the panel is waiting to unmount so the user sees
