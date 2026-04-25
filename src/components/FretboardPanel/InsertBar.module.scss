@@ -81,6 +81,20 @@ $bar-height: 36px;
   }
 }
 
+// Centered overlay that pins the move/delete buttons to the controls card's
+// horizontal extent rather than the full bar. inset: 0 + max-width + auto
+// margins centers it; on viewports narrower than 900px it collapses to the
+// bar's width so the buttons stay near the edges. pointer-events: none lets
+// pointerdowns fall through to the bar (so dnd-kit's drag activation still
+// works); buttons re-enable hits below.
+.sideButtons {
+  position: absolute;
+  inset: 0;
+  max-width: 900px;
+  margin-inline: auto;
+  pointer-events: none;
+}
+
 .iconButton {
   position: absolute;
   top: 50%;
@@ -93,6 +107,7 @@ $bar-height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  pointer-events: auto;
 
   > svg {
     display: block;

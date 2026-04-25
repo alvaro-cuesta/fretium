@@ -72,20 +72,46 @@ export function InsertBar({
         <span className={styles.barLine} />
       </div>
 
-      {showControls && (
-        <button
-          type="button"
-          className={cx(
-            globalStyles.linkButton,
-            styles.iconButton,
-            styles.moveButton,
-          )}
-          aria-label={moveLabel}
-          onClick={onMove}
-        >
-          <MoveIcon />
-        </button>
-      )}
+      {/*
+        Side-button overlay: centered, max-width matches the controls card so
+        the move/delete buttons sit at the controls' edges instead of the bar's
+        edges. pointer-events: none lets pointerdowns fall through to the bar
+        below; the buttons re-enable their own hits.
+      */}
+      <div
+        className={styles.sideButtons}
+        aria-hidden={!showControls}
+      >
+        {showControls && (
+          <button
+            type="button"
+            className={cx(
+              globalStyles.linkButton,
+              styles.iconButton,
+              styles.moveButton,
+            )}
+            aria-label={moveLabel}
+            onClick={onMove}
+          >
+            <MoveIcon />
+          </button>
+        )}
+
+        {showControls && (
+          <button
+            type="button"
+            className={cx(
+              globalStyles.linkButton,
+              styles.iconButton,
+              styles.deleteButton,
+            )}
+            aria-label="Delete fretboard"
+            onClick={onRequestDelete}
+          >
+            <TrashIcon />
+          </button>
+        )}
+      </div>
 
       <button
         type="button"
@@ -95,21 +121,6 @@ export function InsertBar({
       >
         <PlusIcon />
       </button>
-
-      {showControls && (
-        <button
-          type="button"
-          className={cx(
-            globalStyles.linkButton,
-            styles.iconButton,
-            styles.deleteButton,
-          )}
-          aria-label="Delete fretboard"
-          onClick={onRequestDelete}
-        >
-          <TrashIcon />
-        </button>
-      )}
     </div>
   );
 }
