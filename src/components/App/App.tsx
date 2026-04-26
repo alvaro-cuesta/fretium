@@ -140,10 +140,9 @@ export function App() {
 
       <ConfirmDialog
         open={pendingDeleteId !== null}
-        icon={<TrashIcon />}
         title="Delete fretboard?"
         body="This action cannot be undone."
-        confirmLabel="Delete"
+        confirmLabel={<><TrashIcon /> Delete</>}
         cancelLabel="Cancel"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

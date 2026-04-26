@@ -23,9 +23,6 @@
   margin: 0;
   font-size: 1.15rem;
   color: var(--text-h);
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .body {
@@ -40,6 +37,9 @@
 }
 
 .confirmButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border-color: color-mix(in srgb, #d81e5b 70%, var(--border) 30%);
   background: color-mix(in srgb, #d81e5b 14%, var(--bg) 86%);
   color: var(--text-h);
