@@ -86,46 +86,44 @@ export function App() {
     return result;
   }, [fretboards, removingIds, panelImgData]);
 
-  // Solo print: inject a <style> with an @media print rule that hides every
-  // panel except the target. Because the rule is scoped to print media it has
-  // zero effect on screen, so it can stay in the DOM until the next print
-  // action — no afterprint cleanup needed (Chrome Android fires afterprint
-  // *before* the print dialog opens, which would undo React-state approaches).
-  const soloPrintStyleRef = useRef<HTMLStyleElement | null>(null);
-  // Flag to distinguish our own window.print() calls from native Ctrl+P.
-  const isProgrammaticPrintRef = useRef(false);
+  // Solo print: render a <style> in JSX (not manually injected) that hides
+  // every panel except the target. Chrome Android doesn't pick up dynamically
+  // injected <style> elements for print capture, but styles committed to the
+  // DOM via React's render cycle are included. The style uses @media print so
+  // it's invisible on screen and can stay in the DOM until the next print.
+  const [soloPrintId, setSoloPrintId] = useState<string | null>(null);
+  // When soloPrintId changes from null → id, trigger print after React commits.
+  const pendingPrintRef = useRef<'solo' | 'all' | null>(null);
 
-  // If the user triggers print natively (Ctrl+P / browser menu) while a stale
-  // solo-print style is still in the DOM, clear it so all panels print.
   useEffect(() => {
-    const clearSoloPrintStyle = () => {
-      if (isProgrammaticPrintRef.current) {
-        isProgrammaticPrintRef.current = false;
-        return;
-      }
-      soloPrintStyleRef.current?.remove();
-      soloPrintStyleRef.current = null;
+    if (pendingPrintRef.current === null) return;
+    pendingPrintRef.current = null;
+    window.print();
+  });
+
+  // Clear stale solo-print style when the user triggers print natively
+  // (Ctrl+P) — beforeprint fires before our programmatic prints too, but
+  // handlePrintSolo sets the state synchronously before window.print() so the
+  // style is already re-applied by then.
+  useEffect(() => {
+    const handleBeforePrint = () => {
+      if (pendingPrintRef.current !== null) return;
+      setSoloPrintId(null);
     };
-    window.addEventListener('beforeprint', clearSoloPrintStyle);
+    window.addEventListener('beforeprint', handleBeforePrint);
     return () => {
-      window.removeEventListener('beforeprint', clearSoloPrintStyle);
+      window.removeEventListener('beforeprint', handleBeforePrint);
     };
   }, []);
 
   const handlePrintSolo = useCallback((id: string) => {
-    soloPrintStyleRef.current?.remove();
-    const style = document.createElement('style');
-    style.textContent = `@media print { article[data-panel-id]:not([data-panel-id="${id}"]) { display: none !important; } }`;
-    document.head.appendChild(style);
-    soloPrintStyleRef.current = style;
-    isProgrammaticPrintRef.current = true;
-    window.print();
+    pendingPrintRef.current = 'solo';
+    setSoloPrintId(id);
   }, []);
 
   const handlePrintAll = useCallback(() => {
-    soloPrintStyleRef.current?.remove();
-    soloPrintStyleRef.current = null;
-    window.print();
+    pendingPrintRef.current = 'all';
+    setSoloPrintId(null);
   }, []);
 
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -143,6 +141,13 @@ export function App() {
 
   return (
     <Layout>
+      {soloPrintId && (
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `@media print { article[data-panel-id]:not([data-panel-id="${soloPrintId}"]) { display: none !important; } }`,
+          }}
+        />
+      )}
       <DragDropProvider
         onDragEnd={(event) => {
           if (event.canceled) return;
