@@ -1,3 +1,5 @@
+$page-margin: 16px;
+
 .controlsSection {
   display: grid;
   grid-template-columns: minmax(0, max-content);
@@ -94,6 +96,10 @@
     grid-template-columns: minmax(0, 1fr);
     padding: 12px 14px;
     border-radius: 14px;
+    // Fill the viewport (minus page margins) so the 3-column checkbox row
+    // always has enough horizontal space — fit-content sizing would let the
+    // section shrink below 3-col width on mobile.
+    width: calc(100% - (2 * #{$page-margin}));
   }
 
   .controlsForm {
@@ -124,7 +130,7 @@
 
   .checkboxRow {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: start;
     gap: 8px 12px;
   }
