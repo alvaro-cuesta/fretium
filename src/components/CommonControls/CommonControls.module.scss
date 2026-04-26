@@ -104,11 +104,10 @@ $page-margin: 16px;
 
   .controlsForm {
     align-items: stretch;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas:
-      'instrument'
-      'noteLabels'
-      'checkboxes';
+      'instrument noteLabels'
+      'checkboxes checkboxes';
     gap: 10px 12px;
   }
 
