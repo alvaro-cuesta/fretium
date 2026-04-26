@@ -79,6 +79,11 @@ $page-margin: 16px;
     gap: 4px;
   }
 
+  .header,
+  .footer {
+    break-inside: avoid;
+  }
+
   .main {
     gap: 4px;
   }
