@@ -11,12 +11,11 @@ const PNG_EXPORT_SCALE_SD = 2 as const;
 const PNG_EXPORT_SCALE_HD = 4 as const;
 const TOAST_DURATION_MS = 3000;
 
-async function copyToClipboard(
-  contentType: string,
-  data: string | Blob | PromiseLike<string | Blob>,
-) {
-  await navigator.clipboard.write([new ClipboardItem({ [contentType]: data })]);
-}
+// Whether the browser supports programmatic clipboard writes. When false the
+// "Copy to clipboard" menu items are hidden entirely.
+const CAN_COPY_TO_CLIPBOARD =
+  typeof ClipboardItem !== 'undefined' &&
+  typeof navigator.clipboard?.write === 'function';
 
 async function downloadSvgAsPng(
   svgUrl: string,
@@ -28,13 +27,16 @@ async function downloadSvgAsPng(
   downloadBlob(pngBlob, `${filenameBase}.png`);
 }
 
-async function copySvgToClipboardPng(
-  svgUrl: string,
-  width: number,
-  height: number,
-) {
-  const pngBlob = await rasterizeSvg(svgUrl, PNG_CONTENT_TYPE, width, height);
-  await copyToClipboard(PNG_CONTENT_TYPE, pngBlob);
+// Pass the rasterization Promise directly to ClipboardItem so the
+// clipboard.write call happens synchronously within the user gesture —
+// if we await the rasterization first, mobile browsers reject the write
+// because the gesture has expired by the time we reach clipboard.write.
+function copySvgToClipboardPng(svgUrl: string, width: number, height: number) {
+  return navigator.clipboard.write([
+    new ClipboardItem({
+      [PNG_CONTENT_TYPE]: rasterizeSvg(svgUrl, PNG_CONTENT_TYPE, width, height),
+    }),
+  ]);
 }
 
 // @todo Consider using dataUrl here?
@@ -238,41 +240,45 @@ export function SaveMenu(props: SaveMenuProps) {
                 </span>
               </button>
 
-              <button
-                type="button"
-                role="menuitem"
-                className={cx(globalStyles.linkButton, menuItemClassName)}
-                onClick={() => {
-                  closeMenu();
+              {CAN_COPY_TO_CLIPBOARD && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    closeMenu();
 
-                  void handleCopy(
-                    props.width * PNG_EXPORT_SCALE_SD,
-                    props.height * PNG_EXPORT_SCALE_SD,
-                  );
-                }}
-              >
-                <span>
-                  Copy to clipboard <small>(SD)</small>
-                </span>
-              </button>
+                    void handleCopy(
+                      props.width * PNG_EXPORT_SCALE_SD,
+                      props.height * PNG_EXPORT_SCALE_SD,
+                    );
+                  }}
+                >
+                  <span>
+                    Copy to clipboard <small>(SD)</small>
+                  </span>
+                </button>
+              )}
 
-              <button
-                type="button"
-                role="menuitem"
-                className={cx(globalStyles.linkButton, menuItemClassName)}
-                onClick={() => {
-                  closeMenu();
+              {CAN_COPY_TO_CLIPBOARD && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    closeMenu();
 
-                  void handleCopy(
-                    props.width * PNG_EXPORT_SCALE_HD,
-                    props.height * PNG_EXPORT_SCALE_HD,
-                  );
-                }}
-              >
-                <span>
-                  Copy to clipboard <small>(HD)</small>
-                </span>
-              </button>
+                    void handleCopy(
+                      props.width * PNG_EXPORT_SCALE_HD,
+                      props.height * PNG_EXPORT_SCALE_HD,
+                    );
+                  }}
+                >
+                  <span>
+                    Copy to clipboard <small>(HD)</small>
+                  </span>
+                </button>
+              )}
             </div>
           </>
         )}
