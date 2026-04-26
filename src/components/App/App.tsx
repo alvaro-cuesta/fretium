@@ -99,31 +99,14 @@ export function App() {
 
   useEffect(() => {
     if (!pendingPrintRef.current) return;
-    pendingPrintRef.current = false;
+    // Keep the flag true through window.print() — Chrome Android fires
+    // beforeprint synchronously during the call, and our listener uses the
+    // flag to avoid clearing soloPrintId before the capture happens.
     debugLog('3-useEffect');
-
-    // Also hide via direct DOM as belt-and-suspenders
-    if (soloPrintId) {
-      document.querySelectorAll('article[data-panel-id]').forEach((el) => {
-        if (
-          el instanceof HTMLElement &&
-          el.dataset['panelId'] !== soloPrintId
-        ) {
-          el.style.display = 'none';
-        }
-      });
-    }
-
-    debugLog('4-dom-hidden');
+    debugLog('4-calling-print');
     window.print();
+    pendingPrintRef.current = false;
     debugLog('5-after-print');
-
-    // Restore direct DOM changes
-    document.querySelectorAll('article[data-panel-id]').forEach((el) => {
-      if (el instanceof HTMLElement) {
-        el.style.display = '';
-      }
-    });
   });
 
   useEffect(() => {
