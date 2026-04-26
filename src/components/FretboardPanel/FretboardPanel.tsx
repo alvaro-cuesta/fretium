@@ -60,6 +60,10 @@ type FretboardPanelProps = {
   total: number;
   config: FretboardConfig;
   commonConfig: CommonConfig;
+  /** Widest SVG viewBox width across all visible panels — used for uniform print scaling. */
+  maxFretboardWidth: number;
+  /** Reports this panel's SVG viewBox width so the parent can track the widest. */
+  onFretboardWidthChange: (width: number) => void;
   /** True while the panel is mid-fade-out — about to unmount. */
   isRemoving: boolean;
   /** True for the first frame after mount so the entering animation can play. */
@@ -80,6 +84,8 @@ export function FretboardPanel({
   total,
   config,
   commonConfig,
+  maxFretboardWidth,
+  onFretboardWidthChange,
   isRemoving,
   isInserting,
   onRemoveAnimationEnd,
@@ -221,6 +227,20 @@ export function FretboardPanel({
       commonConfig.showFretLabels,
     ],
   );
+
+  // Report this panel's SVG width so the parent can find the widest for
+  // uniform print scaling.
+  useEffect(() => {
+    onFretboardWidthChange(fretboardMetrics.total.width);
+  }, [fretboardMetrics.total.width, onFretboardWidthChange]);
+
+  // In print, each fretboard's width is a percentage of the page content area
+  // so that the widest panel = 100% and smaller ones shrink proportionally —
+  // giving every diagram the same visual scale (same px-per-fret ratio).
+  const printWidthPercent =
+    maxFretboardWidth > 0
+      ? (fretboardMetrics.total.width / maxFretboardWidth) * 100
+      : 100;
 
   const patch = (next: Partial<FretboardConfig>) => {
     onChangeConfig({ ...config, ...next });
@@ -418,6 +438,11 @@ export function FretboardPanel({
           <Scrollable>
             <FretboardImg
               className={styles.fretboardImg}
+              style={
+                {
+                  '--print-width': `${printWidthPercent}%`,
+                } as React.CSSProperties
+              }
               onImgChange={(nextFretboardImg) => {
                 setFretboardImg(nextFretboardImg);
               }}

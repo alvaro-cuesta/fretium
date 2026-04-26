@@ -57,3 +57,24 @@ $gradient-stop: 58%;
 .content {
   display: inline-block;
 }
+
+// In print there's no scrolling, so flatten the fit-content / inline-block
+// sizing chain so that percentage-based child widths resolve against the
+// actual page content area.
+@media print {
+  .root {
+    width: 100%;
+    max-width: none;
+  }
+
+  .scroller {
+    width: 100%;
+    max-width: none;
+    overflow: visible;
+  }
+
+  .content {
+    display: block;
+    width: 100%;
+  }
+}

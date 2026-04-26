@@ -1,5 +1,5 @@
 import { DragDropProvider } from '@dnd-kit/react';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { CommonControls } from '../CommonControls/CommonControls.tsx';
 import { ConfirmDialog } from '../ConfirmDialog.tsx';
 import { FretboardPanel } from '../FretboardPanel/FretboardPanel.tsx';
@@ -22,6 +22,28 @@ export function App() {
     moveDown,
     reorder,
   } = useAppState();
+
+  // Track each panel's SVG viewBox width so we can print all fretboards at
+  // the same scale — the widest dictates 100% page width, others shrink
+  // proportionally.
+  const [panelWidths, setPanelWidths] = useState<Map<string, number>>(
+    () => new Map(),
+  );
+  const reportPanelWidth = useCallback((id: string, width: number) => {
+    setPanelWidths((prev) => {
+      if (prev.get(id) === width) return prev;
+      const next = new Map(prev);
+      next.set(id, width);
+      return next;
+    });
+  }, []);
+  const maxFretboardWidth = useMemo(() => {
+    let max = 0;
+    for (const [id, w] of panelWidths) {
+      if (!removingIds.has(id) && w > max) max = w;
+    }
+    return max;
+  }, [panelWidths, removingIds]);
 
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
@@ -83,6 +105,10 @@ export function App() {
               total={fretboards.length}
               config={fretboard.config}
               commonConfig={commonConfig}
+              maxFretboardWidth={maxFretboardWidth}
+              onFretboardWidthChange={(width) => {
+                reportPanelWidth(fretboard.id, width);
+              }}
               isRemoving={removingIds.has(fretboard.id)}
               isInserting={insertingIds.has(fretboard.id)}
               onRemoveAnimationEnd={() => {

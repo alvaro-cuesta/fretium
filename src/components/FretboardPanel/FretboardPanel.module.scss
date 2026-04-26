@@ -219,13 +219,22 @@ $panel-animation-ms: 220ms;
 }
 
 @media print {
+  .panel {
+    break-inside: avoid;
+  }
+
   .fretboardSection {
+    width: 100%;
     max-width: none;
   }
 
-  // Don't override the screen `height: clamp(...)` on the img: that explicit
-  // height keeps the box non-zero and lets the browser drive width from the
-  // intrinsic aspect ratio. The previous `width: 100%; height: auto` override
-  // created a circular reference inside Scrollable's fit-content/inline-block
-  // chain and could collapse the img to 0×0 in print.
+  // Each panel's --print-width is set from JS as a percentage of the page
+  // content area: the widest fretboard = 100%, others shrink proportionally
+  // so every diagram prints at the same visual scale.
+  .fretboardImg {
+    width: var(--print-width, auto);
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
 }

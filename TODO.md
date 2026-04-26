@@ -89,3 +89,7 @@ I think the above could be easily implemented by just:
   - Download .txt file
   - Copy to clipboard as text
 - Add a way to specify (and display) fingerings in diagrams
+
+In mobile merge the "instrument" and "note labels" dropdowns into a single line
+
+Simplify controls (dropdowns) in print view -- show the dropdown itself as just text
