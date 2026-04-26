@@ -1,6 +1,5 @@
 import { DragDropProvider } from '@dnd-kit/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { flushSync } from 'react-dom';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { CommonControls } from '../CommonControls/CommonControls.tsx';
 import { ConfirmDialog } from '../ConfirmDialog.tsx';
 import { FretboardPanel } from '../FretboardPanel/FretboardPanel.tsx';
@@ -87,32 +86,25 @@ export function App() {
     return result;
   }, [fretboards, removingIds, panelImgData]);
 
-  // Solo print: when set, only the targeted panel is visible in print.
-  // Cleared via the afterprint event.
-  const [soloPrintId, setSoloPrintId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleAfterPrint = () => {
-      setSoloPrintId(null);
-    };
-    window.addEventListener('afterprint', handleAfterPrint);
-    return () => {
-      window.removeEventListener('afterprint', handleAfterPrint);
-    };
-  }, []);
+  // Solo print: inject a <style> with an @media print rule that hides every
+  // panel except the target. Because the rule is scoped to print media it has
+  // zero effect on screen, so it can stay in the DOM until the next print
+  // action — no afterprint cleanup needed (Chrome Android fires afterprint
+  // *before* the print dialog opens, which would undo React-state approaches).
+  const soloPrintStyleRef = useRef<HTMLStyleElement | null>(null);
 
   const handlePrintSolo = useCallback((id: string) => {
-    // flushSync guarantees React commits the DOM update (adding the
-    // panelPrintHidden class) before window.print() captures the page.
-    // Without it, Chrome's print preview renders before the async commit.
-    // eslint-disable-next-line react-dom/no-flush-sync -- intentional: window.print() must see the committed DOM
-    flushSync(() => {
-      setSoloPrintId(id);
-    });
+    soloPrintStyleRef.current?.remove();
+    const style = document.createElement('style');
+    style.textContent = `@media print { article[data-panel-id]:not([data-panel-id="${id}"]) { display: none !important; } }`;
+    document.head.appendChild(style);
+    soloPrintStyleRef.current = style;
     window.print();
   }, []);
 
   const handlePrintAll = useCallback(() => {
+    soloPrintStyleRef.current?.remove();
+    soloPrintStyleRef.current = null;
     window.print();
   }, []);
 
@@ -188,9 +180,6 @@ export function App() {
               onPrintSolo={() => {
                 handlePrintSolo(fretboard.id);
               }}
-              isPrintHidden={
-                soloPrintId !== null && soloPrintId !== fretboard.id
-              }
               isRemoving={removingIds.has(fretboard.id)}
               isInserting={insertingIds.has(fretboard.id)}
               onRemoveAnimationEnd={() => {

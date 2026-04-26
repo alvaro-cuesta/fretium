@@ -75,8 +75,6 @@ type FretboardPanelProps = {
   ) => void;
   /** Triggers a print showing only this panel. */
   onPrintSolo: () => void;
-  /** True when another panel is being solo-printed — hides this one in print. */
-  isPrintHidden: boolean;
   /** True while the panel is mid-fade-out — about to unmount. */
   isRemoving: boolean;
   /** True for the first frame after mount so the entering animation can play. */
@@ -101,7 +99,6 @@ export function FretboardPanel({
   onFretboardWidthChange,
   onImgDataChange,
   onPrintSolo,
-  isPrintHidden,
   isRemoving,
   isInserting,
   onRemoveAnimationEnd,
@@ -302,10 +299,10 @@ export function FretboardPanel({
     <article
       ref={setPanelRef}
       aria-label={`Fretboard ${index + 1}`}
+      data-panel-id={id}
       className={cx(styles.panel, {
         [styles.panelRemoving]: isRemoving,
         [styles.panelInserting]: isInserting,
-        [styles.panelPrintHidden]: isPrintHidden,
       })}
       aria-hidden={isRemoving}
     >
