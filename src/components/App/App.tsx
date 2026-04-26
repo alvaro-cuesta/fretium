@@ -1,5 +1,5 @@
 import { DragDropProvider } from '@dnd-kit/react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CommonControls } from '../CommonControls/CommonControls.tsx';
 import { ConfirmDialog } from '../ConfirmDialog.tsx';
 import { FretboardPanel } from '../FretboardPanel/FretboardPanel.tsx';
@@ -92,6 +92,25 @@ export function App() {
   // action — no afterprint cleanup needed (Chrome Android fires afterprint
   // *before* the print dialog opens, which would undo React-state approaches).
   const soloPrintStyleRef = useRef<HTMLStyleElement | null>(null);
+  // Flag to distinguish our own window.print() calls from native Ctrl+P.
+  const isProgrammaticPrintRef = useRef(false);
+
+  // If the user triggers print natively (Ctrl+P / browser menu) while a stale
+  // solo-print style is still in the DOM, clear it so all panels print.
+  useEffect(() => {
+    const clearSoloPrintStyle = () => {
+      if (isProgrammaticPrintRef.current) {
+        isProgrammaticPrintRef.current = false;
+        return;
+      }
+      soloPrintStyleRef.current?.remove();
+      soloPrintStyleRef.current = null;
+    };
+    window.addEventListener('beforeprint', clearSoloPrintStyle);
+    return () => {
+      window.removeEventListener('beforeprint', clearSoloPrintStyle);
+    };
+  }, []);
 
   const handlePrintSolo = useCallback((id: string) => {
     soloPrintStyleRef.current?.remove();
@@ -99,6 +118,7 @@ export function App() {
     style.textContent = `@media print { article[data-panel-id]:not([data-panel-id="${id}"]) { display: none !important; } }`;
     document.head.appendChild(style);
     soloPrintStyleRef.current = style;
+    isProgrammaticPrintRef.current = true;
     window.print();
   }, []);
 
