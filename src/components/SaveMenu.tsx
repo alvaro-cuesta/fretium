@@ -252,12 +252,14 @@ export function SaveMenu(props: SaveMenuProps) {
                   role="menuitem"
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
-                    closeMenu();
-
+                    // Start the clipboard write BEFORE closing the menu —
+                    // some mobile browsers invalidate the user gesture if a
+                    // focus/DOM change (from closeMenu) happens first.
                     void handleCopy(
                       props.width * PNG_EXPORT_SCALE_SD,
                       props.height * PNG_EXPORT_SCALE_SD,
                     );
+                    closeMenu();
                   }}
                 >
                   <span>
@@ -272,12 +274,11 @@ export function SaveMenu(props: SaveMenuProps) {
                   role="menuitem"
                   className={cx(globalStyles.linkButton, menuItemClassName)}
                   onClick={() => {
-                    closeMenu();
-
                     void handleCopy(
                       props.width * PNG_EXPORT_SCALE_HD,
                       props.height * PNG_EXPORT_SCALE_HD,
                     );
+                    closeMenu();
                   }}
                 >
                   <span>
