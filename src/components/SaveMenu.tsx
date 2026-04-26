@@ -11,21 +11,24 @@ const PNG_EXPORT_SCALE_SD = 2 as const;
 const PNG_EXPORT_SCALE_HD = 4 as const;
 const TOAST_DURATION_MS = 3000;
 
-// Whether the browser supports writing PNG to the clipboard. When false the
-// "Copy to clipboard" menu items are hidden entirely. Evaluated lazily so
-// test mocks that stub ClipboardItem / navigator.clipboard are picked up.
-function canCopyToClipboard() {
+// Whether the browser supports writing a given content type to the clipboard.
+// Evaluated lazily so test mocks that stub ClipboardItem are picked up.
+function canCopyToClipboard(contentType: string) {
   if (typeof ClipboardItem === 'undefined') return false;
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- clipboard can be undefined in insecure contexts
   if (typeof navigator.clipboard?.write !== 'function') return false;
-  // Firefox exposes ClipboardItem but only supports text types, not image/png.
+  // Firefox exposes ClipboardItem but only supports text types, not images.
   // ClipboardItem.supports() detects this; when unavailable (older browsers
-  // that do support PNG) we fall through optimistically.
+  // that do support the type) we fall through optimistically.
   if (typeof ClipboardItem.supports === 'function') {
-    return ClipboardItem.supports(PNG_CONTENT_TYPE);
+    return ClipboardItem.supports(contentType);
   }
   return true;
 }
+
+// The SVG_CONTENT_TYPE includes ";charset=utf-8" which ClipboardItem doesn't
+// accept — use the base MIME type for clipboard operations.
+const SVG_CLIPBOARD_TYPE = 'image/svg+xml';
 
 async function downloadSvgAsPng(
   svgUrl: string,
@@ -83,6 +86,21 @@ export function SaveMenu(props: SaveMenuProps) {
     toastTimeout.schedule(() => {
       setToast(null);
     }, TOAST_DURATION_MS);
+  }
+
+  async function handleCopySvg() {
+    try {
+      const blob = await fetch(props.svgUrl).then((r) => r.blob());
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          [SVG_CLIPBOARD_TYPE]: new Blob([blob], { type: SVG_CLIPBOARD_TYPE }),
+        }),
+      ]);
+      showToast({ message: 'Copied!', type: 'success' });
+    } catch (error) {
+      console.error('SVG clipboard copy failed:', error);
+      showToast({ message: 'Failed to copy', type: 'error' });
+    }
   }
 
   async function handleCopy(width: number, height: number) {
@@ -158,7 +176,19 @@ export function SaveMenu(props: SaveMenuProps) {
                 <span>Download</span>
               </a>
 
-              {/* `navigator.clipboard.write` fails with SVG content type, so no SVG copy */}
+              {canCopyToClipboard(SVG_CLIPBOARD_TYPE) && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    void handleCopySvg();
+                    closeMenu();
+                  }}
+                >
+                  <span>Copy to clipboard</span>
+                </button>
+              )}
             </div>
 
             <div
@@ -251,7 +281,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 </span>
               </button>
 
-              {canCopyToClipboard() && (
+              {canCopyToClipboard(PNG_CONTENT_TYPE) && (
                 <button
                   type="button"
                   role="menuitem"
@@ -273,7 +303,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 </button>
               )}
 
-              {canCopyToClipboard() && (
+              {canCopyToClipboard(PNG_CONTENT_TYPE) && (
                 <button
                   type="button"
                   role="menuitem"
