@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { CommonControls } from '../CommonControls/CommonControls.tsx';
 import { ConfirmDialog } from '../ConfirmDialog.tsx';
 import { FretboardPanel } from '../FretboardPanel/FretboardPanel.tsx';
+import { TrashIcon } from '../FretboardPanel/icons.tsx';
 import { Layout } from '../Layout.tsx';
 import styles from './App.module.scss';
 import { useAppState } from './app-state.ts';
@@ -139,6 +140,7 @@ export function App() {
 
       <ConfirmDialog
         open={pendingDeleteId !== null}
+        icon={<TrashIcon />}
         title="Delete fretboard?"
         body="This action cannot be undone."
         confirmLabel="Delete"

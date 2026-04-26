@@ -5,6 +5,7 @@ import styles from './ConfirmDialog.module.scss';
 
 type ConfirmDialogProps = {
   open: boolean;
+  icon?: React.ReactNode;
   title: string;
   body?: React.ReactNode;
   confirmLabel?: string;
@@ -15,6 +16,7 @@ type ConfirmDialogProps = {
 
 export function ConfirmDialog({
   open,
+  icon,
   title,
   body,
   confirmLabel = 'Confirm',
@@ -66,6 +68,7 @@ export function ConfirmDialog({
           id={`${styles.title}-label`}
           className={styles.title}
         >
+          {icon}
           {title}
         </h2>
         {body !== undefined && <div className={styles.body}>{body}</div>}
