@@ -7,13 +7,7 @@ import { TrashIcon } from '../FretboardPanel/icons.tsx';
 import { Layout } from '../Layout.tsx';
 import styles from './App.module.scss';
 import { useAppState } from './app-state.ts';
-
-export type PanelImgData = {
-  svgUrl: string;
-  filenameBase: string;
-  width: number;
-  height: number;
-};
+import type { PanelImgData } from './panel-img-data.ts';
 
 export function App() {
   const {

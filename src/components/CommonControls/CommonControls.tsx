@@ -4,7 +4,7 @@ import { INSTRUMENTS } from '../../config/instruments.ts';
 import { PNG_CONTENT_TYPE } from '../../lib/file.ts';
 import { type NoteDisplayMode } from '../../lib/fretboard.ts';
 import { rasterizeSvg } from '../../lib/image.ts';
-import type { PanelImgData } from '../App/App.tsx';
+import type { PanelImgData } from '../App/panel-img-data.ts';
 import { type CommonConfig } from '../App/common-config.ts';
 import {
   INSTRUMENT_TUNING_BY_VALUE,
