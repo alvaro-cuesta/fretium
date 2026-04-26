@@ -86,28 +86,21 @@ export function App() {
     return result;
   }, [fretboards, removingIds, panelImgData]);
 
-  // Solo print: render a <style> in JSX (not manually injected) that hides
-  // every panel except the target. Chrome Android doesn't pick up dynamically
-  // injected <style> elements for print capture, but styles committed to the
-  // DOM via React's render cycle are included. The style uses @media print so
-  // it's invisible on screen and can stay in the DOM until the next print.
+  // Solo print: set soloPrintId → panels get isPrintHidden class → useEffect
+  // calls window.print() after React commits the classes to the DOM. A
+  // beforeprint listener clears stale state when the user presses Ctrl+P.
   const [soloPrintId, setSoloPrintId] = useState<string | null>(null);
-  // When soloPrintId changes from null → id, trigger print after React commits.
-  const pendingPrintRef = useRef<'solo' | 'all' | null>(null);
+  const pendingPrintRef = useRef(false);
 
   useEffect(() => {
-    if (pendingPrintRef.current === null) return;
-    pendingPrintRef.current = null;
+    if (!pendingPrintRef.current) return;
+    pendingPrintRef.current = false;
     window.print();
   });
 
-  // Clear stale solo-print style when the user triggers print natively
-  // (Ctrl+P) — beforeprint fires before our programmatic prints too, but
-  // handlePrintSolo sets the state synchronously before window.print() so the
-  // style is already re-applied by then.
   useEffect(() => {
     const handleBeforePrint = () => {
-      if (pendingPrintRef.current !== null) return;
+      if (pendingPrintRef.current) return;
       setSoloPrintId(null);
     };
     window.addEventListener('beforeprint', handleBeforePrint);
@@ -117,12 +110,12 @@ export function App() {
   }, []);
 
   const handlePrintSolo = useCallback((id: string) => {
-    pendingPrintRef.current = 'solo';
+    pendingPrintRef.current = true;
     setSoloPrintId(id);
   }, []);
 
   const handlePrintAll = useCallback(() => {
-    pendingPrintRef.current = 'all';
+    pendingPrintRef.current = true;
     setSoloPrintId(null);
   }, []);
 
@@ -141,13 +134,6 @@ export function App() {
 
   return (
     <Layout>
-      {soloPrintId && (
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `@media print { article[data-panel-id]:not([data-panel-id="${soloPrintId}"]) { display: none !important; } }`,
-          }}
-        />
-      )}
       <DragDropProvider
         onDragEnd={(event) => {
           if (event.canceled) return;
@@ -205,6 +191,9 @@ export function App() {
               onPrintSolo={() => {
                 handlePrintSolo(fretboard.id);
               }}
+              isPrintHidden={
+                soloPrintId !== null && soloPrintId !== fretboard.id
+              }
               isRemoving={removingIds.has(fretboard.id)}
               isInserting={insertingIds.has(fretboard.id)}
               onRemoveAnimationEnd={() => {
