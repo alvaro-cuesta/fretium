@@ -1,5 +1,6 @@
 import { DragDropProvider } from '@dnd-kit/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { CommonControls } from '../CommonControls/CommonControls.tsx';
 import { ConfirmDialog } from '../ConfirmDialog.tsx';
 import { FretboardPanel } from '../FretboardPanel/FretboardPanel.tsx';
@@ -101,10 +102,14 @@ export function App() {
   }, []);
 
   const handlePrintSolo = useCallback((id: string) => {
-    setSoloPrintId(id);
-    requestAnimationFrame(() => {
-      window.print();
+    // flushSync guarantees React commits the DOM update (adding the
+    // panelPrintHidden class) before window.print() captures the page.
+    // Without it, Chrome's print preview renders before the async commit.
+    // eslint-disable-next-line react-dom/no-flush-sync -- intentional: window.print() must see the committed DOM
+    flushSync(() => {
+      setSoloPrintId(id);
     });
+    window.print();
   }, []);
 
   const handlePrintAll = useCallback(() => {
