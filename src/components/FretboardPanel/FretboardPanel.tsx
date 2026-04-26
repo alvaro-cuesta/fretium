@@ -473,7 +473,16 @@ export function FretboardPanel({
             <SaveMenu
               svgUrl={fretboardImg.url}
               filenameBase={fretboardImg.filenameBase}
-              description={fretboardImg.description}
+              instrumentName={resolvedInstrumentTuning.instrumentName}
+              tuningName={resolvedInstrumentTuning.tuningName}
+              tuning={resolvedInstrumentTuning.tuning}
+              patternName={
+                getPatternFullDisplayNameAtPath(
+                  PATTERNS_GROUPED,
+                  config.pattern,
+                ) ?? getPatternEntry(config.pattern).displayName
+              }
+              rootNote={config.rootNote}
               width={fretboardMetrics.total.width}
               height={fretboardMetrics.total.height}
             />

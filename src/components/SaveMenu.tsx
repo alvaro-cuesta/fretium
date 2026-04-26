@@ -80,7 +80,11 @@ type Toast = { message: string; type: 'success' | 'error' };
 type SaveMenuProps = {
   svgUrl: string;
   filenameBase: string;
-  description: string;
+  instrumentName: string;
+  tuningName: string;
+  tuning: readonly string[];
+  patternName: string;
+  rootNote: string;
   width: number;
   height: number;
 };
@@ -128,7 +132,7 @@ export function SaveMenu(props: SaveMenuProps) {
   //   }
   // }
 
-  const shareText = `${props.description}\n\nMade with ${import.meta.env.PACKAGE_HOMEPAGE}`;
+  const shareText = `${props.instrumentName} ${props.tuningName} (${props.tuning.join(' ')})\n${props.patternName} (root ${props.rootNote})\n\nMade with ${import.meta.env.PACKAGE_HOMEPAGE}`;
 
   async function handleSharePng(width: number, height: number, suffix: string) {
     try {
