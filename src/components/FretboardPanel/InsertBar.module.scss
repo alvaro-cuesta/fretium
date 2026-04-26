@@ -152,3 +152,9 @@ $bar-height: 36px;
 .deleteButton {
   right: 4px;
 }
+
+@media print {
+  .wrapper {
+    display: none !important;
+  }
+}
