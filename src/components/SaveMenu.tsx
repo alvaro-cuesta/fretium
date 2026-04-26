@@ -84,7 +84,8 @@ export function SaveMenu(props: SaveMenuProps) {
     try {
       await copySvgToClipboardPng(props.svgUrl, width, height);
       showToast({ message: 'Copied!', type: 'success' });
-    } catch {
+    } catch (error) {
+      console.error('Clipboard copy failed:', error);
       showToast({ message: 'Failed to copy', type: 'error' });
     }
   }
