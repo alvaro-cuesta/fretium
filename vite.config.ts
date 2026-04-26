@@ -13,6 +13,7 @@ import ViteSvgr from 'vite-plugin-svgr';
 import type { MyImportMetaEnv } from './lib/define';
 import { fromEntries, objectKeys } from './lib/object';
 import { getPackageMetaEnv } from './lib/package-meta-env';
+import * as packageJson from './package.json';
 
 type MetaEnvKey<TEnv extends Record<string, unknown>> = Extract<
   keyof TEnv,
@@ -130,11 +131,10 @@ export default defineConfig(async ({ mode }) => {
         },
         manifest: {
           id: '/',
-          name: 'Fretium | Fretboard diagram generator',
-          short_name: 'Fretium',
-          description:
-            'Generate beautiful fretboard diagrams for guitar, bass, ukulele and more. Right in your browser, no installation required.',
-          theme_color: '#bc366a',
+          name: packageJson.config.name,
+          short_name: packageJson.config.shortName,
+          description: packageJson.config.description,
+          theme_color: '#1a1a2e',
           background_color: '#1a1a2e',
           display: 'standalone',
         },
