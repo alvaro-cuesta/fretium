@@ -83,6 +83,102 @@ export function XIcon(props: IconProps) {
   );
 }
 
+export function PrinterIcon(props: IconProps) {
+  return (
+    <svg
+      {...COMMON_PROPS}
+      className={props.className}
+      aria-hidden={props['aria-hidden'] ?? true}
+    >
+      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <path d="M6 9V3h12v6" />
+      <rect
+        x="6"
+        y="14"
+        width="12"
+        height="8"
+        rx="1"
+      />
+    </svg>
+  );
+}
+
+export function ExternalLinkIcon(props: IconProps) {
+  return (
+    <svg
+      {...COMMON_PROPS}
+      className={props.className}
+      aria-hidden={props['aria-hidden'] ?? true}
+    >
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    </svg>
+  );
+}
+
+export function DownloadIcon(props: IconProps) {
+  return (
+    <svg
+      {...COMMON_PROPS}
+      className={props.className}
+      aria-hidden={props['aria-hidden'] ?? true}
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <path d="m7 10 5 5 5-5" />
+      <path d="M12 15V3" />
+    </svg>
+  );
+}
+
+export function ShareIcon(props: IconProps) {
+  return (
+    <svg
+      {...COMMON_PROPS}
+      className={props.className}
+      aria-hidden={props['aria-hidden'] ?? true}
+    >
+      <circle
+        cx="18"
+        cy="5"
+        r="3"
+      />
+      <circle
+        cx="6"
+        cy="12"
+        r="3"
+      />
+      <circle
+        cx="18"
+        cy="19"
+        r="3"
+      />
+      <path d="m8.59 13.51 6.83 3.98" />
+      <path d="m8.59 10.49 6.83-3.98" />
+    </svg>
+  );
+}
+
+export function ClipboardIcon(props: IconProps) {
+  return (
+    <svg
+      {...COMMON_PROPS}
+      className={props.className}
+      aria-hidden={props['aria-hidden'] ?? true}
+    >
+      <rect
+        x="8"
+        y="2"
+        width="8"
+        height="4"
+        rx="1"
+        ry="1"
+      />
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+    </svg>
+  );
+}
+
 export function PlusIcon(props: IconProps) {
   return (
     <svg

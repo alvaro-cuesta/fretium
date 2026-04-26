@@ -4,7 +4,15 @@ import { useImperativeTimeout } from '../hooks/useImperativeTimeout.ts';
 import globalStyles from '../index.module.scss';
 import { downloadBlob, PNG_CONTENT_TYPE } from '../lib/file';
 import { rasterizeSvg } from '../lib/image';
-import { SaveIcon, XIcon } from './FretboardPanel/icons.tsx';
+import {
+  ClipboardIcon,
+  DownloadIcon,
+  ExternalLinkIcon,
+  PrinterIcon,
+  SaveIcon,
+  ShareIcon,
+  XIcon,
+} from './FretboardPanel/icons.tsx';
 import { MenuButton } from './MenuButton';
 import styles from './SaveMenu.module.scss';
 
@@ -197,7 +205,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 window.print();
               }}
             >
-              Print
+              <PrinterIcon /> Print
             </button>
 
             <div
@@ -219,7 +227,9 @@ export function SaveMenu(props: SaveMenuProps) {
                 className={cx(globalStyles.linkButton, menuItemClassName)}
                 onClick={closeMenu}
               >
-                <span>Open in new tab</span>
+                <span>
+                  <ExternalLinkIcon /> Open in new tab
+                </span>
               </a>
 
               <a
@@ -229,7 +239,9 @@ export function SaveMenu(props: SaveMenuProps) {
                 className={cx(globalStyles.linkButton, menuItemClassName)}
                 onClick={closeMenu}
               >
-                <span>Download</span>
+                <span>
+                  <DownloadIcon /> Download
+                </span>
               </a>
 
               {/* SVG share is disabled — most share targets (messaging apps,
@@ -246,7 +258,9 @@ export function SaveMenu(props: SaveMenuProps) {
                     closeMenu();
                   }}
                 >
-                  <span>Copy to clipboard</span>
+                  <span>
+                    <ClipboardIcon /> Copy to clipboard
+                  </span>
                 </button>
               )}
             </div>
@@ -278,7 +292,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 }}
               >
                 <span>
-                  Open in new tab <small>(SD)</small>
+                  <ExternalLinkIcon /> Open in new tab <small>(SD)</small>
                 </span>
               </button>
 
@@ -297,7 +311,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 }}
               >
                 <span>
-                  Open in new tab <small>(HD)</small>
+                  <ExternalLinkIcon /> Open in new tab <small>(HD)</small>
                 </span>
               </button>
 
@@ -317,7 +331,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 }}
               >
                 <span>
-                  Download <small>(SD)</small>
+                  <DownloadIcon /> Download <small>(SD)</small>
                 </span>
               </button>
 
@@ -337,7 +351,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 }}
               >
                 <span>
-                  Download <small>(HD)</small>
+                  <DownloadIcon /> Download <small>(HD)</small>
                 </span>
               </button>
 
@@ -356,7 +370,7 @@ export function SaveMenu(props: SaveMenuProps) {
                   }}
                 >
                   <span>
-                    Share <small>(SD)</small>
+                    <ShareIcon /> Share <small>(SD)</small>
                   </span>
                 </button>
               )}
@@ -376,7 +390,7 @@ export function SaveMenu(props: SaveMenuProps) {
                   }}
                 >
                   <span>
-                    Share <small>(HD)</small>
+                    <ShareIcon /> Share <small>(HD)</small>
                   </span>
                 </button>
               )}
@@ -398,7 +412,7 @@ export function SaveMenu(props: SaveMenuProps) {
                   }}
                 >
                   <span>
-                    Copy to clipboard <small>(SD)</small>
+                    <ClipboardIcon /> Copy to clipboard <small>(SD)</small>
                   </span>
                 </button>
               )}
@@ -417,7 +431,7 @@ export function SaveMenu(props: SaveMenuProps) {
                   }}
                 >
                   <span>
-                    Copy to clipboard <small>(HD)</small>
+                    <ClipboardIcon /> Copy to clipboard <small>(HD)</small>
                   </span>
                 </button>
               )}
