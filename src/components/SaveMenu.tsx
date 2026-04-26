@@ -219,19 +219,9 @@ export function SaveMenu(props: SaveMenuProps) {
                 <span>Download</span>
               </a>
 
-              {canShareFile(SVG_CLIPBOARD_TYPE, 'svg') && (
-                <button
-                  type="button"
-                  role="menuitem"
-                  className={cx(globalStyles.linkButton, menuItemClassName)}
-                  onClick={() => {
-                    void handleShareSvg();
-                    closeMenu();
-                  }}
-                >
-                  <span>Share</span>
-                </button>
-              )}
+              {/* SVG share is disabled — most share targets (messaging apps,
+                  social media) don't render SVG, so the shared file is
+                  effectively useless for non-technical recipients. */}
 
               {canCopyToClipboard(SVG_CLIPBOARD_TYPE) && (
                 <button
