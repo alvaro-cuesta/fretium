@@ -4,13 +4,13 @@ import { INSTRUMENTS } from '../../config/instruments.ts';
 import { PNG_CONTENT_TYPE } from '../../lib/file.ts';
 import { type NoteDisplayMode } from '../../lib/fretboard.ts';
 import { rasterizeSvg } from '../../lib/image.ts';
-import type { PanelImgData } from '../App/panel-img-data.ts';
 import { type CommonConfig } from '../App/common-config.ts';
 import {
   INSTRUMENT_TUNING_BY_VALUE,
   INSTRUMENT_TUNING_GROUPS,
   type InstrumentTuningOption,
 } from '../App/instrument-tuning.ts';
+import type { PanelImgData } from '../App/panel-img-data.ts';
 import { PrinterIcon, ShareIcon } from '../FretboardPanel/icons.tsx';
 import styles from './CommonControls.module.scss';
 
