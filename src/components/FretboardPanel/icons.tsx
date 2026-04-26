@@ -131,8 +131,24 @@ export function DownloadIcon(props: IconProps) {
   );
 }
 
+// Apple devices use a box-with-upward-arrow share icon; everyone else uses
+// the nodes-connected-by-lines variant.
+const IS_APPLE =
+  typeof navigator !== 'undefined' &&
+  /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 export function ShareIcon(props: IconProps) {
-  return (
+  return IS_APPLE ? (
+    <svg
+      {...COMMON_PROPS}
+      className={props.className}
+      aria-hidden={props['aria-hidden'] ?? true}
+    >
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+      <path d="m16 6-4-4-4 4" />
+      <path d="M12 2v13" />
+    </svg>
+  ) : (
     <svg
       {...COMMON_PROPS}
       className={props.className}
