@@ -4,6 +4,7 @@ import { useImperativeTimeout } from '../hooks/useImperativeTimeout.ts';
 import globalStyles from '../index.module.scss';
 import { downloadBlob, PNG_CONTENT_TYPE } from '../lib/file';
 import { rasterizeSvg } from '../lib/image';
+import { SaveIcon, XIcon } from './FretboardPanel/icons.tsx';
 import { MenuButton } from './MenuButton';
 import styles from './SaveMenu.module.scss';
 
@@ -429,7 +430,7 @@ export function SaveMenu(props: SaveMenuProps) {
             aria-hidden="true"
             className={styles.menuTriggerIcon}
           >
-            {isOpen ? '❌' : '💾'}
+            {isOpen ? <XIcon /> : <SaveIcon />}
           </span>
         )}
       </MenuButton>

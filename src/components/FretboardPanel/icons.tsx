@@ -56,6 +56,33 @@ export function TrashIcon(props: IconProps) {
   );
 }
 
+export function SaveIcon(props: IconProps) {
+  return (
+    <svg
+      {...COMMON_PROPS}
+      className={props.className}
+      aria-hidden={props['aria-hidden'] ?? true}
+    >
+      <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+      <path d="M17 21v-7H7v7" />
+      <path d="M7 3v4h7" />
+    </svg>
+  );
+}
+
+export function XIcon(props: IconProps) {
+  return (
+    <svg
+      {...COMMON_PROPS}
+      className={props.className}
+      aria-hidden={props['aria-hidden'] ?? true}
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  );
+}
+
 export function PlusIcon(props: IconProps) {
   return (
     <svg
