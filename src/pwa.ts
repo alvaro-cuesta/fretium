@@ -4,7 +4,7 @@ const SESSION_KEY = 'pwa-just-updated';
 
 // How often to poll for a new SW. The browser only checks for updates on
 // navigation, so long-running sessions would never see one without this.
-const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
+const UPDATE_CHECK_INTERVAL_MS = 5 * 60 * 1000;
 
 /**
  * Register the service worker and handle auto-updates.
