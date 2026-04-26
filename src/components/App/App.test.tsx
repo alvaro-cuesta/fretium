@@ -324,7 +324,7 @@ test('loads form controls from history.state and persists updates with replaceSt
 
   fireEvent.change(screen.getByLabelText('Root note'), {
     target: {
-      value: 'Bb',
+      value: 'G',
     },
   });
 
@@ -334,7 +334,7 @@ test('loads form controls from history.state and persists updates with replaceSt
       | { fretboards?: { rootNote: string }[] }
       | undefined;
 
-    expect(persisted?.fretboards?.[0]?.rootNote).toBe('Bb');
+    expect(persisted?.fretboards?.[0]?.rootNote).toBe('G');
   });
 
   expect(replaceStateSpy).toHaveBeenCalled();

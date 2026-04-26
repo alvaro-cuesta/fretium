@@ -32,6 +32,28 @@ import { Scrollable } from '../Scrollable.tsx';
 import styles from './FretboardPanel.module.scss';
 import { InsertBar } from './InsertBar.tsx';
 
+// One entry per pitch class. When the note-labels mode is anything other than
+// "note", sharp/flat enharmonics render identically on the diagram, so the
+// root-note select collapses each pair into a single "C#/Db"-style option.
+const ENHARMONIC_GROUPS: readonly {
+  sharp: Note;
+  flat: Note | null;
+  label: string;
+}[] = [
+  { sharp: 'C', flat: null, label: 'C' },
+  { sharp: 'C#', flat: 'Db', label: 'C#/Db' },
+  { sharp: 'D', flat: null, label: 'D' },
+  { sharp: 'D#', flat: 'Eb', label: 'D#/Eb' },
+  { sharp: 'E', flat: null, label: 'E' },
+  { sharp: 'F', flat: null, label: 'F' },
+  { sharp: 'F#', flat: 'Gb', label: 'F#/Gb' },
+  { sharp: 'G', flat: null, label: 'G' },
+  { sharp: 'G#', flat: 'Ab', label: 'G#/Ab' },
+  { sharp: 'A', flat: null, label: 'A' },
+  { sharp: 'A#', flat: 'Bb', label: 'A#/Bb' },
+  { sharp: 'B', flat: null, label: 'B' },
+] as const;
+
 type FretboardPanelProps = {
   id: string;
   index: number;
@@ -204,6 +226,23 @@ export function FretboardPanel({
     onChangeConfig({ ...config, ...next });
   };
 
+  // Sharp/flat enharmonics only differ visually when notes render with their
+  // letter name. In any other mode (intervals/degrees/none) "C#" and "Db"
+  // produce identical diagrams, so we collapse the pairs into one option.
+  // The value of a merged option preserves the user's current spelling when it
+  // matches that pitch class — that way switching the labels mode back and
+  // forth doesn't silently rewrite "Db" as "C#".
+  const mergeEnharmonics = commonConfig.noteDisplayMode !== 'note';
+  const rootNoteOptions = mergeEnharmonics
+    ? ENHARMONIC_GROUPS.map((group) => ({
+        value:
+          group.flat !== null && config.rootNote === group.flat
+            ? group.flat
+            : group.sharp,
+        label: group.label,
+      }))
+    : NOTES.map((note) => ({ value: note, label: note }));
+
   return (
     <article
       ref={setPanelRef}
@@ -362,12 +401,12 @@ export function FretboardPanel({
                 }}
                 autoComplete="off"
               >
-                {NOTES.map((rootNote) => (
+                {rootNoteOptions.map(({ value, label }) => (
                   <option
-                    key={rootNote}
-                    value={rootNote}
+                    key={label}
+                    value={value}
                   >
-                    {rootNote}
+                    {label}
                   </option>
                 ))}
               </select>
