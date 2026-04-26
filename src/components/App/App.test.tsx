@@ -97,7 +97,6 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
   expect(screen.getByLabelText('Start fret')).toHaveValue('AUTO');
   expect(screen.getByLabelText('End fret')).toHaveValue('AUTO');
   expect(screen.getByLabelText('Background')).toBeChecked();
-  expect(screen.getByLabelText('Strings')).toBeChecked();
   expect(screen.getByLabelText('Fret lines')).toBeChecked();
   expect(screen.getByLabelText('Fret markers')).toBeChecked();
   expect(screen.getByLabelText('Fret labels')).toBeChecked();
@@ -280,22 +279,25 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
 test('loads form controls from history.state and persists updates with replaceState', async () => {
   window.history.replaceState(
     {
-      'app.fretboards': [
-        {
+      fretium: {
+        commonConfig: {
           instrumentTuning: 'Bass::Standard',
-          pattern: ['heptatonic', 'minor'],
-          rootNote: 'A',
           noteDisplayMode: 'interval',
-          fretRange: { start: 3, end: 7 },
           showBackgroundNeck: false,
-          showStrings: false,
           showFretLines: false,
           showFretMarkers: false,
           showFretLabels: false,
           showStringLabels: false,
           showDropShadows: false,
         },
-      ],
+        fretboards: [
+          {
+            pattern: ['heptatonic', 'minor'],
+            rootNote: 'A',
+            fretRange: { start: 3, end: 7 },
+          },
+        ],
+      },
     },
     '',
   );
@@ -314,7 +316,6 @@ test('loads form controls from history.state and persists updates with replaceSt
   expect(screen.getByLabelText('Start fret')).toHaveValue('3');
   expect(screen.getByLabelText('End fret')).toHaveValue('7');
   expect(screen.getByLabelText('Background')).not.toBeChecked();
-  expect(screen.getByLabelText('Strings')).not.toBeChecked();
   expect(screen.getByLabelText('Fret lines')).not.toBeChecked();
   expect(screen.getByLabelText('Fret markers')).not.toBeChecked();
   expect(screen.getByLabelText('Fret labels')).not.toBeChecked();
@@ -329,11 +330,11 @@ test('loads form controls from history.state and persists updates with replaceSt
 
   await waitFor(() => {
     const historyState = window.history.state as Record<string, unknown> | null;
-    const fretboards = historyState?.['app.fretboards'] as
-      | { rootNote: string }[]
+    const persisted = historyState?.['fretium'] as
+      | { fretboards?: { rootNote: string }[] }
       | undefined;
 
-    expect(fretboards?.[0]?.rootNote).toBe('Bb');
+    expect(persisted?.fretboards?.[0]?.rootNote).toBe('Bb');
   });
 
   expect(replaceStateSpy).toHaveBeenCalled();
@@ -405,22 +406,25 @@ test('shows a third pattern select for tetrads', () => {
 test('restores nested pattern paths from history.state arrays', () => {
   window.history.replaceState(
     {
-      'app.fretboards': [
-        {
+      fretium: {
+        commonConfig: {
           instrumentTuning: 'Guitar::Standard',
-          pattern: ['arpeggios/dom7', 'caged-positions/d', 'base'],
-          rootNote: 'C',
           noteDisplayMode: 'note',
-          fretRange: { start: 'AUTO', end: 'AUTO' },
           showBackgroundNeck: true,
-          showStrings: true,
           showFretLines: true,
           showFretMarkers: true,
           showFretLabels: true,
           showStringLabels: true,
           showDropShadows: true,
         },
-      ],
+        fretboards: [
+          {
+            pattern: ['arpeggios/dom7', 'caged-positions/d', 'base'],
+            rootNote: 'C',
+            fretRange: { start: 'AUTO', end: 'AUTO' },
+          },
+        ],
+      },
     },
     '',
   );

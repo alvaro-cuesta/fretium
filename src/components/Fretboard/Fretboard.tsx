@@ -48,7 +48,6 @@ export type FretboardProps = {
   startFret: number;
   endFret: number;
   showBackgroundNeck: boolean;
-  showStrings: boolean;
   showFretLines: boolean;
   showFretMarkers: boolean;
   showFretLabels: boolean;
@@ -128,7 +127,6 @@ export function Fretboard({
   startFret,
   endFret,
   showBackgroundNeck,
-  showStrings,
   showFretLines,
   showFretMarkers,
   showFretLabels,
@@ -379,17 +377,15 @@ export function Fretboard({
               // eslint-disable-next-line react-x/no-array-index-key -- nothing else to use
               <g key={stringIndex}>
                 {/* Strings */}
-                {showStrings && (
-                  <FretboardString
-                    xLeft={metrics.stringXLeft}
-                    xRight={metrics.stringXRight}
-                    y={stringY}
-                    gauge={metrics.getStringGauge(stringIndex)}
-                    shadowFilterId={
-                      showDropShadows ? stringShadowFilterId : undefined
-                    }
-                  />
-                )}
+                <FretboardString
+                  xLeft={metrics.stringXLeft}
+                  xRight={metrics.stringXRight}
+                  y={stringY}
+                  gauge={metrics.getStringGauge(stringIndex)}
+                  shadowFilterId={
+                    showDropShadows ? stringShadowFilterId : undefined
+                  }
+                />
 
                 {/* Notes */}
                 {Array.from(

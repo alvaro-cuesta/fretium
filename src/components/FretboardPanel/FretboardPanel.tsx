@@ -2,11 +2,8 @@ import { PointerSensor } from '@dnd-kit/react';
 import { useSortable } from '@dnd-kit/react/sortable';
 import cx from 'classnames';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { objectKeys } from '../../../lib/object.ts';
-import { INSTRUMENTS } from '../../config/instruments.ts';
 import { PATTERNS_GROUPED } from '../../config/patterns/patterns.ts';
 import { calculateFretRange } from '../../lib/fret-range.ts';
-import { type NoteDisplayMode } from '../../lib/fretboard.ts';
 import { NOTES, type Note } from '../../lib/music.ts';
 import {
   coercePatternPath,
@@ -14,6 +11,7 @@ import {
   getPatternFullDisplayNameAtPath,
 } from '../../lib/pattern-config.ts';
 import { renderPattern } from '../../lib/pattern-engine.ts';
+import { type CommonConfig } from '../App/common-config.ts';
 import {
   END_FRET_OPTIONS,
   fretRangeReducer,
@@ -22,11 +20,7 @@ import {
   START_FRET_OPTIONS,
 } from '../App/fret-range.ts';
 import type { FretboardConfig } from '../App/fretboard-config.ts';
-import {
-  INSTRUMENT_TUNING_BY_VALUE,
-  INSTRUMENT_TUNING_GROUPS,
-  type InstrumentTuningOption,
-} from '../App/instrument-tuning.ts';
+import { INSTRUMENT_TUNING_BY_VALUE } from '../App/instrument-tuning.ts';
 import {
   getPatternSelectDescriptors,
   type GroupedPatternPath,
@@ -43,6 +37,7 @@ type FretboardPanelProps = {
   index: number;
   total: number;
   config: FretboardConfig;
+  commonConfig: CommonConfig;
   /** True while the panel is mid-fade-out — about to unmount. */
   isRemoving: boolean;
   /** True for the first frame after mount so the entering animation can play. */
@@ -62,6 +57,7 @@ export function FretboardPanel({
   index,
   total,
   config,
+  commonConfig,
   isRemoving,
   isInserting,
   onRemoveAnimationEnd,
@@ -157,7 +153,7 @@ export function FretboardPanel({
   const firstPatternSelectRef = useRef<HTMLSelectElement | null>(null);
 
   const resolvedInstrumentTuning = INSTRUMENT_TUNING_BY_VALUE.get(
-    config.instrumentTuning,
+    commonConfig.instrumentTuning,
   );
 
   if (!resolvedInstrumentTuning) {
@@ -192,15 +188,15 @@ export function FretboardPanel({
         startFret: fretRange.start,
         endFret: fretRange.end,
         tuning: resolvedInstrumentTuning.tuning,
-        showStringLabels: config.showStringLabels,
-        showFretLabels: config.showFretLabels,
+        showStringLabels: commonConfig.showStringLabels,
+        showFretLabels: commonConfig.showFretLabels,
       }),
     [
       fretRange.start,
       fretRange.end,
       resolvedInstrumentTuning.tuning,
-      config.showStringLabels,
-      config.showFretLabels,
+      commonConfig.showStringLabels,
+      commonConfig.showFretLabels,
     ],
   );
 
@@ -232,42 +228,6 @@ export function FretboardPanel({
       <div className={styles.panelContent}>
         <section className={styles.controlsSection}>
           <form className={styles.controlsForm}>
-            <label className={cx(styles.fieldGroup, styles.instrumentField)}>
-              <span className={styles.fieldLabel}>Instrument</span>
-              <select
-                className={styles.selectorInput}
-                value={resolvedInstrumentTuning.value}
-                onChange={(e) => {
-                  patch({
-                    instrumentTuning: e.target.value as InstrumentTuningOption,
-                  });
-                }}
-                autoComplete="off"
-              >
-                {INSTRUMENT_TUNING_GROUPS.map((group) => (
-                  <optgroup
-                    key={group.instrumentName}
-                    label={group.instrumentName}
-                  >
-                    {objectKeys(INSTRUMENTS[group.instrumentName].tunings).map(
-                      (tuningName) => {
-                        const value = `${group.instrumentName}::${tuningName}`;
-                        const label = `${group.instrumentName} ${tuningName}`;
-                        return (
-                          <option
-                            key={value}
-                            value={value}
-                          >
-                            {label}
-                          </option>
-                        );
-                      },
-                    )}
-                  </optgroup>
-                ))}
-              </select>
-            </label>
-
             <div className={cx(styles.rangeFields, styles.fretRangeFields)}>
               <label className={styles.fieldGroup}>
                 <span className={styles.fieldLabel}>Start fret</span>
@@ -320,25 +280,6 @@ export function FretboardPanel({
                 </select>
               </label>
             </div>
-
-            <label className={cx(styles.fieldGroup, styles.noteLabelsField)}>
-              <span className={styles.fieldLabel}>Note labels</span>
-              <select
-                className={styles.selectorInput}
-                value={config.noteDisplayMode}
-                onChange={(e) => {
-                  patch({
-                    noteDisplayMode: e.target.value as NoteDisplayMode,
-                  });
-                }}
-                autoComplete="off"
-              >
-                <option value="note">Note</option>
-                <option value="interval">Intervals</option>
-                <option value="degree">Degrees</option>
-                <option value="none">None</option>
-              </select>
-            </label>
 
             <div className={cx(styles.fieldGroup, styles.patternField)}>
               <fieldset className={styles.patternFieldset}>
@@ -431,99 +372,6 @@ export function FretboardPanel({
                 ))}
               </select>
             </label>
-
-            <div className={styles.checkboxRow}>
-              <label className={styles.checkboxField}>
-                <input
-                  className={styles.checkboxInput}
-                  type="checkbox"
-                  checked={config.showBackgroundNeck}
-                  onChange={(e) => {
-                    patch({ showBackgroundNeck: e.target.checked });
-                  }}
-                  autoComplete="off"
-                />
-                <span className={styles.checkboxLabel}>Background</span>
-              </label>
-
-              <label className={styles.checkboxField}>
-                <input
-                  className={styles.checkboxInput}
-                  type="checkbox"
-                  checked={config.showStrings}
-                  onChange={(e) => {
-                    patch({ showStrings: e.target.checked });
-                  }}
-                  autoComplete="off"
-                />
-                <span className={styles.checkboxLabel}>Strings</span>
-              </label>
-
-              <label className={styles.checkboxField}>
-                <input
-                  className={styles.checkboxInput}
-                  type="checkbox"
-                  checked={config.showFretLines}
-                  onChange={(e) => {
-                    patch({ showFretLines: e.target.checked });
-                  }}
-                  autoComplete="off"
-                />
-                <span className={styles.checkboxLabel}>Fret lines</span>
-              </label>
-
-              <label className={styles.checkboxField}>
-                <input
-                  className={styles.checkboxInput}
-                  type="checkbox"
-                  checked={config.showFretMarkers}
-                  onChange={(e) => {
-                    patch({ showFretMarkers: e.target.checked });
-                  }}
-                  autoComplete="off"
-                />
-                <span className={styles.checkboxLabel}>Fret markers</span>
-              </label>
-
-              <label className={styles.checkboxField}>
-                <input
-                  className={styles.checkboxInput}
-                  type="checkbox"
-                  checked={config.showFretLabels}
-                  onChange={(e) => {
-                    patch({ showFretLabels: e.target.checked });
-                  }}
-                  autoComplete="off"
-                />
-                <span className={styles.checkboxLabel}>Fret labels</span>
-              </label>
-
-              <label className={styles.checkboxField}>
-                <input
-                  className={styles.checkboxInput}
-                  type="checkbox"
-                  checked={config.showStringLabels}
-                  onChange={(e) => {
-                    patch({ showStringLabels: e.target.checked });
-                  }}
-                  autoComplete="off"
-                />
-                <span className={styles.checkboxLabel}>String labels</span>
-              </label>
-
-              <label className={styles.checkboxField}>
-                <input
-                  className={styles.checkboxInput}
-                  type="checkbox"
-                  checked={config.showDropShadows}
-                  onChange={(e) => {
-                    patch({ showDropShadows: e.target.checked });
-                  }}
-                  autoComplete="off"
-                />
-                <span className={styles.checkboxLabel}>Drop shadows</span>
-              </label>
-            </div>
           </form>
         </section>
 
@@ -546,14 +394,13 @@ export function FretboardPanel({
               tuning={resolvedInstrumentTuning.tuning}
               startFret={fretRange.start}
               endFret={fretRange.end}
-              showBackgroundNeck={config.showBackgroundNeck}
-              showStrings={config.showStrings}
-              showFretLines={config.showFretLines}
-              showFretMarkers={config.showFretMarkers}
-              showFretLabels={config.showFretLabels}
-              showStringLabels={config.showStringLabels}
-              showDropShadows={config.showDropShadows}
-              noteDisplayMode={config.noteDisplayMode}
+              showBackgroundNeck={commonConfig.showBackgroundNeck}
+              showFretLines={commonConfig.showFretLines}
+              showFretMarkers={commonConfig.showFretMarkers}
+              showFretLabels={commonConfig.showFretLabels}
+              showStringLabels={commonConfig.showStringLabels}
+              showDropShadows={commonConfig.showDropShadows}
+              noteDisplayMode={commonConfig.noteDisplayMode}
               rootNote={config.rootNote}
             />
           </Scrollable>

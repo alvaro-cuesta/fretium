@@ -1,16 +1,25 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { JsonValue } from 'type-fest';
 import {
   getStoredValue,
   storeValue,
+  type HistoryStateDeserializeResult,
   type HistoryStateOptions,
 } from '../../lib/history-state.ts';
+import {
+  DEFAULT_COMMON_CONFIG,
+  deserializeCommonConfig,
+  serializeCommonConfig,
+  type CommonConfig,
+} from './common-config.ts';
 import {
   DEFAULT_FRETBOARD_CONFIG,
   deserializeFretboardConfigArray,
   serializeFretboardConfigArray,
   type FretboardConfig,
 } from './fretboard-config.ts';
-import { FRETBOARDS_HISTORY_KEY } from './history.ts';
+
+const APP_STATE_HISTORY_KEY = 'fretium' as const;
 
 type RuntimeFretboard = {
   /** Stable runtime-only id used for React keys and DnD identity. Not persisted. */
@@ -18,9 +27,48 @@ type RuntimeFretboard = {
   config: FretboardConfig;
 };
 
-const PERSISTED_OPTIONS: HistoryStateOptions<readonly FretboardConfig[]> = {
-  serialize: serializeFretboardConfigArray,
-  deserialize: deserializeFretboardConfigArray,
+type PersistedAppState = {
+  commonConfig: CommonConfig;
+  fretboards: readonly FretboardConfig[];
+};
+
+function serializeAppState(value: PersistedAppState): JsonValue {
+  return {
+    commonConfig: serializeCommonConfig(value.commonConfig),
+    fretboards: serializeFretboardConfigArray(value.fretboards),
+  };
+}
+
+function deserializeAppState(
+  value: unknown,
+): HistoryStateDeserializeResult<PersistedAppState> {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return { type: 'error' };
+  }
+
+  const raw = value as Record<string, unknown>;
+
+  const commonResult = deserializeCommonConfig(raw['commonConfig']);
+  const fretboardsResult = deserializeFretboardConfigArray(raw['fretboards']);
+
+  return {
+    type: 'success',
+    value: {
+      commonConfig:
+        commonResult.type === 'success'
+          ? commonResult.value
+          : DEFAULT_COMMON_CONFIG,
+      fretboards:
+        fretboardsResult.type === 'success'
+          ? fretboardsResult.value
+          : [DEFAULT_FRETBOARD_CONFIG],
+    },
+  };
+}
+
+const PERSISTED_OPTIONS: HistoryStateOptions<PersistedAppState> = {
+  serialize: serializeAppState,
+  deserialize: deserializeAppState,
 };
 
 function makeFretboard(config: FretboardConfig): RuntimeFretboard {
@@ -30,12 +78,30 @@ function makeFretboard(config: FretboardConfig): RuntimeFretboard {
   };
 }
 
-function loadInitialFretboards(): RuntimeFretboard[] {
-  const stored = getStoredValue(FRETBOARDS_HISTORY_KEY, PERSISTED_OPTIONS);
-  if (stored && stored.length > 0) {
-    return stored.map((config) => makeFretboard(config));
+function loadInitialState(): {
+  commonConfig: CommonConfig;
+  fretboards: RuntimeFretboard[];
+} {
+  const stored = getStoredValue(APP_STATE_HISTORY_KEY, PERSISTED_OPTIONS);
+  if (stored && stored.fretboards.length > 0) {
+    return {
+      commonConfig: stored.commonConfig,
+      fretboards: stored.fretboards.map((config) => makeFretboard(config)),
+    };
   }
-  return [makeFretboard(DEFAULT_FRETBOARD_CONFIG)];
+  return {
+    commonConfig: DEFAULT_COMMON_CONFIG,
+    fretboards: [makeFretboard(DEFAULT_FRETBOARD_CONFIG)],
+  };
+}
+
+function moveItem<T>(items: readonly T[], from: number, to: number): T[] {
+  if (from === to || from < 0 || from >= items.length) return items.slice();
+  const next = items.slice();
+  const [moved] = next.splice(from, 1);
+  if (moved === undefined) return items.slice();
+  next.splice(Math.max(0, Math.min(to, next.length)), 0, moved);
+  return next;
 }
 
 /**
@@ -47,19 +113,15 @@ function loadInitialFretboards(): RuntimeFretboard[] {
  * class.
  * See https://react.dev/reference/react/addTransitionType
  */
+export function useAppState() {
+  const [initial] = useState(loadInitialState);
 
-function moveItem<T>(items: readonly T[], from: number, to: number): T[] {
-  if (from === to || from < 0 || from >= items.length) return items.slice();
-  const next = items.slice();
-  const [moved] = next.splice(from, 1);
-  if (moved === undefined) return items.slice();
-  next.splice(Math.max(0, Math.min(to, next.length)), 0, moved);
-  return next;
-}
+  const [commonConfig, setCommonConfig] = useState<CommonConfig>(
+    initial.commonConfig,
+  );
 
-export function useFretboards() {
   const [fretboards, setFretboards] = useState<RuntimeFretboard[]>(
-    loadInitialFretboards,
+    initial.fretboards,
   );
 
   // IDs currently in their fade-out phase. Still rendered so CSS can animate,
@@ -92,11 +154,16 @@ export function useFretboards() {
     // Persist only the panels that aren't mid-removal — otherwise a page
     // refresh during the fade would briefly restore a panel we just deleted.
     storeValue(
-      FRETBOARDS_HISTORY_KEY,
-      fretboards.filter((f) => !removingIds.has(f.id)).map((f) => f.config),
+      APP_STATE_HISTORY_KEY,
+      {
+        commonConfig,
+        fretboards: fretboards
+          .filter((f) => !removingIds.has(f.id))
+          .map((f) => f.config),
+      },
       PERSISTED_OPTIONS,
     );
-  }, [fretboards, removingIds]);
+  }, [commonConfig, fretboards, removingIds]);
 
   const updateConfig = useCallback((id: string, next: FretboardConfig) => {
     setFretboards((current) =>
@@ -205,6 +272,8 @@ export function useFretboards() {
   }, []);
 
   return {
+    commonConfig,
+    setCommonConfig,
     fretboards,
     removingIds,
     insertingIds,

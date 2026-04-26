@@ -15,7 +15,6 @@ const REQUIRED_PROPS = {
   startFret: 0,
   endFret: 12,
   showBackgroundNeck: true,
-  showStrings: true,
   showFretLines: true,
   showFretMarkers: true,
   showFretLabels: true,

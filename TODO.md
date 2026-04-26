@@ -50,7 +50,6 @@
 
 I think the above could be easily implemented by just:
 
-- Group common controls line instrument, tuning, and other vis
 - Adding visualization modes for N columns + dropdown (collection mode)
 
 ### Share

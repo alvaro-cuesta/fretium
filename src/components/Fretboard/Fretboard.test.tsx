@@ -14,7 +14,6 @@ const REQUIRED_PROPS = {
   instrumentName: 'Guitar',
   tuningName: 'Standard',
   showBackgroundNeck: true,
-  showStrings: true,
   showFretLines: true,
   showFretMarkers: true,
   showFretLabels: true,
@@ -265,7 +264,6 @@ test('omits disabled neck layers while keeping notes rendered', () => {
       startFret={1}
       endFret={1}
       showBackgroundNeck={false}
-      showStrings={false}
       showFretLines={false}
     />,
   );
@@ -277,14 +275,12 @@ test('omits disabled neck layers while keeping notes rendered', () => {
       startFret: 1,
       endFret: 1,
       showBackgroundNeck: false,
-      showStrings: false,
       showFretLines: false,
     }),
   });
 
   expect(svg.querySelector('g[clip-path] > rect')).not.toBeInTheDocument();
   expect(svg.querySelector('line[stroke-width="6"]')).not.toBeInTheDocument();
-  expect(svg.querySelector('line[stroke-width="3.2"]')).not.toBeInTheDocument();
   expect(screen.getByText('F')).toBeInTheDocument();
 });
 
@@ -368,7 +364,6 @@ test('describes the rendered fretboard in the aria label', () => {
       startFret={3}
       endFret={7}
       showBackgroundNeck={false}
-      showStrings={false}
       showFretLines={false}
       showFretMarkers={false}
       showFretLabels={true}

@@ -1,13 +1,16 @@
 import { DragDropProvider } from '@dnd-kit/react';
 import { useCallback, useState } from 'react';
+import { CommonControls } from '../CommonControls/CommonControls.tsx';
 import { ConfirmDialog } from '../ConfirmDialog.tsx';
 import { FretboardPanel } from '../FretboardPanel/FretboardPanel.tsx';
 import { Layout } from '../Layout.tsx';
 import styles from './App.module.scss';
-import { useFretboards } from './fretboards.ts';
+import { useAppState } from './app-state.ts';
 
 export function App() {
   const {
+    commonConfig,
+    setCommonConfig,
     fretboards,
     removingIds,
     insertingIds,
@@ -18,7 +21,7 @@ export function App() {
     moveUp,
     moveDown,
     reorder,
-  } = useFretboards();
+  } = useAppState();
 
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
@@ -66,6 +69,11 @@ export function App() {
           reorder(currentIndex, finalIndex);
         }}
       >
+        <CommonControls
+          config={commonConfig}
+          onChange={setCommonConfig}
+        />
+
         <div className={styles.panelList}>
           {fretboards.map((fretboard, index) => (
             <FretboardPanel
@@ -74,6 +82,7 @@ export function App() {
               index={index}
               total={fretboards.length}
               config={fretboard.config}
+              commonConfig={commonConfig}
               isRemoving={removingIds.has(fretboard.id)}
               isInserting={insertingIds.has(fretboard.id)}
               onRemoveAnimationEnd={() => {
