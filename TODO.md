@@ -61,6 +61,7 @@ I think the above could be easily implemented by just:
 
 - Make print view have a special layout that is optimized for printing (e.g. remove controls and replace them with a small description)
   - If printing only one diagram, do not trigger full-page print view, but instead just print the diagram it is being printed (inside the special layout)
+- Make per-fretboard print button print only that fretboard -- print every fretboatd from different UI
 
 ### UI
 
@@ -68,10 +69,6 @@ I think the above could be easily implemented by just:
 - Make controls more compact in general (e.g. by using dropdowns, accordions, tabs, or similar to group related options together and save space)
 - Improve diagram sizing calcs (becomes too small on mobile, but there's tension between width and height)
 - Toast when "copy to clipboard" (in save menu) succeeds or fails
-
-## Bugs
-
-- Print view is not usable right now
 
 ## Features to consider
 
@@ -89,7 +86,3 @@ I think the above could be easily implemented by just:
   - Download .txt file
   - Copy to clipboard as text
 - Add a way to specify (and display) fingerings in diagrams
-
-In mobile merge the "instrument" and "note labels" dropdowns into a single line
-
-Simplify controls (dropdowns) in print view -- show the dropdown itself as just text

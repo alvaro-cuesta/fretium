@@ -72,3 +72,14 @@ $page-margin: 16px;
   font-size: 0.78rem;
   color: #666;
 }
+
+@media print {
+  .root {
+    padding: 0;
+    gap: 4px;
+  }
+
+  .main {
+    gap: 4px;
+  }
+}

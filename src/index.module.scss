@@ -199,4 +199,15 @@ button,
       content: ' (' attr(href) ')';
     }
   }
+
+  // Render dropdowns as plain text in print — no border, background, or
+  // dropdown arrow — so the controls section reads as a compact label for the
+  // printed diagram.
+  select {
+    appearance: none;
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+  }
 }

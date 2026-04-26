@@ -154,3 +154,35 @@ $page-margin: 16px;
     padding: 9px 12px;
   }
 }
+
+@media print {
+  .controlsSection {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .controlsForm {
+    gap: 2px 12px;
+  }
+
+  .selectorInput {
+    padding: 0;
+  }
+
+  .fieldGroup {
+    gap: 2px;
+  }
+
+  .checkboxRow {
+    gap: 0 8px;
+  }
+
+  .checkboxField {
+    min-height: 0;
+    padding: 0;
+    gap: 4px;
+  }
+}
