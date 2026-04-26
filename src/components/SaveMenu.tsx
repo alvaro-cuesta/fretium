@@ -75,7 +75,8 @@ async function openInNewTabSvgAsPng(
   URL.revokeObjectURL(pngUrl);
 }
 
-type Toast = { message: string; type: 'success' | 'error' };
+type Toast = { key: number; message: string; type: 'success' | 'error' };
+let toastKey = 0;
 
 type SaveMenuProps = {
   svgUrl: string;
@@ -95,8 +96,8 @@ export function SaveMenu(props: SaveMenuProps) {
   const [toast, setToast] = useState<Toast | null>(null);
   const toastTimeout = useImperativeTimeout();
 
-  function showToast(next: Toast) {
-    setToast(next);
+  function showToast(message: string, type: Toast['type']) {
+    setToast({ key: ++toastKey, message, type });
     toastTimeout.schedule(() => {
       setToast(null);
     }, TOAST_DURATION_MS);
@@ -110,10 +111,10 @@ export function SaveMenu(props: SaveMenuProps) {
           [SVG_CLIPBOARD_TYPE]: new Blob([blob], { type: SVG_CLIPBOARD_TYPE }),
         }),
       ]);
-      showToast({ message: 'Copied!', type: 'success' });
+      showToast('Copied!', 'success');
     } catch (error) {
       console.error('SVG clipboard copy failed:', error);
-      showToast({ message: 'Failed to copy', type: 'error' });
+      showToast('Failed to copy', 'error');
     }
   }
 
@@ -128,7 +129,7 @@ export function SaveMenu(props: SaveMenuProps) {
   //   } catch (error) {
   //     if (error instanceof DOMException && error.name === 'AbortError') return;
   //     console.error('SVG share failed:', error);
-  //     showToast({ message: 'Failed to share', type: 'error' });
+  //     showToast('Failed to share', 'error');
   //   }
   // }
 
@@ -152,17 +153,17 @@ export function SaveMenu(props: SaveMenuProps) {
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return;
       console.error('PNG share failed:', error);
-      showToast({ message: 'Failed to share', type: 'error' });
+      showToast('Failed to share', 'error');
     }
   }
 
   async function handleCopy(width: number, height: number) {
     try {
       await copySvgToClipboardPng(props.svgUrl, width, height);
-      showToast({ message: 'Copied!', type: 'success' });
+      showToast('Copied!', 'success');
     } catch (error) {
       console.error('Clipboard copy failed:', error);
-      showToast({ message: 'Failed to copy', type: 'error' });
+      showToast('Failed to copy', 'error');
     }
   }
 
@@ -170,6 +171,7 @@ export function SaveMenu(props: SaveMenuProps) {
     <>
       {toast && (
         <div
+          key={toast.key}
           className={cx(styles.toast, {
             [styles.toastError]: toast.type === 'error',
           })}
