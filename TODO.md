@@ -55,7 +55,6 @@ I think the above could be easily implemented by just:
 ### Share
 
 - Add a way to share diagrams (e.g. via URL with hash, or via JSON file export/import, or both!) -- possibly copying to clipboard?
-- Implement share if available (so you can share PNG, SVG, etc.)
 
 ### Export
 
@@ -66,7 +65,6 @@ I think the above could be easily implemented by just:
 ### UI
 
 - Make controls more compact in general (e.g. by using dropdowns, accordions, tabs, or similar to group related options together and save space)
-- Toast when "copy to clipboard" (in save menu) succeeds or fails
 
 ## Features to consider
 
