@@ -86,27 +86,19 @@ export function App() {
     return result;
   }, [fretboards, removingIds, panelImgData]);
 
-  // --- Solo print (with debug markers written to DOM directly) ---
+  // Solo/all print: useEffect calls window.print() after React commits so
+  // the panelPrintHidden class is on the DOM when the browser captures.
+  // pendingPrintRef stays true through the print call so the beforeprint
+  // listener (which clears stale solo state on native Ctrl+P) doesn't
+  // undo us mid-capture on Chrome Android.
   const [soloPrintId, setSoloPrintId] = useState<string | null>(null);
+  const [, forceRender] = useState(0);
   const pendingPrintRef = useRef(false);
-  const debugRef = useRef<HTMLDivElement | null>(null);
-
-  function debugLog(msg: string) {
-    console.log(`[solo-print] ${msg}`);
-    const el = debugRef.current;
-    if (el) el.textContent = (el.textContent || '') + ` → ${msg}`;
-  }
 
   useEffect(() => {
     if (!pendingPrintRef.current) return;
-    // Keep the flag true through window.print() — Chrome Android fires
-    // beforeprint synchronously during the call, and our listener uses the
-    // flag to avoid clearing soloPrintId before the capture happens.
-    debugLog('3-useEffect');
-    debugLog('4-calling-print');
     window.print();
     pendingPrintRef.current = false;
-    debugLog('5-after-print');
   });
 
   useEffect(() => {
@@ -121,16 +113,16 @@ export function App() {
   }, []);
 
   const handlePrintSolo = useCallback((id: string) => {
-    if (debugRef.current) debugRef.current.textContent = `1-solo-${id}`;
     pendingPrintRef.current = true;
     setSoloPrintId(id);
-    debugLog('2-setState');
   }, []);
 
   const handlePrintAll = useCallback(() => {
-    if (debugRef.current) debugRef.current.textContent = '';
     pendingPrintRef.current = true;
     setSoloPrintId(null);
+    // Force a re-render even when soloPrintId is already null so the
+    // useEffect fires and calls window.print().
+    forceRender((n) => n + 1);
   }, []);
 
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
@@ -148,18 +140,6 @@ export function App() {
 
   return (
     <Layout>
-      {/* DEBUG: written to DOM directly (no React state) to show print capture timing */}
-      <div
-        ref={debugRef}
-        style={{
-          padding: 8,
-          background: '#ff0',
-          color: '#000',
-          fontSize: 12,
-          fontFamily: 'monospace',
-          minHeight: 20,
-        }}
-      />
       <DragDropProvider
         onDragEnd={(event) => {
           if (event.canceled) return;
