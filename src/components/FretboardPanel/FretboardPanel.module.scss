@@ -223,9 +223,9 @@ $panel-animation-ms: 220ms;
     max-width: none;
   }
 
-  .fretboardImg {
-    width: 100%;
-    height: auto;
-    max-width: none;
-  }
+  // Don't override the screen `height: clamp(...)` on the img: that explicit
+  // height keeps the box non-zero and lets the browser drive width from the
+  // intrinsic aspect ratio. The previous `width: 100%; height: auto` override
+  // created a circular reference inside Scrollable's fit-content/inline-block
+  // chain and could collapse the img to 0×0 in print.
 }
