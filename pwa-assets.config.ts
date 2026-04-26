@@ -6,15 +6,17 @@ import {
 export default defineConfig({
   preset: {
     ...preset,
-    maskable: {
-      ...(typeof preset.maskable === 'object' ? preset.maskable : {}),
-      // No extra padding — the source SVG already fits the canvas. The OS
-      // clips to its icon shape (circle/squircle) but the logo stays large.
-      padding: 0,
-      resizeOptions: {
-        background: '#1a1a2e',
-      },
-    },
+    maskable:
+      typeof preset.maskable === 'object'
+        ? {
+            ...preset.maskable,
+            padding: 0.1,
+            resizeOptions: {
+              ...preset.maskable.resizeOptions,
+              background: '#1a1a2e',
+            },
+          }
+        : preset.maskable,
   },
   images: ['public/favicon.svg'],
 });
