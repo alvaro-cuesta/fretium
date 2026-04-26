@@ -68,7 +68,7 @@ $panel-animation-ms: 220ms;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-areas:
-    'fretRange fretRange fretRange fretRange fretRange rootNote rootNote rootNote rootNote rootNote rootNote rootNote'
+    'fretRange fretRange fretRange fretRange fretRange fretRange fretRange fretRange fretRange fretRange rootNote rootNote'
     'pattern pattern pattern pattern pattern pattern pattern pattern pattern pattern pattern pattern';
   align-items: end;
   gap: 12px 16px;
@@ -162,10 +162,10 @@ $panel-animation-ms: 220ms;
 
   .controlsForm {
     align-items: stretch;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     grid-template-areas:
-      'fretRange rootNote'
-      'pattern pattern';
+      'fretRange fretRange fretRange fretRange fretRange fretRange fretRange fretRange fretRange fretRange rootNote rootNote'
+      'pattern pattern pattern pattern pattern pattern pattern pattern pattern pattern pattern pattern';
     gap: 10px 12px;
   }
 
