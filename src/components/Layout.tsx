@@ -36,7 +36,7 @@ export function Layout(props: LayoutProps) {
 
       <footer className={styles.footer}>
         <p>
-          Made with ❤️ by{' '}
+          Made with <span role="img" aria-label="love">❤️</span> by{' '}
           <a
             className={globalStyles.printLink}
             href={import.meta.env.PACKAGE_AUTHOR.url}
