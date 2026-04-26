@@ -56,14 +56,9 @@ I think the above could be easily implemented by just:
 
 - Add a way to share diagrams (e.g. via URL with hash, or via JSON file export/import, or both!) -- possibly copying to clipboard?
 
-### Export
-
-- Make print view have a special layout that is optimized for printing (e.g. remove controls and replace them with a small description)
-  - If printing only one diagram, do not trigger full-page print view, but instead just print the diagram it is being printed (inside the special layout)
-- Make per-fretboard print button print only that fretboard -- print every fretboatd from different UI
-
 ### UI
 
+- Make print view have a special layout that is optimized for printing (e.g. remove controls and replace them with a small description)
 - Make controls more compact in general (e.g. by using dropdowns, accordions, tabs, or similar to group related options together and save space)
 
 ## Features to consider
