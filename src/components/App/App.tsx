@@ -1,5 +1,6 @@
 import { DragDropProvider } from '@dnd-kit/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { CommonControls } from '../CommonControls/CommonControls.tsx';
 import { ConfirmDialog } from '../ConfirmDialog.tsx';
 import { FretboardPanel } from '../FretboardPanel/FretboardPanel.tsx';
@@ -86,20 +87,12 @@ export function App() {
     return result;
   }, [fretboards, removingIds, panelImgData]);
 
-  // Solo/all print: useEffect calls window.print() after React commits so
-  // the panelPrintHidden class is on the DOM when the browser captures.
-  // pendingPrintRef stays true through the print call so the beforeprint
-  // listener (which clears stale solo state on native Ctrl+P) doesn't
-  // undo us mid-capture on Chrome Android.
+  // Solo/all print: flushSync commits the panelPrintHidden class to the DOM
+  // synchronously before window.print() captures. pendingPrintRef stays true
+  // through the call so the beforeprint listener (which clears stale solo
+  // state on native Ctrl+P) doesn't undo us mid-capture on Chrome Android.
   const [soloPrintId, setSoloPrintId] = useState<string | null>(null);
-  const [, forceRender] = useState(0);
   const pendingPrintRef = useRef(false);
-
-  useEffect(() => {
-    if (!pendingPrintRef.current) return;
-    window.print();
-    pendingPrintRef.current = false;
-  });
 
   useEffect(() => {
     const handleBeforePrint = () => {
@@ -114,15 +107,22 @@ export function App() {
 
   const handlePrintSolo = useCallback((id: string) => {
     pendingPrintRef.current = true;
-    setSoloPrintId(id);
+    // eslint-disable-next-line react-dom/no-flush-sync
+    flushSync(() => {
+      setSoloPrintId(id);
+    });
+    window.print();
+    pendingPrintRef.current = false;
   }, []);
 
   const handlePrintAll = useCallback(() => {
     pendingPrintRef.current = true;
-    setSoloPrintId(null);
-    // Force a re-render even when soloPrintId is already null so the
-    // useEffect fires and calls window.print().
-    forceRender((n) => n + 1);
+    // eslint-disable-next-line react-dom/no-flush-sync
+    flushSync(() => {
+      setSoloPrintId(null);
+    });
+    window.print();
+    pendingPrintRef.current = false;
   }, []);
 
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
