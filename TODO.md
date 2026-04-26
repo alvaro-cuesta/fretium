@@ -38,7 +38,6 @@
   - But note that this overriding/merging is also a feature, because we want to sometimes merge notes together
   - But in this specific case (showing multiple chords) we don't want to merge, we want to show all of them!
   - Hard to tell how to do this with these conflicting requirements and still keep UI/UX/pattern DSL simple and intuitive
-- PWA
 
 ### Multiple fretboards
 
