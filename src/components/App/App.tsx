@@ -86,22 +86,45 @@ export function App() {
     return result;
   }, [fretboards, removingIds, panelImgData]);
 
-  // Solo print: set soloPrintId → panels get isPrintHidden class → useEffect
-  // calls window.print() after React commits the classes to the DOM. A
-  // beforeprint listener clears stale state when the user presses Ctrl+P.
+  // --- Solo print (with debug markers) ---
   const [soloPrintId, setSoloPrintId] = useState<string | null>(null);
+  const [printDebug, setPrintDebug] = useState<string[]>([]);
   const pendingPrintRef = useRef(false);
 
   useEffect(() => {
     if (!pendingPrintRef.current) return;
     pendingPrintRef.current = false;
+    setPrintDebug((prev) => [...prev, `3-useEffect-before-print`]);
+
+    // Also hide via direct DOM as belt-and-suspenders
+    if (soloPrintId) {
+      document.querySelectorAll('article[data-panel-id]').forEach((el) => {
+        if (
+          el instanceof HTMLElement &&
+          el.dataset['panelId'] !== soloPrintId
+        ) {
+          el.style.display = 'none';
+        }
+      });
+    }
+
+    setPrintDebug((prev) => [...prev, `4-dom-hidden-calling-print`]);
     window.print();
+    setPrintDebug((prev) => [...prev, `5-after-print-returned`]);
+
+    // Restore direct DOM changes
+    document.querySelectorAll('article[data-panel-id]').forEach((el) => {
+      if (el instanceof HTMLElement) {
+        el.style.display = '';
+      }
+    });
   });
 
   useEffect(() => {
     const handleBeforePrint = () => {
       if (pendingPrintRef.current) return;
       setSoloPrintId(null);
+      setPrintDebug([]);
     };
     window.addEventListener('beforeprint', handleBeforePrint);
     return () => {
@@ -110,11 +133,14 @@ export function App() {
   }, []);
 
   const handlePrintSolo = useCallback((id: string) => {
+    setPrintDebug([`1-handlePrintSolo-${id}`]);
     pendingPrintRef.current = true;
     setSoloPrintId(id);
+    setPrintDebug((prev) => [...prev, `2-setState-called`]);
   }, []);
 
   const handlePrintAll = useCallback(() => {
+    setPrintDebug([]);
     pendingPrintRef.current = true;
     setSoloPrintId(null);
   }, []);
@@ -134,6 +160,21 @@ export function App() {
 
   return (
     <Layout>
+      {/* DEBUG: visible in print to show which steps ran before capture */}
+      {printDebug.length > 0 && (
+        <div
+          style={{
+            padding: 8,
+            background: '#ff0',
+            color: '#000',
+            fontSize: 12,
+            fontFamily: 'monospace',
+          }}
+        >
+          DEBUG soloPrintId={soloPrintId ?? 'null'} | steps:{' '}
+          {printDebug.join(' → ')}
+        </div>
+      )}
       <DragDropProvider
         onDragEnd={(event) => {
           if (event.canceled) return;
