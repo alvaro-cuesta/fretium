@@ -11,15 +11,20 @@ const PNG_EXPORT_SCALE_SD = 2 as const;
 const PNG_EXPORT_SCALE_HD = 4 as const;
 const TOAST_DURATION_MS = 3000;
 
-// Whether the browser supports programmatic clipboard writes. When false the
+// Whether the browser supports writing PNG to the clipboard. When false the
 // "Copy to clipboard" menu items are hidden entirely. Evaluated lazily so
 // test mocks that stub ClipboardItem / navigator.clipboard are picked up.
 function canCopyToClipboard() {
-  return (
-    typeof ClipboardItem !== 'undefined' &&
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- clipboard can be undefined in insecure contexts
-    typeof navigator.clipboard?.write === 'function'
-  );
+  if (typeof ClipboardItem === 'undefined') return false;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- clipboard can be undefined in insecure contexts
+  if (typeof navigator.clipboard?.write !== 'function') return false;
+  // Firefox exposes ClipboardItem but only supports text types, not image/png.
+  // ClipboardItem.supports() detects this; when unavailable (older browsers
+  // that do support PNG) we fall through optimistically.
+  if (typeof ClipboardItem.supports === 'function') {
+    return ClipboardItem.supports(PNG_CONTENT_TYPE);
+  }
+  return true;
 }
 
 async function downloadSvgAsPng(
