@@ -60,6 +60,14 @@ export function ConfirmDialog({
       ref={dialogRef}
       className={styles.dialog}
       aria-labelledby={`${styles.title}-label`}
+      onClick={(e) => {
+        // Clicks on the ::backdrop land on the <dialog> element itself, not
+        // on any child. Close the dialog when the user clicks outside the
+        // content box.
+        if (e.target === e.currentTarget) {
+          dialogRef.current?.close();
+        }
+      }}
     >
       <div className={styles.content}>
         <h2
