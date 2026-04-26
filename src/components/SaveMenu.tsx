@@ -30,6 +30,15 @@ function canCopyToClipboard(contentType: string) {
 // accept — use the base MIME type for clipboard operations.
 const SVG_CLIPBOARD_TYPE = 'image/svg+xml';
 
+// Whether the browser supports sharing files of a given content type via the
+// Web Share API. Uses navigator.canShare() with a dummy file to probe support.
+function canShareFile(contentType: string, extension: string) {
+  if (typeof navigator.share !== 'function') return false;
+  if (typeof navigator.canShare !== 'function') return false;
+  const testFile = new File([], `test.${extension}`, { type: contentType });
+  return navigator.canShare({ files: [testFile] });
+}
+
 async function downloadSvgAsPng(
   svgUrl: string,
   filenameBase: string,
@@ -100,6 +109,40 @@ export function SaveMenu(props: SaveMenuProps) {
     } catch (error) {
       console.error('SVG clipboard copy failed:', error);
       showToast({ message: 'Failed to copy', type: 'error' });
+    }
+  }
+
+  async function handleShareSvg() {
+    try {
+      const blob = await fetch(props.svgUrl).then((r) => r.blob());
+      const file = new File([blob], `${props.filenameBase}.svg`, {
+        type: SVG_CLIPBOARD_TYPE,
+      });
+      await navigator.share({ files: [file] });
+    } catch (error) {
+      // User cancelling the share sheet throws AbortError — don't toast that.
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      console.error('SVG share failed:', error);
+      showToast({ message: 'Failed to share', type: 'error' });
+    }
+  }
+
+  async function handleSharePng(width: number, height: number, suffix: string) {
+    try {
+      const pngBlob = await rasterizeSvg(
+        props.svgUrl,
+        PNG_CONTENT_TYPE,
+        width,
+        height,
+      );
+      const file = new File([pngBlob], `${props.filenameBase}-${suffix}.png`, {
+        type: PNG_CONTENT_TYPE,
+      });
+      await navigator.share({ files: [file] });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      console.error('PNG share failed:', error);
+      showToast({ message: 'Failed to share', type: 'error' });
     }
   }
 
@@ -175,6 +218,20 @@ export function SaveMenu(props: SaveMenuProps) {
               >
                 <span>Download</span>
               </a>
+
+              {canShareFile(SVG_CLIPBOARD_TYPE, 'svg') && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    void handleShareSvg();
+                    closeMenu();
+                  }}
+                >
+                  <span>Share</span>
+                </button>
+              )}
 
               {canCopyToClipboard(SVG_CLIPBOARD_TYPE) && (
                 <button
@@ -280,6 +337,46 @@ export function SaveMenu(props: SaveMenuProps) {
                   Download <small>(HD)</small>
                 </span>
               </button>
+
+              {canShareFile(PNG_CONTENT_TYPE, 'png') && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    void handleSharePng(
+                      props.width * PNG_EXPORT_SCALE_SD,
+                      props.height * PNG_EXPORT_SCALE_SD,
+                      'SD',
+                    );
+                    closeMenu();
+                  }}
+                >
+                  <span>
+                    Share <small>(SD)</small>
+                  </span>
+                </button>
+              )}
+
+              {canShareFile(PNG_CONTENT_TYPE, 'png') && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={cx(globalStyles.linkButton, menuItemClassName)}
+                  onClick={() => {
+                    void handleSharePng(
+                      props.width * PNG_EXPORT_SCALE_HD,
+                      props.height * PNG_EXPORT_SCALE_HD,
+                      'HD',
+                    );
+                    closeMenu();
+                  }}
+                >
+                  <span>
+                    Share <small>(HD)</small>
+                  </span>
+                </button>
+              )}
 
               {canCopyToClipboard(PNG_CONTENT_TYPE) && (
                 <button
