@@ -112,20 +112,20 @@ export function SaveMenu(props: SaveMenuProps) {
     }
   }
 
-  async function handleShareSvg() {
-    try {
-      const blob = await fetch(props.svgUrl).then((r) => r.blob());
-      const file = new File([blob], `${props.filenameBase}.svg`, {
-        type: SVG_CLIPBOARD_TYPE,
-      });
-      await navigator.share({ files: [file] });
-    } catch (error) {
-      // User cancelling the share sheet throws AbortError — don't toast that.
-      if (error instanceof DOMException && error.name === 'AbortError') return;
-      console.error('SVG share failed:', error);
-      showToast({ message: 'Failed to share', type: 'error' });
-    }
-  }
+  // SVG share handler — disabled (see comment in JSX) but kept for future use.
+  // async function handleShareSvg() {
+  //   try {
+  //     const blob = await fetch(props.svgUrl).then((r) => r.blob());
+  //     const file = new File([blob], `${props.filenameBase}.svg`, {
+  //       type: SVG_CLIPBOARD_TYPE,
+  //     });
+  //     await navigator.share({ files: [file] });
+  //   } catch (error) {
+  //     if (error instanceof DOMException && error.name === 'AbortError') return;
+  //     console.error('SVG share failed:', error);
+  //     showToast({ message: 'Failed to share', type: 'error' });
+  //   }
+  // }
 
   async function handleSharePng(width: number, height: number, suffix: string) {
     try {
