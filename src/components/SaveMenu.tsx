@@ -80,6 +80,7 @@ type Toast = { message: string; type: 'success' | 'error' };
 type SaveMenuProps = {
   svgUrl: string;
   filenameBase: string;
+  description: string;
   width: number;
   height: number;
 };
@@ -127,6 +128,8 @@ export function SaveMenu(props: SaveMenuProps) {
   //   }
   // }
 
+  const shareText = `${props.description}\n\nMade with ${import.meta.env.PACKAGE_HOMEPAGE}`;
+
   async function handleSharePng(width: number, height: number, suffix: string) {
     try {
       const pngBlob = await rasterizeSvg(
@@ -138,7 +141,10 @@ export function SaveMenu(props: SaveMenuProps) {
       const file = new File([pngBlob], `${props.filenameBase}-${suffix}.png`, {
         type: PNG_CONTENT_TYPE,
       });
-      await navigator.share({ files: [file] });
+      await navigator.share({
+        text: shareText,
+        files: [file],
+      });
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return;
       console.error('PNG share failed:', error);

@@ -473,6 +473,7 @@ export function FretboardPanel({
             <SaveMenu
               svgUrl={fretboardImg.url}
               filenameBase={fretboardImg.filenameBase}
+              description={fretboardImg.description}
               width={fretboardMetrics.total.width}
               height={fretboardMetrics.total.height}
             />

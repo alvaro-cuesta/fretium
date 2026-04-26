@@ -15,6 +15,7 @@ import styles from './FretboardImg.module.scss';
 export type ImgChangeEvent = {
   url: string;
   filenameBase: string;
+  description: string;
 };
 
 type FretboardImgProps = Omit<FretboardProps, 'ref'> &
@@ -104,6 +105,7 @@ export function FretboardImg(props: FretboardImgProps) {
       setImgData({
         url: objectUrl,
         filenameBase,
+        description,
       });
 
       return () => {
@@ -115,7 +117,7 @@ export function FretboardImg(props: FretboardImgProps) {
         }, 0);
       };
     },
-    [filenameBase],
+    [filenameBase, description],
   );
 
   // We have to use a MutationObserver here because during development any change to the code changed the SVG element
