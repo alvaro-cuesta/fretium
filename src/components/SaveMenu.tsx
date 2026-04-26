@@ -227,9 +227,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 className={cx(globalStyles.linkButton, menuItemClassName)}
                 onClick={closeMenu}
               >
-                <span>
-                  <ExternalLinkIcon /> Open in new tab
-                </span>
+                <ExternalLinkIcon /> <span>Open in new tab</span>
               </a>
 
               <a
@@ -239,9 +237,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 className={cx(globalStyles.linkButton, menuItemClassName)}
                 onClick={closeMenu}
               >
-                <span>
-                  <DownloadIcon /> Download
-                </span>
+                <DownloadIcon /> <span>Download</span>
               </a>
 
               {/* SVG share is disabled — most share targets (messaging apps,
@@ -258,9 +254,7 @@ export function SaveMenu(props: SaveMenuProps) {
                     closeMenu();
                   }}
                 >
-                  <span>
-                    <ClipboardIcon /> Copy to clipboard
-                  </span>
+                  <ClipboardIcon /> <span>Copy to clipboard</span>
                 </button>
               )}
             </div>
@@ -291,8 +285,9 @@ export function SaveMenu(props: SaveMenuProps) {
                   );
                 }}
               >
+                <ExternalLinkIcon />{' '}
                 <span>
-                  <ExternalLinkIcon /> Open in new tab <small>(SD)</small>
+                  Open in new tab <small>(SD)</small>
                 </span>
               </button>
 
@@ -310,8 +305,9 @@ export function SaveMenu(props: SaveMenuProps) {
                   );
                 }}
               >
+                <ExternalLinkIcon />{' '}
                 <span>
-                  <ExternalLinkIcon /> Open in new tab <small>(HD)</small>
+                  Open in new tab <small>(HD)</small>
                 </span>
               </button>
 
@@ -330,8 +326,9 @@ export function SaveMenu(props: SaveMenuProps) {
                   );
                 }}
               >
+                <DownloadIcon />{' '}
                 <span>
-                  <DownloadIcon /> Download <small>(SD)</small>
+                  Download <small>(SD)</small>
                 </span>
               </button>
 
@@ -350,8 +347,9 @@ export function SaveMenu(props: SaveMenuProps) {
                   );
                 }}
               >
+                <DownloadIcon />{' '}
                 <span>
-                  <DownloadIcon /> Download <small>(HD)</small>
+                  Download <small>(HD)</small>
                 </span>
               </button>
 
@@ -369,8 +367,9 @@ export function SaveMenu(props: SaveMenuProps) {
                     closeMenu();
                   }}
                 >
+                  <ShareIcon />{' '}
                   <span>
-                    <ShareIcon /> Share <small>(SD)</small>
+                    Share <small>(SD)</small>
                   </span>
                 </button>
               )}
@@ -389,8 +388,9 @@ export function SaveMenu(props: SaveMenuProps) {
                     closeMenu();
                   }}
                 >
+                  <ShareIcon />{' '}
                   <span>
-                    <ShareIcon /> Share <small>(HD)</small>
+                    Share <small>(HD)</small>
                   </span>
                 </button>
               )}
@@ -411,8 +411,9 @@ export function SaveMenu(props: SaveMenuProps) {
                     closeMenu();
                   }}
                 >
+                  <ClipboardIcon />{' '}
                   <span>
-                    <ClipboardIcon /> Copy to clipboard <small>(SD)</small>
+                    Copy to clipboard <small>(SD)</small>
                   </span>
                 </button>
               )}
@@ -430,8 +431,9 @@ export function SaveMenu(props: SaveMenuProps) {
                     closeMenu();
                   }}
                 >
+                  <ClipboardIcon />{' '}
                   <span>
-                    <ClipboardIcon /> Copy to clipboard <small>(HD)</small>
+                    Copy to clipboard <small>(HD)</small>
                   </span>
                 </button>
               )}

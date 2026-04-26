@@ -60,6 +60,10 @@
   align-items: center;
   gap: 8px;
   justify-content: flex-start;
+
+  > svg {
+    flex-shrink: 0;
+  }
   border: 0;
   border-radius: 0;
   background: transparent;
