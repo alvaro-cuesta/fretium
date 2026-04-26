@@ -44,7 +44,7 @@
 .toast {
   position: absolute;
   right: clamp(12px, 2vw, 20px);
-  bottom: clamp(52px, calc(2vw + 40px), 60px);
+  bottom: clamp(64px, calc(2vw + 52px), 72px);
   padding: 6px 12px;
   border-radius: 8px;
   background: var(--accent);
@@ -84,6 +84,6 @@
 
   .toast {
     right: 10px;
-    bottom: 50px;
+    bottom: 62px;
   }
 }
