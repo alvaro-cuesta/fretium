@@ -65,9 +65,7 @@ I think the above could be easily implemented by just:
 
 ### UI
 
-- Make controls section more compact in mobile (currently it takes a lot of space and pushes the diagram down, which is not ideal)
 - Make controls more compact in general (e.g. by using dropdowns, accordions, tabs, or similar to group related options together and save space)
-- Improve diagram sizing calcs (becomes too small on mobile, but there's tension between width and height)
 - Toast when "copy to clipboard" (in save menu) succeeds or fails
 
 ## Features to consider
