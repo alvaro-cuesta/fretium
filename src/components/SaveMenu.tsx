@@ -97,6 +97,8 @@ type SaveMenuProps = {
   rootNote: string;
   width: number;
   height: number;
+  /** Triggers a print that shows only this panel. */
+  onPrintSolo: () => void;
 };
 
 export function SaveMenu(props: SaveMenuProps) {
@@ -202,7 +204,7 @@ export function SaveMenu(props: SaveMenuProps) {
               className={cx(globalStyles.linkButton, menuItemClassName)}
               onClick={() => {
                 closeMenu();
-                window.print();
+                props.onPrintSolo();
               }}
             >
               <PrinterIcon /> Print

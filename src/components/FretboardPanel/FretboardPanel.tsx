@@ -64,6 +64,19 @@ type FretboardPanelProps = {
   maxFretboardWidth: number;
   /** Reports this panel's SVG viewBox width so the parent can track the widest. */
   onFretboardWidthChange: (width: number) => void;
+  /** Reports this panel's export-ready img data so the parent can share all. */
+  onImgDataChange: (
+    data: {
+      svgUrl: string;
+      filenameBase: string;
+      width: number;
+      height: number;
+    } | null,
+  ) => void;
+  /** Triggers a print showing only this panel. */
+  onPrintSolo: () => void;
+  /** True when another panel is being solo-printed — hides this one in print. */
+  isPrintHidden: boolean;
   /** True while the panel is mid-fade-out — about to unmount. */
   isRemoving: boolean;
   /** True for the first frame after mount so the entering animation can play. */
@@ -86,6 +99,9 @@ export function FretboardPanel({
   commonConfig,
   maxFretboardWidth,
   onFretboardWidthChange,
+  onImgDataChange,
+  onPrintSolo,
+  isPrintHidden,
   isRemoving,
   isInserting,
   onRemoveAnimationEnd,
@@ -234,6 +250,25 @@ export function FretboardPanel({
     onFretboardWidthChange(fretboardMetrics.total.width);
   }, [fretboardMetrics.total.width, onFretboardWidthChange]);
 
+  // Report export-ready img data so the parent can share all panels.
+  useEffect(() => {
+    if (fretboardImg) {
+      onImgDataChange({
+        svgUrl: fretboardImg.url,
+        filenameBase: fretboardImg.filenameBase,
+        width: fretboardMetrics.total.width,
+        height: fretboardMetrics.total.height,
+      });
+    } else {
+      onImgDataChange(null);
+    }
+  }, [
+    fretboardImg,
+    fretboardMetrics.total.width,
+    fretboardMetrics.total.height,
+    onImgDataChange,
+  ]);
+
   // In print, each fretboard's width is a percentage of the page content area
   // so that the widest panel = 100% and smaller ones shrink proportionally —
   // giving every diagram the same visual scale (same px-per-fret ratio).
@@ -270,6 +305,7 @@ export function FretboardPanel({
       className={cx(styles.panel, {
         [styles.panelRemoving]: isRemoving,
         [styles.panelInserting]: isInserting,
+        [styles.panelPrintHidden]: isPrintHidden,
       })}
       aria-hidden={isRemoving}
     >
@@ -485,6 +521,7 @@ export function FretboardPanel({
               rootNote={config.rootNote}
               width={fretboardMetrics.total.width}
               height={fretboardMetrics.total.height}
+              onPrintSolo={onPrintSolo}
             />
           )}
         </section>

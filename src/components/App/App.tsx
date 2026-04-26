@@ -1,5 +1,5 @@
 import { DragDropProvider } from '@dnd-kit/react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CommonControls } from '../CommonControls/CommonControls.tsx';
 import { ConfirmDialog } from '../ConfirmDialog.tsx';
 import { FretboardPanel } from '../FretboardPanel/FretboardPanel.tsx';
@@ -7,6 +7,13 @@ import { TrashIcon } from '../FretboardPanel/icons.tsx';
 import { Layout } from '../Layout.tsx';
 import styles from './App.module.scss';
 import { useAppState } from './app-state.ts';
+
+export type PanelImgData = {
+  svgUrl: string;
+  filenameBase: string;
+  width: number;
+  height: number;
+};
 
 export function App() {
   const {
@@ -45,6 +52,70 @@ export function App() {
     }
     return max;
   }, [panelWidths, removingIds]);
+
+  // Track each panel's export-ready img data for share-all.
+  const [panelImgData, setPanelImgData] = useState<
+    Map<string, PanelImgData | null>
+  >(() => new Map());
+  const reportPanelImgData = useCallback(
+    (id: string, data: PanelImgData | null) => {
+      setPanelImgData((prev) => {
+        const existing = prev.get(id) ?? null;
+        // Compare by value — the caller constructs a new object each time, so
+        // identity comparison would always trigger a state update → re-render
+        // → infinite loop.
+        if (
+          existing === data ||
+          (existing !== null &&
+            data !== null &&
+            existing.svgUrl === data.svgUrl &&
+            existing.filenameBase === data.filenameBase &&
+            existing.width === data.width &&
+            existing.height === data.height)
+        ) {
+          return prev;
+        }
+        const next = new Map(prev);
+        next.set(id, data);
+        return next;
+      });
+    },
+    [],
+  );
+  const allPanelImgData = useMemo(() => {
+    const result: PanelImgData[] = [];
+    for (const fb of fretboards) {
+      if (removingIds.has(fb.id)) continue;
+      const data = panelImgData.get(fb.id);
+      if (data) result.push(data);
+    }
+    return result;
+  }, [fretboards, removingIds, panelImgData]);
+
+  // Solo print: when set, only the targeted panel is visible in print.
+  // Cleared via the afterprint event.
+  const [soloPrintId, setSoloPrintId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setSoloPrintId(null);
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => {
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, []);
+
+  const handlePrintSolo = useCallback((id: string) => {
+    setSoloPrintId(id);
+    requestAnimationFrame(() => {
+      window.print();
+    });
+  }, []);
+
+  const handlePrintAll = useCallback(() => {
+    window.print();
+  }, []);
 
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
@@ -95,6 +166,8 @@ export function App() {
         <CommonControls
           config={commonConfig}
           onChange={setCommonConfig}
+          onPrintAll={handlePrintAll}
+          allPanelImgData={allPanelImgData}
         />
 
         <div className={styles.panelList}>
@@ -110,6 +183,15 @@ export function App() {
               onFretboardWidthChange={(width) => {
                 reportPanelWidth(fretboard.id, width);
               }}
+              onImgDataChange={(data) => {
+                reportPanelImgData(fretboard.id, data);
+              }}
+              onPrintSolo={() => {
+                handlePrintSolo(fretboard.id);
+              }}
+              isPrintHidden={
+                soloPrintId !== null && soloPrintId !== fretboard.id
+              }
               isRemoving={removingIds.has(fretboard.id)}
               isInserting={insertingIds.has(fretboard.id)}
               onRemoveAnimationEnd={() => {

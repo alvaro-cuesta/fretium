@@ -1,23 +1,74 @@
 import cx from 'classnames';
 import { objectKeys } from '../../../lib/object.ts';
 import { INSTRUMENTS } from '../../config/instruments.ts';
+import { PNG_CONTENT_TYPE } from '../../lib/file.ts';
 import { type NoteDisplayMode } from '../../lib/fretboard.ts';
+import { rasterizeSvg } from '../../lib/image.ts';
+import type { PanelImgData } from '../App/App.tsx';
 import { type CommonConfig } from '../App/common-config.ts';
 import {
+  INSTRUMENT_TUNING_BY_VALUE,
   INSTRUMENT_TUNING_GROUPS,
   type InstrumentTuningOption,
 } from '../App/instrument-tuning.ts';
+import { PrinterIcon, ShareIcon } from '../FretboardPanel/icons.tsx';
 import styles from './CommonControls.module.scss';
+
+const PNG_EXPORT_SCALE_SD = 2 as const;
+const PNG_EXPORT_SCALE_HD = 4 as const;
+
+function canShareFile(contentType: string, extension: string) {
+  if (typeof navigator.share !== 'function') return false;
+  if (typeof navigator.canShare !== 'function') return false;
+  const testFile = new File([], `test.${extension}`, { type: contentType });
+  return navigator.canShare({ files: [testFile] });
+}
 
 type CommonControlsProps = {
   config: CommonConfig;
   onChange: (next: CommonConfig) => void;
+  onPrintAll: () => void;
+  allPanelImgData: readonly PanelImgData[];
 };
 
-export function CommonControls({ config, onChange }: CommonControlsProps) {
+export function CommonControls({
+  config,
+  onChange,
+  onPrintAll,
+  allPanelImgData,
+}: CommonControlsProps) {
   const patch = (next: Partial<CommonConfig>) => {
     onChange({ ...config, ...next });
   };
+
+  const resolved = INSTRUMENT_TUNING_BY_VALUE.get(config.instrumentTuning);
+  const instrumentLabel = resolved
+    ? `${resolved.instrumentName} ${resolved.tuningName} (${resolved.tuning.join(' ')})`
+    : config.instrumentTuning;
+
+  const shareText = `${instrumentLabel}\n\nMade with ${import.meta.env.PACKAGE_HOMEPAGE}`;
+
+  async function handleShareAll(scale: number, suffix: string) {
+    try {
+      const files = await Promise.all(
+        allPanelImgData.map(async (panel) => {
+          const pngBlob = await rasterizeSvg(
+            panel.svgUrl,
+            PNG_CONTENT_TYPE,
+            panel.width * scale,
+            panel.height * scale,
+          );
+          return new File([pngBlob], `${panel.filenameBase}-${suffix}.png`, {
+            type: PNG_CONTENT_TYPE,
+          });
+        }),
+      );
+      await navigator.share({ text: shareText, files });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      console.error('Share all failed:', error);
+    }
+  }
 
   return (
     <section
@@ -158,6 +209,46 @@ export function CommonControls({ config, onChange }: CommonControlsProps) {
             />
             <span className={styles.checkboxLabel}>Drop shadows</span>
           </label>
+        </div>
+
+        <div className={styles.actionsRow}>
+          <button
+            type="button"
+            className={styles.actionButton}
+            onClick={onPrintAll}
+          >
+            <PrinterIcon /> <span>Print all</span>
+          </button>
+
+          {canShareFile(PNG_CONTENT_TYPE, 'png') &&
+            allPanelImgData.length > 0 && (
+              <>
+                <button
+                  type="button"
+                  className={styles.actionButton}
+                  onClick={() => {
+                    void handleShareAll(PNG_EXPORT_SCALE_SD, 'SD');
+                  }}
+                >
+                  <ShareIcon />{' '}
+                  <span>
+                    Share all <small>(SD)</small>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className={styles.actionButton}
+                  onClick={() => {
+                    void handleShareAll(PNG_EXPORT_SCALE_HD, 'HD');
+                  }}
+                >
+                  <ShareIcon />{' '}
+                  <span>
+                    Share all <small>(HD)</small>
+                  </span>
+                </button>
+              </>
+            )}
         </div>
       </form>
     </section>
