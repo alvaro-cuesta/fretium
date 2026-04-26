@@ -97,12 +97,13 @@ $page-margin: 16px;
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
 }
 
 .actionButton {
+  flex: 1 1 0;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 8px 14px;
   border: 1px solid var(--border);
