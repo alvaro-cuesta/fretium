@@ -17,6 +17,7 @@ const TOAST_DURATION_MS = 3000;
 function canCopyToClipboard() {
   return (
     typeof ClipboardItem !== 'undefined' &&
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- clipboard can be undefined in insecure contexts
     typeof navigator.clipboard?.write === 'function'
   );
 }
