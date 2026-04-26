@@ -12,10 +12,14 @@ const PNG_EXPORT_SCALE_HD = 4 as const;
 const TOAST_DURATION_MS = 3000;
 
 // Whether the browser supports programmatic clipboard writes. When false the
-// "Copy to clipboard" menu items are hidden entirely.
-const CAN_COPY_TO_CLIPBOARD =
-  typeof ClipboardItem !== 'undefined' &&
-  typeof navigator.clipboard?.write === 'function';
+// "Copy to clipboard" menu items are hidden entirely. Evaluated lazily so
+// test mocks that stub ClipboardItem / navigator.clipboard are picked up.
+function canCopyToClipboard() {
+  return (
+    typeof ClipboardItem !== 'undefined' &&
+    typeof navigator.clipboard?.write === 'function'
+  );
+}
 
 async function downloadSvgAsPng(
   svgUrl: string,
@@ -240,7 +244,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 </span>
               </button>
 
-              {CAN_COPY_TO_CLIPBOARD && (
+              {canCopyToClipboard() && (
                 <button
                   type="button"
                   role="menuitem"
@@ -260,7 +264,7 @@ export function SaveMenu(props: SaveMenuProps) {
                 </button>
               )}
 
-              {CAN_COPY_TO_CLIPBOARD && (
+              {canCopyToClipboard() && (
                 <button
                   type="button"
                   role="menuitem"

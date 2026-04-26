@@ -249,8 +249,10 @@ test('renders core controls with defaults and exposes SVG and PNG downloads in t
 
   expect(copySdItem).toBeInstanceOf(MockClipboardItem);
   expect(copyHdItem).toBeInstanceOf(MockClipboardItem);
-  expect(copySdItem.items[PNG_CONTENT_TYPE]).toBe(rasterizedPngBlob);
-  expect(copyHdItem.items[PNG_CONTENT_TYPE]).toBe(rasterizedPngBlob);
+  // The clipboard item receives a Promise<Blob> (not a resolved Blob) so that
+  // clipboard.write starts within the user gesture before rasterization completes.
+  expect(await copySdItem.items[PNG_CONTENT_TYPE]).toBe(rasterizedPngBlob);
+  expect(await copyHdItem.items[PNG_CONTENT_TYPE]).toBe(rasterizedPngBlob);
 
   await waitFor(() => {
     expect(anchorClick).toHaveBeenCalledTimes(2);
