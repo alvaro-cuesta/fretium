@@ -8,6 +8,7 @@ import { defineConfig, loadEnv, type Plugin, type UserConfig } from 'vite';
 import { patchCssModules } from 'vite-css-modules';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import { ViteMinifyPlugin } from 'vite-plugin-minify';
+import { VitePWA } from 'vite-plugin-pwa';
 import ViteSvgr from 'vite-plugin-svgr';
 import type { MyImportMetaEnv } from './lib/define';
 import { fromEntries, objectKeys } from './lib/object';
@@ -122,6 +123,25 @@ export default defineConfig(async ({ mode }) => {
       ViteMinifyPlugin(),
       ViteSvgr(),
       minifyJsonLdPlugin(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        pwaAssets: {
+          config: './pwa-assets.config.ts',
+        },
+        manifest: {
+          id: '/',
+          name: 'Fretium | Fretboard diagram generator',
+          short_name: 'Fretium',
+          description:
+            'Generate beautiful fretboard diagrams for guitar, bass, ukulele and more. Right in your browser, no installation required.',
+          theme_color: '#bc366a',
+          background_color: '#1a1a2e',
+          display: 'standalone',
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        },
+      }),
     ],
     define: makeMetaEnvDefines<MyImportMetaEnv>(getPackageMetaEnv(gitCommit)),
     build: {
@@ -148,6 +168,12 @@ export default defineConfig(async ({ mode }) => {
       environment: 'jsdom',
       globals: true,
       setupFiles: ['./test/setup.ts'],
+      alias: {
+        'virtual:pwa-register': new URL(
+          './test/__mocks__/virtual-pwa-register.ts',
+          import.meta.url,
+        ).pathname,
+      },
     },
   } satisfies UserConfig;
 });

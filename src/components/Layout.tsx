@@ -1,5 +1,9 @@
+import { useEffect } from 'react';
 import globalStyles from '../index.module.scss';
+import { initPwa } from '../pwa.ts';
 import { ErrorBoundary } from './ErrorBoundary.tsx';
+import { showGlobalToast } from './global-toast.ts';
+import { GlobalToast } from './GlobalToast.tsx';
 import styles from './Layout.module.scss';
 
 type LayoutProps = {
@@ -7,8 +11,13 @@ type LayoutProps = {
 };
 
 export function Layout(props: LayoutProps) {
+  useEffect(() => {
+    initPwa(showGlobalToast);
+  }, []);
+
   return (
     <div className={styles.root}>
+      <GlobalToast />
       <header className={styles.header}>
         <h1>
           <a
